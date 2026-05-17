@@ -1030,11 +1030,7 @@ async function loadLeaderboard() {
 
 function subscribeLeaderboard() {
   if (!sb) return;
-  sb.channel('handles-live')
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'handles' }, () => {
-      loadLeaderboard();
-    })
-    .subscribe();
+  setInterval(loadLeaderboard, 30000);
 }
 
 // ============================================================
