@@ -475,6 +475,11 @@
   .photo-btn.ready{border-style:solid;border-color:var(--orange);color:var(--orange);background:rgba(255,115,0,0.06)}
   .photo-preview{width:44px;height:44px;object-fit:cover;border:1px solid var(--rule);display:none;flex-shrink:0}
   .photo-preview.show{display:block}
+  .photo-err{
+    font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+    color:#ff6b6b;display:none;width:100%;
+  }
+  .photo-err.show{display:block}
   .mission-foot{
     display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
     font-family:var(--mono);font-size:11px;letter-spacing:0.15em;color:var(--paper-3);
@@ -845,6 +850,7 @@
             <span class="photo-btn">+ Attach photo</span>
             <img class="photo-preview" alt="preview" />
           </label>
+          <span class="photo-err"></span>
           <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
         </div>
       </li>
@@ -864,6 +870,7 @@
             <span class="photo-btn">+ Attach photo</span>
             <img class="photo-preview" alt="preview" />
           </label>
+          <span class="photo-err"></span>
           <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
         </div>
       </li>
@@ -883,6 +890,7 @@
             <span class="photo-btn">+ Attach photo</span>
             <img class="photo-preview" alt="preview" />
           </label>
+          <span class="photo-err"></span>
           <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
         </div>
       </li>
@@ -902,6 +910,7 @@
             <span class="photo-btn">+ Attach photo</span>
             <img class="photo-preview" alt="preview" />
           </label>
+          <span class="photo-err"></span>
           <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
         </div>
       </li>
@@ -1323,10 +1332,12 @@ function resetPhotoState(ch) {
   const preview = ch.querySelector('.photo-preview');
   const photBtn = ch.querySelector('.photo-btn');
   const yesBtn  = ch.querySelector('.cc-yes');
+  const errEl   = ch.querySelector('.photo-err');
   if (input)   input.value = '';
   if (preview) { preview.src = ''; preview.classList.remove('show'); }
   if (photBtn) photBtn.classList.remove('ready');
   if (yesBtn && PHOTO_CHALLENGES.has(ch.dataset.cid)) yesBtn.disabled = true;
+  if (errEl)   { errEl.textContent = ''; errEl.classList.remove('show'); }
 }
 
 // ============================================================
@@ -1403,6 +1414,9 @@ document.querySelectorAll('.cc-no').forEach(btn => {
   });
 });
 
+const ALLOWED_MIME  = new Set(['image/jpeg','image/jpg','image/png','image/webp','image/heic','image/heif']);
+const MAX_RAW_BYTES = 20 * 1024 * 1024; // 20 MB raw — compression output is always ~200–400 KB
+
 document.querySelectorAll('.photo-input').forEach(input => {
   input.addEventListener('change', () => {
     const ch      = input.closest('.challenge');
@@ -1410,16 +1424,39 @@ document.querySelectorAll('.photo-input').forEach(input => {
     const preview = ch.querySelector('.photo-preview');
     const photBtn = ch.querySelector('.photo-btn');
     const yesBtn  = ch.querySelector('.cc-yes');
-    if (file) {
-      const url = URL.createObjectURL(file);
-      if (preview) { preview.src = url; preview.classList.add('show'); }
-      if (photBtn) photBtn.classList.add('ready');
-      if (yesBtn)  yesBtn.disabled = false;
-    } else {
+    const errEl   = ch.querySelector('.photo-err');
+
+    const showErr = (msg) => {
+      input.value = '';
       if (preview) { preview.src = ''; preview.classList.remove('show'); }
       if (photBtn) photBtn.classList.remove('ready');
       if (yesBtn)  yesBtn.disabled = true;
+      if (errEl)   { errEl.textContent = msg; errEl.classList.add('show'); }
+    };
+
+    if (errEl) { errEl.textContent = ''; errEl.classList.remove('show'); }
+
+    if (!file) {
+      if (preview) { preview.src = ''; preview.classList.remove('show'); }
+      if (photBtn) photBtn.classList.remove('ready');
+      if (yesBtn)  yesBtn.disabled = true;
+      return;
     }
+
+    if (!ALLOWED_MIME.has(file.type.toLowerCase())) {
+      showErr('Images only — JPEG, PNG, WEBP or HEIC');
+      return;
+    }
+
+    if (file.size > MAX_RAW_BYTES) {
+      showErr('File too large — maximum 20 MB');
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    if (preview) { preview.src = url; preview.classList.add('show'); }
+    if (photBtn) photBtn.classList.add('ready');
+    if (yesBtn)  yesBtn.disabled = false;
   });
 });
 
