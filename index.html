@@ -881,7 +881,7 @@
         <div class="challenge-confirm needs-photo">
           <span>Attach a photo to confirm this challenge.</span>
           <label class="photo-upload-row">
-            <input type="file" accept="image/*" capture="environment" class="photo-input" />
+            <input type="file" accept="image/*" class="photo-input" />
             <span class="photo-btn">+ Attach photo</span>
             <img class="photo-preview" alt="preview" />
           </label>
@@ -905,7 +905,7 @@
         <div class="challenge-confirm needs-photo">
           <span>Attach a photo to confirm this challenge.</span>
           <label class="photo-upload-row">
-            <input type="file" accept="image/*" capture="environment" class="photo-input" />
+            <input type="file" accept="image/*" class="photo-input" />
             <span class="photo-btn">+ Attach photo</span>
             <img class="photo-preview" alt="preview" />
           </label>
@@ -929,7 +929,7 @@
         <div class="challenge-confirm needs-photo">
           <span>Attach a photo to confirm this challenge.</span>
           <label class="photo-upload-row">
-            <input type="file" accept="image/*" capture="environment" class="photo-input" />
+            <input type="file" accept="image/*" class="photo-input" />
             <span class="photo-btn">+ Attach photo</span>
             <img class="photo-preview" alt="preview" />
           </label>
@@ -953,7 +953,7 @@
         <div class="challenge-confirm needs-photo">
           <span>Attach a photo to confirm this challenge.</span>
           <label class="photo-upload-row">
-            <input type="file" accept="image/*" capture="environment" class="photo-input" />
+            <input type="file" accept="image/*" class="photo-input" />
             <span class="photo-btn">+ Attach photo</span>
             <img class="photo-preview" alt="preview" />
           </label>
@@ -1665,9 +1665,14 @@ document.addEventListener('keydown', e => {
   }
 });
 
+document.querySelectorAll('.photo-preview').forEach(img => {
+  img.addEventListener('click', e => {
+    e.stopPropagation();
+    if (img.classList.contains('show') && img.src) openLightbox(img.src);
+  });
+});
+
 document.addEventListener('click', e => {
-  const preview = e.target.closest('.photo-preview');
-  if (preview && preview.src) { openLightbox(preview.src); return; }
   const card = e.target.closest('.pw-card');
   if (card && card.dataset.src) openLightbox(card.dataset.src);
 });
