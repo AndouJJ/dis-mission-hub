@@ -1,0 +1,1264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DIS Mission Hub — Decode. Cohere. Prevail.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#0d0e10;
+    --ink-2:#15171a;
+    --ink-3:#202327;
+    --paper:#ecead8;
+    --paper-2:#dfdcc4;
+    --paper-3:#c8c4a4;
+    --rule:#3a3d42;
+    --rule-paper:#8a866b;
+    --signal:oklch(0.62 0.17 25);
+    --signal-2:oklch(0.55 0.18 25);
+    --amber:oklch(0.78 0.14 75);
+    --classified:oklch(0.55 0.16 25);
+    --muted:#9ea3ab;
+    --serif:"Instrument Serif", "Times New Roman", serif;
+    --sans:"Inter", system-ui, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--ink);color:var(--paper);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  body{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(217,82,55,0.08), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(220,180,90,0.06), transparent 60%),
+      var(--ink);
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--signal);color:var(--paper)}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(13,14,16,0.85);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--rule);
+    font-family:var(--mono);font-size:11px;letter-spacing:0.08em;
+  }
+  .topbar-inner{
+    max-width:1440px;margin:0 auto;padding:12px 32px;
+    display:flex;align-items:center;gap:32px;
+  }
+  .brand{display:flex;align-items:center;gap:14px;font-weight:700}
+  .brand-logo{height:28px;width:auto;display:block}
+  .brand-divider{width:1px;height:18px;background:var(--rule);display:inline-block}
+  .back-btn{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.15em;color:var(--paper);
+    background:transparent;border:1px solid var(--rule);padding:6px 12px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;text-transform:uppercase;
+    transition:all 0.15s;
+  }
+  .back-btn:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .back-btn .arrow{transition:transform 0.15s}
+  .back-btn:hover .arrow{transform:translateX(-3px)}
+
+  /* ---------- accessibility toggle ---------- */
+  .a11y-btn{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.15em;color:var(--paper);
+    background:transparent;border:1px solid var(--rule);padding:6px 10px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;text-transform:uppercase;
+    transition:all 0.15s;
+  }
+  .a11y-btn:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .a11y-btn .icon{width:12px;height:12px;display:inline-block;position:relative}
+  .a11y-btn .icon::before,.a11y-btn .icon::after{content:"";position:absolute;inset:0;border-radius:50%;border:1.5px solid currentColor}
+  .a11y-btn .icon::after{clip-path:inset(0 50% 0 0);background:currentColor;border-color:currentColor}
+  body.cb-safe .a11y-btn{background:var(--amber);color:var(--ink);border-color:var(--amber)}
+
+  /* ---------- shape/icon reinforcers (always on) ---------- */
+  /* status pill states use classes instead of inline styles so palette swaps work */
+  .status-pill.idle{border-color:var(--ink);color:var(--ink);background:transparent}
+  .status-pill.ok{border-color:#1b5d2e;color:#1b5d2e;background:#cde0c7}
+  .status-pill.ready{border-color:#1b5d2e;color:#1b5d2e;background:transparent}
+  .status-pill.bad{border-color:var(--signal);color:var(--signal);background:transparent}
+  .status-pill.ok::before,.status-pill.ready::before{content:"▲";margin-right:6px;font-size:9px}
+  .status-pill.bad::before{content:"■";margin-right:6px;font-size:9px}
+  .status-pill.idle::before{content:"○";margin-right:6px;font-size:10px}
+
+  /* ladder change arrows already use ▲/▼ glyphs (shape reinforces hue) */
+
+  /* difficulty bars get stripes when filled, dots when empty — hue independent */
+  .difficulty span{
+    width:14px;height:6px;background:var(--rule);
+    background-image:radial-gradient(circle at center, var(--ink-3) 0 1px, transparent 1.5px);
+    background-size:4px 4px;
+  }
+  .difficulty span.on{
+    background:var(--signal);
+    background-image:repeating-linear-gradient(45deg, rgba(0,0,0,0.25) 0 2px, transparent 2px 4px);
+  }
+
+  /* correct quiz option gets a check glyph + filled box, not just color */
+  .opt.correct .letter::after{content:" ✓";color:var(--amber)}
+
+  /* live dot keeps its pulse animation (motion = redundant signal beyond color) */
+  .pill .dot{box-shadow:0 0 8px var(--signal), 0 0 0 2px rgba(255,255,255,0.18)}
+
+  /* ---------- color-blind safe palette ---------- */
+  /* Red → cool blue/teal, amber stays (universally distinguishable from blue under all CVD types) */
+  body.cb-safe{
+    --signal: oklch(0.62 0.16 240);     /* blue, replaces red */
+    --signal-2: oklch(0.55 0.17 240);
+    --classified: oklch(0.55 0.16 240);
+  }
+  /* the hardcoded greens in verdict.ok need a safer alternative under CB too — swap to a deeper teal */
+  body.cb-safe .status-pill.ok{border-color:#0e4f5a;color:#0e4f5a;background:#c6e2e7}
+  body.cb-safe .status-pill.ready{border-color:#0e4f5a;color:#0e4f5a}
+  /* up/down stay distinguishable via shape; amber tint for up, slate for down */
+  body.cb-safe .ladder-row .change.up{color:var(--amber)}
+  body.cb-safe .ladder-row .change.dn{color:#7a8aa5}
+  /* hero red glow + body radial swap to blue */
+  body.cb-safe{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(80,140,217,0.10), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(220,180,90,0.06), transparent 60%),
+      var(--ink);
+  }
+  body.cb-safe .pill .dot{box-shadow:0 0 8px var(--signal), 0 0 0 2px rgba(255,255,255,0.18)}
+  .nav{display:flex;gap:24px;margin-left:auto}
+  .nav a{opacity:0.7;transition:opacity 0.15s}
+  .nav a:hover, .nav a.on{opacity:1}
+  .nav a.on{color:var(--amber)}
+  .pill{
+    border:1px solid var(--paper);padding:6px 12px;border-radius:999px;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--signal);box-shadow:0 0 8px var(--signal);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+  /* ---------- ticker ---------- */
+  .ticker{
+    border-bottom:1px solid var(--rule);
+    background:var(--ink-2);
+    font-family:var(--mono);font-size:11px;letter-spacing:0.12em;
+    overflow:hidden;
+  }
+  .ticker-track{
+    display:flex;gap:48px;padding:8px 0;white-space:nowrap;
+    animation:scroll 60s linear infinite;
+    width:max-content;
+  }
+  .ticker-track span{color:var(--muted)}
+  .ticker-track b{color:var(--amber);font-weight:500}
+  .ticker-track .sep{color:var(--signal)}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ---------- hero ---------- */
+  .hero{
+    max-width:1440px;margin:0 auto;padding:64px 32px 24px;
+    display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:end;
+    position:relative;
+  }
+  .hero::before{
+    content:"";position:absolute;top:64px;right:32px;left:32px;height:1px;background:var(--rule);
+  }
+  .crosshairs{position:absolute;width:14px;height:14px;pointer-events:none}
+  .crosshairs::before,.crosshairs::after{content:"";position:absolute;background:var(--paper-3)}
+  .crosshairs::before{left:50%;top:0;bottom:0;width:1px;transform:translateX(-50%)}
+  .crosshairs::after{top:50%;left:0;right:0;height:1px;transform:translateY(-50%)}
+  .ch-tl{top:64px;left:32px;transform:translate(-7px,-7px)}
+  .ch-tr{top:64px;right:32px;transform:translate(7px,-7px)}
+
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:0.2em;color:var(--amber);
+    display:flex;align-items:center;gap:12px;margin-bottom:32px;text-transform:uppercase;
+  }
+  .eyebrow::before{content:"";width:24px;height:1px;background:var(--amber)}
+
+  h1.display{
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(64px, 9vw, 144px);
+    line-height:0.92;letter-spacing:-0.02em;
+    margin:0;color:var(--paper);
+  }
+  h1.display em{font-style:italic;color:var(--amber)}
+  h1.display .strike{position:relative;color:var(--paper-3)}
+  h1.display .strike::after{
+    content:"";position:absolute;left:-4px;right:-4px;top:54%;height:6px;background:var(--signal);
+  }
+  .lede{
+    font-family:var(--serif);font-size:24px;line-height:1.35;color:var(--paper-2);max-width:540px;
+    margin-top:24px;font-style:italic;
+  }
+
+  .hero-right{
+    border:1px solid var(--rule);
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+    padding:20px;
+    font-family:var(--mono);font-size:11px;
+  }
+  .hero-right .label{color:var(--muted);letter-spacing:0.15em;margin-bottom:10px;text-transform:uppercase}
+  .stamp{
+    display:inline-block;border:2px solid var(--signal);color:var(--signal);
+    padding:6px 12px;font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:0.2em;
+    transform:rotate(-3deg);text-transform:uppercase;
+  }
+  .meta-row{display:flex;justify-content:space-between;border-top:1px dashed var(--rule);padding:8px 0;color:var(--paper-2)}
+  .meta-row:first-of-type{border-top:none}
+  .meta-row b{color:var(--paper);font-weight:500}
+
+  /* ---------- cta row ---------- */
+  .cta-row{
+    max-width:1440px;margin:48px auto 0;padding:0 32px;
+    display:flex;gap:16px;flex-wrap:wrap;align-items:center;
+  }
+  .btn{
+    font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;
+    padding:18px 28px;border:1px solid var(--paper);background:var(--paper);color:var(--ink);
+    display:inline-flex;align-items:center;gap:12px;cursor:pointer;
+    transition:all 0.15s;
+  }
+  .btn:hover{background:var(--amber);border-color:var(--amber)}
+  .btn.ghost{background:transparent;color:var(--paper)}
+  .btn.ghost:hover{background:var(--paper);color:var(--ink)}
+  .btn .arrow{display:inline-block;transition:transform 0.15s}
+  .btn:hover .arrow{transform:translateX(4px)}
+  .keystroke{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.1em}
+  .keystroke kbd{
+    border:1px solid var(--rule);padding:2px 6px;border-radius:3px;margin:0 2px;
+    background:var(--ink-2);color:var(--paper-2);font-family:inherit;
+  }
+
+  /* ---------- section common ---------- */
+  section{max-width:1440px;margin:0 auto;padding:120px 32px}
+  .section-head{display:grid;grid-template-columns:1fr 1.5fr;gap:48px;margin-bottom:48px;align-items:end}
+  .section-head h2{
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(48px, 6vw, 88px);line-height:0.95;letter-spacing:-0.02em;
+    margin:0;
+  }
+  .section-head h2 em{font-style:italic;color:var(--amber)}
+  .section-head .copy{font-family:var(--serif);font-size:20px;line-height:1.4;color:var(--paper-2);font-style:italic;max-width:520px}
+  .section-label{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.2em;color:var(--muted);
+    text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;
+  }
+  .section-label::before{content:"";width:8px;height:8px;background:var(--signal);display:inline-block}
+
+  /* ---------- challenge grid ---------- */
+  .grid-3{display:grid;grid-template-columns:repeat(3, 1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+  .card{
+    background:var(--ink);padding:32px;display:flex;flex-direction:column;gap:20px;min-height:380px;
+    position:relative;transition:background 0.2s;cursor:pointer;
+  }
+  .card:hover{background:var(--ink-2)}
+  .card .num{
+    font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.15em;
+    display:flex;justify-content:space-between;
+  }
+  .card .num b{color:var(--amber);font-weight:500}
+  .card .icon-frame{
+    height:120px;border:1px dashed var(--rule);display:grid;place-items:center;
+    background:repeating-linear-gradient(45deg, transparent 0 6px, rgba(255,255,255,0.025) 6px 7px);
+    position:relative;
+  }
+  .card h3{font-family:var(--serif);font-weight:400;font-size:32px;line-height:1.05;margin:0;letter-spacing:-0.01em}
+  .card p{font-size:14px;line-height:1.5;color:var(--paper-2);margin:0}
+  .card .foot{
+    margin-top:auto;display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--mono);font-size:11px;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase;
+    border-top:1px solid var(--rule);padding-top:16px;
+  }
+  .card .foot .go{color:var(--paper);display:flex;align-items:center;gap:6px}
+  .difficulty{display:flex;gap:3px}
+  .difficulty span{width:14px;height:4px;background:var(--rule)}
+  .difficulty span.on{background:var(--signal)}
+
+  /* icon glyphs (geometric, original) */
+  .glyph{width:64px;height:64px;color:var(--paper)}
+
+  /* ---------- cipher console ---------- */
+  .console-wrap{
+    background:var(--paper);color:var(--ink);
+    border:1px solid var(--rule-paper);
+    position:relative;overflow:hidden;
+  }
+  .console-wrap::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      linear-gradient(to right, transparent 0 calc(50% - 0.5px), rgba(0,0,0,0.04) calc(50% - 0.5px) calc(50% + 0.5px), transparent calc(50% + 0.5px) 100%),
+      repeating-linear-gradient(0deg, transparent 0 31px, rgba(0,0,0,0.05) 31px 32px);
+  }
+  .console-head{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:16px 24px;border-bottom:1px solid var(--rule-paper);
+    font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
+    position:relative;background:var(--paper-2);
+  }
+  .console-head .left{display:flex;gap:16px;align-items:center}
+  .file-id{font-weight:700}
+  .console-body{
+    display:grid;grid-template-columns:1fr 1px 1fr;gap:0;position:relative;
+  }
+  .console-pane{padding:40px;position:relative}
+  .console-pane h4{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
+    color:#5a543a;margin:0 0 16px 0;font-weight:700;
+  }
+  .console-pane .label-tag{
+    position:absolute;top:0;left:0;background:var(--ink);color:var(--paper);
+    font-family:var(--mono);font-size:10px;letter-spacing:0.2em;padding:4px 10px;text-transform:uppercase;
+  }
+  .divider-col{background:var(--rule-paper)}
+  .cipher-text{
+    font-family:var(--mono);font-size:22px;line-height:1.6;letter-spacing:0.04em;
+    color:var(--ink);word-break:break-word;min-height:160px;
+  }
+  .cipher-text .char{display:inline-block;transition:color 0.2s}
+  .cipher-text .sp{display:inline-block;width:0.5em}
+
+  .shift-control{
+    margin-top:32px;border-top:1px dashed var(--rule-paper);padding-top:24px;
+    display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;
+  }
+  .shift-control label{font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#5a543a}
+  input[type=range].slider{
+    -webkit-appearance:none;appearance:none;width:100%;height:2px;background:var(--ink);
+  }
+  input[type=range].slider::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:14px;height:14px;background:var(--signal);
+    border:2px solid var(--ink);cursor:pointer;border-radius:0;
+  }
+  input[type=range].slider::-moz-range-thumb{
+    width:14px;height:14px;background:var(--signal);border:2px solid var(--ink);border-radius:0;cursor:pointer;
+  }
+  .shift-val{
+    font-family:var(--mono);font-weight:700;font-size:24px;color:var(--ink);
+    background:var(--paper-2);border:1px solid var(--rule-paper);padding:2px 12px;min-width:60px;text-align:center;
+  }
+  .console-foot{
+    border-top:1px solid var(--rule-paper);background:var(--paper-2);
+    padding:14px 24px;display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#5a543a;
+  }
+  .submit-btn{
+    background:var(--ink);color:var(--paper);border:none;padding:10px 20px;
+    font-family:var(--mono);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;font-weight:700;cursor:pointer;
+  }
+  .submit-btn:hover{background:var(--signal)}
+  .status-pill{
+    display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border:1px solid var(--ink);
+    font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink);
+  }
+
+  /* ---------- cohesion ladder ---------- */
+  .ladder{
+    background:var(--ink-2);border:1px solid var(--rule);
+    display:grid;grid-template-columns:240px 1fr;
+  }
+  .ladder-side{
+    padding:32px;border-right:1px solid var(--rule);
+    display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .ladder-side h3{font-family:var(--serif);font-size:36px;line-height:1;margin:0 0 16px;font-weight:400}
+  .ladder-side .num-big{font-family:var(--serif);font-size:96px;line-height:0.9;color:var(--amber);font-style:italic}
+  .ladder-side p{font-size:13px;line-height:1.5;color:var(--paper-2);margin:12px 0 0}
+  .ladder-rows{display:flex;flex-direction:column}
+  .ladder-row{
+    display:grid;grid-template-columns:60px 1fr 200px 120px 60px;gap:24px;
+    padding:20px 32px;border-bottom:1px solid var(--rule);align-items:center;
+    transition:background 0.15s;cursor:pointer;
+  }
+  .ladder-row:last-child{border-bottom:none}
+  .ladder-row:hover{background:var(--ink-3)}
+  .ladder-row .rank{font-family:var(--serif);font-size:32px;font-style:italic;color:var(--paper-3)}
+  .ladder-row .name{font-family:var(--serif);font-size:22px}
+  .ladder-row .name .codename{font-family:var(--mono);font-size:11px;color:var(--muted);display:block;letter-spacing:0.1em;margin-top:2px}
+  .ladder-row .bar{height:6px;background:var(--ink-3);position:relative;overflow:hidden}
+  .ladder-row .bar i{position:absolute;top:0;left:0;bottom:0;background:var(--amber)}
+  .ladder-row .score{font-family:var(--mono);font-size:14px;color:var(--amber);letter-spacing:0.05em;text-align:right}
+  .ladder-row .change{font-family:var(--mono);font-size:11px;color:var(--paper-3);text-align:right}
+  .ladder-row .change.up{color:#7fc28d}
+  .ladder-row .change.dn{color:var(--signal)}
+
+  /* ---------- quiz strip ---------- */
+  .quiz-card{
+    background:var(--paper);color:var(--ink);padding:48px;
+    display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;
+    position:relative;overflow:hidden;
+  }
+  .quiz-card::before{
+    content:"DOSSIER · CLASSIFIED · INTERNAL ONLY · DOSSIER · CLASSIFIED · INTERNAL ONLY · ";
+    position:absolute;top:8px;left:0;right:0;color:var(--rule-paper);
+    font-family:var(--mono);font-size:10px;letter-spacing:0.3em;white-space:nowrap;overflow:hidden;
+  }
+  .quiz-card .meta{font-family:var(--mono);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#5a543a;margin-bottom:24px}
+  .quiz-card h3{font-family:var(--serif);font-size:56px;line-height:1;margin:0 0 24px;font-weight:400;letter-spacing:-0.01em}
+  .quiz-card h3 em{font-style:italic;color:var(--signal)}
+  .quiz-card p.q-body{font-family:var(--serif);font-size:22px;line-height:1.35;margin:0;color:#2a2a25;font-style:italic}
+  .options{display:flex;flex-direction:column;gap:12px}
+  .opt{
+    display:flex;align-items:center;gap:16px;padding:18px 24px;border:1px solid var(--ink);
+    background:transparent;font-family:var(--sans);font-size:15px;cursor:pointer;
+    transition:all 0.15s;text-align:left;
+  }
+  .opt:hover{background:var(--ink);color:var(--paper)}
+  .opt .letter{font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:0.1em;width:24px}
+  .opt.correct{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .opt.correct .letter{color:var(--amber)}
+
+  /* ---------- footer ---------- */
+  footer{
+    border-top:1px solid var(--rule);background:var(--ink-2);
+    margin-top:120px;
+  }
+  .foot-inner{
+    max-width:1440px;margin:0 auto;padding:64px 32px 32px;
+    display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;
+  }
+  .foot-brand h4{font-family:var(--serif);font-size:48px;font-weight:400;margin:0 0 12px;line-height:0.95;letter-spacing:-0.01em}
+  .foot-brand h4 em{font-style:italic;color:var(--amber)}
+  .foot-brand p{font-family:var(--serif);font-size:18px;line-height:1.4;color:var(--paper-2);font-style:italic;max-width:380px}
+  .foot-col h5{font-family:var(--mono);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin:0 0 16px;font-weight:500}
+  .foot-col ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+  .foot-col a{color:var(--paper-2);font-size:14px}
+  .foot-col a:hover{color:var(--amber)}
+  .foot-bottom{
+    max-width:1440px;margin:0 auto;padding:24px 32px;border-top:1px solid var(--rule);
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--mono);font-size:11px;letter-spacing:0.15em;color:var(--muted);text-transform:uppercase;
+  }
+
+  /* ---------- landing overlay ---------- */
+  .landing{
+    position:fixed;inset:0;z-index:200;
+    background:
+      radial-gradient(1400px 800px at 50% 50%, rgba(217,120,55,0.10), transparent 70%),
+      radial-gradient(800px 500px at 50% 110%, rgba(220,180,90,0.05), transparent 60%),
+      var(--ink);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    transition:opacity 0.6s ease, visibility 0.6s;
+    overflow-y:auto;padding:80px 16px;
+  }
+  .landing.hide{opacity:0;visibility:hidden;pointer-events:none}
+  .landing::before, .landing::after{
+    content:"";position:absolute;left:32px;right:32px;height:1px;background:var(--rule);
+  }
+  .landing::before{top:32px}
+  .landing::after{bottom:32px}
+  .landing .corners{position:absolute;inset:32px;pointer-events:none}
+  .landing .corners .c{position:absolute;width:18px;height:18px;border:1px solid var(--paper-3)}
+  .landing .corners .tl{top:-1px;left:-1px;border-right:none;border-bottom:none}
+  .landing .corners .tr{top:-1px;right:-1px;border-left:none;border-bottom:none}
+  .landing .corners .bl{bottom:-1px;left:-1px;border-right:none;border-top:none}
+  .landing .corners .br{bottom:-1px;right:-1px;border-left:none;border-top:none}
+
+  .landing-meta{
+    position:absolute;top:56px;left:0;right:0;
+    display:flex;justify-content:space-between;padding:0 56px;
+    font-family:var(--mono);font-size:11px;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase;
+  }
+  .landing-meta b{color:var(--amber);font-weight:500}
+
+  .landing-stack{display:flex;flex-direction:column;align-items:center;gap:40px;text-align:center}
+  .landing-logo{height:80px;width:auto;display:block;animation:fadeUp 1s ease both}
+  .landing-title{
+    font-family:var(--serif);font-weight:400;font-size:clamp(72px, 12vw, 180px);
+    line-height:0.9;letter-spacing:-0.025em;margin:0;color:var(--paper);
+    animation:fadeUp 1s 0.15s ease both;
+  }
+  .landing-title em{font-style:italic;color:var(--amber)}
+  .landing-sub{
+    font-family:var(--mono);font-size:12px;letter-spacing:0.4em;color:var(--paper-2);text-transform:uppercase;
+    display:flex;align-items:center;gap:16px;
+    animation:fadeUp 1s 0.3s ease both;
+  }
+  .landing-sub::before,.landing-sub::after{content:"";width:40px;height:1px;background:var(--paper-3)}
+  .landing-enter{
+    margin-top:24px;
+    font-family:var(--mono);font-size:12px;letter-spacing:0.3em;text-transform:uppercase;
+    color:var(--paper);display:flex;align-items:center;gap:14px;
+    border:1px solid var(--paper);padding:18px 32px;background:transparent;cursor:pointer;
+    transition:all 0.2s;
+    animation:fadeUp 1s 0.5s ease both, pulseGlow 2.4s 1.5s infinite;
+  }
+  .landing-enter:hover{background:var(--paper);color:var(--ink)}
+  .landing-enter .arrow{display:inline-block;transition:transform 0.15s}
+  .landing-enter:hover .arrow{transform:translateX(6px)}
+  .landing-hint{
+    position:absolute;bottom:56px;left:0;right:0;text-align:center;
+    font-family:var(--mono);font-size:10px;letter-spacing:0.3em;color:var(--muted);text-transform:uppercase;
+  }
+  .landing-hint kbd{border:1px solid var(--rule);padding:2px 6px;margin:0 2px;background:var(--ink-2);color:var(--paper-2);font-family:inherit}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(236,234,216,0)}50%{box-shadow:0 0 0 6px rgba(236,234,216,0.06)}}
+
+  body.entered .landing{display:none}
+
+  /* ---------- handle form ---------- */
+  .handle-form{
+    display:flex;flex-direction:column;gap:10px;
+    animation:fadeUp 1s 0.5s ease both;
+    width:min(440px, 90vw);
+  }
+  .handle-label{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
+    color:var(--paper-2);text-align:left;
+  }
+  .handle-row{
+    display:flex;align-items:stretch;border:1px solid var(--paper);background:rgba(255,255,255,0.03);
+    transition:background 0.2s, border-color 0.2s;
+  }
+  .handle-row:focus-within{background:rgba(255,255,255,0.08);border-color:var(--amber)}
+  .handle-prefix{
+    display:grid;place-items:center;padding:0 14px;
+    font-family:var(--mono);font-size:18px;color:var(--amber);
+    border-right:1px solid var(--rule);
+  }
+  .handle-input{
+    flex:1;min-width:0;background:transparent;border:none;outline:none;
+    color:var(--paper);font-family:var(--mono);font-size:15px;letter-spacing:0.05em;
+    padding:14px;
+  }
+  .handle-input::placeholder{color:var(--muted);letter-spacing:0.15em;text-transform:uppercase}
+  .handle-submit{
+    border:none;background:var(--paper);color:var(--ink);cursor:pointer;
+    font-family:var(--mono);font-size:11px;letter-spacing:0.15em;font-weight:700;
+    padding:0 18px;display:flex;align-items:center;gap:10px;text-transform:uppercase;
+    transition:background 0.15s;white-space:nowrap;
+  }
+  .handle-submit:hover{background:var(--amber)}
+  .handle-submit .arrow{display:inline-block;transition:transform 0.15s}
+  .handle-submit:hover .arrow{transform:translateX(3px)}
+  .handle-foot{
+    font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--muted);
+    text-transform:uppercase;text-align:left;
+  }
+  .handle-row.shake{animation:shake 0.35s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  /* ---------- welcome modal ---------- */
+  .welcome-modal{
+    position:fixed;inset:0;z-index:300;
+    background:rgba(13,14,16,0.85);
+    backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;padding:24px;
+    opacity:0;visibility:hidden;transition:opacity 0.3s, visibility 0.3s;
+  }
+  .welcome-modal.show{opacity:1;visibility:visible}
+  .welcome-card{
+    background:var(--paper);color:var(--ink);
+    width:min(520px, 100%);padding:40px 36px 32px;position:relative;
+    border:1px solid var(--rule-paper);
+    transform:translateY(20px);transition:transform 0.4s ease;
+    max-height:90vh;overflow-y:auto;
+  }
+  .welcome-modal.show .welcome-card{transform:translateY(0)}
+  .welcome-card::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg, transparent 0 31px, rgba(0,0,0,0.04) 31px 32px);
+  }
+  .welcome-stamp{
+    position:absolute;top:24px;right:28px;
+    border:2px solid var(--signal);color:var(--signal);
+    padding:6px 12px;font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:0.2em;
+    transform:rotate(4deg);text-transform:uppercase;background:var(--paper);
+  }
+  .welcome-meta{
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:10px;letter-spacing:0.18em;color:#5a543a;text-transform:uppercase;
+    margin-bottom:24px;
+  }
+  .welcome-meta b{color:var(--ink)}
+  .welcome-title{
+    font-family:var(--serif);font-weight:400;font-size:clamp(40px, 8vw, 56px);
+    line-height:0.95;letter-spacing:-0.015em;margin:0 0 12px;
+  }
+  .welcome-title em{font-style:italic;color:var(--signal)}
+  .welcome-handle{
+    font-family:var(--mono);font-size:20px;font-weight:700;letter-spacing:0.05em;color:var(--ink);
+    margin-bottom:20px;word-break:break-all;
+  }
+  .welcome-body{
+    font-family:var(--serif);font-size:18px;font-style:italic;line-height:1.4;color:#2a2a25;
+    margin:0 0 24px;
+  }
+  .welcome-body b{font-style:normal;font-family:var(--mono);font-size:12px;letter-spacing:0.1em;color:var(--ink)}
+  .welcome-meta-grid{
+    border-top:1px dashed var(--rule-paper);border-bottom:1px dashed var(--rule-paper);
+    padding:8px 0;margin-bottom:24px;font-family:var(--mono);font-size:11px;letter-spacing:0.1em;
+    text-transform:uppercase;
+  }
+  .welcome-meta-grid .meta-row{
+    display:flex;justify-content:space-between;padding:8px 0;border-top:1px dashed var(--rule-paper);
+    color:#5a543a;
+  }
+  .welcome-meta-grid .meta-row:first-child{border-top:none}
+  .welcome-meta-grid .meta-row b{color:var(--ink);font-weight:600}
+  .welcome-cta{
+    width:100%;background:var(--ink);color:var(--paper);border:none;cursor:pointer;
+    font-family:var(--mono);font-size:12px;letter-spacing:0.2em;text-transform:uppercase;font-weight:700;
+    padding:18px;display:flex;align-items:center;justify-content:center;gap:12px;
+    transition:background 0.15s;
+  }
+  .welcome-cta:hover{background:var(--signal)}
+  .welcome-cta .arrow{transition:transform 0.15s}
+  .welcome-cta:hover .arrow{transform:translateX(4px)}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:1100px){
+    section{padding:80px 24px}
+    .grid-3{grid-template-columns:repeat(2,1fr) !important}
+    .topbar-inner{padding:10px 20px;gap:16px}
+    .nav{gap:16px}
+    .nav a{font-size:10px}
+    .foot-inner{grid-template-columns:2fr 1fr 1fr;padding:48px 24px 24px}
+    .foot-bottom{padding:20px 24px}
+  }
+  @media (max-width:820px){
+    .topbar-inner{padding:10px 16px;gap:12px;flex-wrap:wrap}
+    .nav{display:none}
+    .brand{font-size:10px;gap:10px}
+    .brand-logo{height:22px}
+    .pill{font-size:9px;padding:5px 10px}
+    .pill span:not(.dot){display:none}
+    .pill::after{content:"LIVE";font-size:9px}
+    .back-btn{font-size:10px;padding:5px 10px}
+    .ticker{font-size:10px}
+    .ticker-track{animation-duration:40s}
+    .hero{grid-template-columns:1fr;gap:24px;padding:48px 20px 16px}
+    .hero::before{display:none}
+    .ch-tl, .ch-tr{display:none}
+    .hero-right{order:-1;padding:16px}
+    h1.display{font-size:clamp(56px, 14vw, 96px)}
+    .lede{font-size:20px;margin-top:16px}
+    .eyebrow{margin-bottom:20px;font-size:11px}
+    .cta-row{margin:32px auto 0;padding:0 20px;gap:12px}
+    .btn{padding:14px 20px;font-size:11px;width:100%;justify-content:center}
+    .btn.ghost{order:2}
+    .keystroke{display:none}
+    section{padding:64px 20px}
+    .section-head{grid-template-columns:1fr;gap:16px;margin-bottom:32px}
+    .section-head h2{font-size:clamp(40px, 9vw, 64px)}
+    .section-head .copy{font-size:17px}
+    .grid-3{grid-template-columns:1fr !important}
+    .card{padding:24px;min-height:auto}
+    .card h3{font-size:26px}
+    .console-head{padding:12px 16px;font-size:10px;flex-direction:column;gap:6px;align-items:flex-start}
+    .console-body{grid-template-columns:1fr}
+    .divider-col{height:1px;width:100%}
+    .console-pane{padding:32px 20px 24px}
+    .cipher-text{font-size:17px;min-height:auto}
+    .shift-control{grid-template-columns:1fr;gap:10px;padding-top:16px}
+    .shift-control label{margin-bottom:4px}
+    .shift-val{justify-self:end}
+    .console-foot{padding:12px 16px;flex-direction:column;gap:10px;align-items:stretch;text-align:center}
+    .console-foot > div:last-child{justify-content:space-between}
+    .ladder{grid-template-columns:1fr}
+    .ladder-side{padding:24px;border-right:none;border-bottom:1px solid var(--rule);flex-direction:row;justify-content:space-between;align-items:center;gap:16px}
+    .ladder-side h3{font-size:24px}
+    .ladder-side p{display:none}
+    .ladder-side .num-big{font-size:64px}
+    .ladder-row{grid-template-columns:36px 1fr 80px;gap:12px;padding:14px 20px}
+    .ladder-row .bar,.ladder-row .change{display:none}
+    .ladder-row .name{font-size:18px}
+    .ladder-row .rank{font-size:24px}
+    .quiz-card{grid-template-columns:1fr;padding:28px 20px;gap:24px}
+    .quiz-card h3{font-size:36px}
+    .quiz-card p.q-body{font-size:18px}
+    .opt{padding:14px 16px;font-size:14px}
+    footer{margin-top:64px}
+    .foot-inner{grid-template-columns:1fr;gap:32px;padding:48px 20px 24px}
+    .foot-brand h4{font-size:36px}
+    .foot-brand p{font-size:16px}
+    .foot-bottom{flex-direction:column;gap:8px;text-align:center;font-size:10px;padding:20px}
+    /* landing */
+    .landing-meta{top:24px;padding:0 20px;font-size:9px;letter-spacing:0.15em;gap:12px;flex-wrap:wrap;justify-content:center;text-align:center}
+    .landing::before{top:16px;left:16px;right:16px}
+    .landing::after{bottom:16px;left:16px;right:16px}
+    .landing .corners{inset:16px}
+    .landing-stack{gap:28px;padding:0 24px}
+    .landing-logo{height:56px}
+    .landing-title{font-size:clamp(64px, 18vw, 120px)}
+    .landing-sub{font-size:11px;letter-spacing:0.3em;gap:10px}
+    .landing-sub::before,.landing-sub::after{width:24px}
+    .landing-enter{padding:14px 22px;font-size:11px}
+    .landing-hint{bottom:24px;font-size:9px;padding:0 16px}
+    .handle-form{width:100%}
+    .handle-row{flex-wrap:wrap}
+    .handle-prefix{padding:0 12px;font-size:16px}
+    .handle-input{flex:1 1 60%;font-size:14px;padding:12px}
+    .handle-submit{flex:1 1 100%;padding:14px;justify-content:center;border-top:1px solid var(--rule)}
+    .welcome-modal{padding:16px}
+    .welcome-card{padding:32px 22px 24px}
+    .welcome-stamp{top:16px;right:16px;font-size:10px;padding:5px 10px}
+    .welcome-title{font-size:clamp(34px, 9vw, 44px);margin-top:36px}
+    .welcome-handle{font-size:17px}
+    .welcome-body{font-size:16px}
+    .welcome-cta{padding:16px;font-size:11px}
+  }
+  @media (max-width:420px){
+    .topbar-inner{padding:10px 14px}
+    .brand-divider{display:none}
+    section{padding:56px 16px}
+    .hero{padding:40px 16px 12px}
+    .cta-row{padding:0 16px}
+    h1.display{font-size:clamp(48px, 13vw, 80px)}
+    .quiz-card{padding:24px 16px}
+    .ladder-row{padding:12px 16px}
+    .console-pane{padding:28px 16px 20px}
+  }
+</style>
+</head>
+<body>
+
+<template id="__bundler_thumbnail" data-bg-color="#0d0e10">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#0d0e10"/>
+    <g stroke="#ecead8" stroke-width="3" fill="none">
+      <path d="M380 300 L520 460 M520 300 L380 460"/>
+    </g>
+    <text x="600" y="430" font-family="Times New Roman, serif" font-size="160" font-style="italic" fill="#ecead8" text-anchor="middle">MH</text>
+    <text x="600" y="510" font-family="monospace" font-size="22" letter-spacing="8" fill="#9ea3ab" text-anchor="middle">MISSION HUB</text>
+  </svg>
+</template>
+
+<!-- LANDING -->
+<div class="landing" id="landing">
+  <div class="corners"><span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span></div>
+  <div class="landing-meta">
+    <span>FILE NO. <b>DIS-004</b></span>
+    <span>EST. 2022 · <b>YEAR IV · RESTRICTED ACCESS</b></span>
+  </div>
+  <div class="landing-stack">
+    <img src="assets/dis-logo.png" alt="DIS — Guardians of the New Frontier" class="landing-logo" />
+    <h1 class="landing-title">Mission<br/><em>Hub.</em></h1>
+    <div class="landing-sub">Decode · Cohere · Prevail</div>
+    <form class="handle-form" id="handle-form" autocomplete="off">
+      <label for="handle" class="handle-label">// Identify yourself, operator</label>
+      <div class="handle-row">
+        <span class="handle-prefix">@</span>
+        <input id="handle" name="handle" type="text" class="handle-input" placeholder="DIGITAL HANDLE" maxlength="24" required />
+        <button type="submit" class="handle-submit">
+          <span>SUBMIT</span>
+          <span class="arrow">→</span>
+        </button>
+      </div>
+      <div class="handle-foot">YOUR HANDLE WILL BE STAMPED ON TONIGHT'S FILE</div>
+    </form>
+  </div>
+  <div class="landing-hint">PRESS <kbd>⏎</kbd> TO SUBMIT</div>
+</div>
+
+<!-- WELCOME MODAL -->
+<div class="welcome-modal" id="welcome-modal" aria-hidden="true">
+  <div class="welcome-card">
+    <div class="welcome-stamp">CLEARED</div>
+    <div class="welcome-meta">
+      <span>FILE NO. <b>DIS-004</b></span>
+      <span>ACCESS GRANTED · <b id="welcome-time">06:00 LCL</b></span>
+    </div>
+    <h2 class="welcome-title">Welcome to the<br/><em>Mission Hub,</em></h2>
+    <div class="welcome-handle" id="welcome-handle">@operator</div>
+    <p class="welcome-body">Your handle is logged. Squad chatter is live. Tonight's intercept is waiting at section <b>02 · CIPHER</b>.</p>
+    <div class="welcome-meta-grid">
+      <div class="meta-row"><span>Digital Handle</span><b id="welcome-handle-2">@operator</b></div>
+      <div class="meta-row"><span>Clearance</span><b>CAT1A · GUARDIAN</b></div>
+      <div class="meta-row"><span>Window</span><b>Open until 23:59</b></div>
+    </div>
+    <button class="welcome-cta" id="welcome-cta">Enter the hub <span class="arrow">→</span></button>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <img src="assets/dis-logo.png" alt="DIS — Guardians of the New Frontier" class="brand-logo" />
+      <span class="brand-divider"></span>
+      <span>MISSION HUB</span>
+    </div>
+    <nav class="nav">
+      <a href="#missions" class="on">01 MISSIONS</a>
+      <a href="#cipher">02 CIPHER</a>
+      <a href="#cohesion">03 COHESION</a>
+      <a href="#briefing">04 BRIEFING</a>
+    </nav>
+    <button class="a11y-btn" id="a11y-btn" title="Toggle color-blind safe palette" aria-pressed="false">
+      <span class="icon"></span> CB MODE
+    </button>
+    <button class="back-btn" id="back-btn" title="Return to landing">
+      <span class="arrow">←</span> BACK
+    </button>
+    <div class="pill">
+      <span class="dot"></span>
+      <span>LIVE · OPS WINDOW OPEN</span>
+    </div>
+  </div>
+</header>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span>OPS LOG <b>05·12·26</b></span><span class="sep">//</span>
+    <span>SQUAD <b>NORTH-9</b> CLEARED THE GOLDEN RIVER CIPHER IN <b>04:12</b></span><span class="sep">//</span>
+    <span>NEW CHALLENGE DROP <b>FRIDAY 18:00 LOCAL</b></span><span class="sep">//</span>
+    <span>OBSERVATION DECK CO-OP NOW OPEN TO ALL CHAPTERS</span><span class="sep">//</span>
+    <span>WEEKLY DEAD-DROP RESETS IN <b>02D 14H 33M</b></span><span class="sep">//</span>
+    <span>OPS LOG <b>05·12·26</b></span><span class="sep">//</span>
+    <span>SQUAD <b>NORTH-9</b> CLEARED THE GOLDEN RIVER CIPHER IN <b>04:12</b></span><span class="sep">//</span>
+    <span>NEW CHALLENGE DROP <b>FRIDAY 18:00 LOCAL</b></span><span class="sep">//</span>
+    <span>OBSERVATION DECK CO-OP NOW OPEN TO ALL CHAPTERS</span><span class="sep">//</span>
+    <span>WEEKLY DEAD-DROP RESETS IN <b>02D 14H 33M</b></span><span class="sep">//</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" style="padding-top:96px">
+  <div class="crosshairs ch-tl"></div>
+  <div class="crosshairs ch-tr"></div>
+  <div>
+    <div class="eyebrow">Field Manual · Issue 014 · Restricted</div>
+    <h1 class="display">
+      Decode the<br/>
+      <em>signal.</em> <span class="strike">Stay</span><br/>
+      with your unit.
+    </h1>
+    <p class="lede">A weekly clearing-house of cipher puzzles, cohesion drills and squad-grade challenges built for the people who'd rather think together than scroll alone.</p>
+  </div>
+  <aside class="hero-right">
+    <div class="label">// Tonight's Dispatch</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <span class="stamp">CLEARED</span>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">FILE NO. DIS-026-0512</span>
+    </div>
+    <div class="meta-row"><span>Operation</span><b>Quiet Rooftop</b></div>
+    <div class="meta-row"><span>Format</span><b>Squad of 4 · 45 min</b></div>
+    <div class="meta-row"><span>Difficulty</span><b>03 / 05</b></div>
+    <div class="meta-row"><span>Cipher</span><b>Vigenère + Steg</b></div>
+    <div class="meta-row"><span>Reward</span><b>+ 240 cohesion pts</b></div>
+    <div style="margin-top:20px;border-top:1px dashed var(--rule);padding-top:14px">
+      <div class="label">// Cleared by</div>
+      <div style="display:flex;gap:-8px;margin-top:8px">
+        <span class="av" style="width:32px;height:32px;border-radius:50%;background:#3a4d5a;border:2px solid var(--ink-2);display:inline-block;margin-right:-8px;font-family:var(--mono);font-size:10px;color:var(--paper);display:inline-grid;place-items:center">VK</span>
+        <span style="width:32px;height:32px;border-radius:50%;background:#5a3a40;border:2px solid var(--ink-2);display:inline-grid;place-items:center;margin-right:-8px;font-family:var(--mono);font-size:10px;color:var(--paper)">MR</span>
+        <span style="width:32px;height:32px;border-radius:50%;background:#5a553a;border:2px solid var(--ink-2);display:inline-grid;place-items:center;margin-right:-8px;font-family:var(--mono);font-size:10px;color:var(--paper)">JT</span>
+        <span style="width:32px;height:32px;border-radius:50%;background:#3a5a4d;border:2px solid var(--ink-2);display:inline-grid;place-items:center;font-family:var(--mono);font-size:10px;color:var(--paper)">+34</span>
+      </div>
+    </div>
+  </aside>
+</section>
+
+<div class="cta-row">
+  <button class="btn">Begin tonight's op <span class="arrow">→</span></button>
+  <button class="btn ghost">Browse archive</button>
+  <div class="keystroke" style="margin-left:auto">PRESS <kbd>⏎</kbd> TO ENTER · <kbd>?</kbd> FOR FIELD GUIDE</div>
+</div>
+
+<!-- MISSIONS / CHALLENGES -->
+<section id="missions">
+  <div class="section-head">
+    <div>
+      <div class="section-label">Section 01 · Active Missions</div>
+      <h2>Four ways<br/>to <em>think</em> in<br/>formation.</h2>
+    </div>
+    <p class="copy">Every Friday we drop a fresh set: a cipher to crack, a cohesion drill to run with your squad, a riddle to argue over, and an observation puzzle that rewards the patient.</p>
+  </div>
+
+  <div class="grid-3" style="grid-template-columns:repeat(4, 1fr)">
+    <article class="card">
+      <div class="num"><span>FILE 01 / 04</span><b>NEW · 14H AGO</b></div>
+      <div class="icon-frame">
+        <svg class="glyph" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="8" y="8" width="48" height="48"/>
+          <path d="M8 20h48M8 32h48M8 44h48"/>
+          <path d="M20 8v48M32 8v48M44 8v48"/>
+          <circle cx="20" cy="20" r="3" fill="currentColor"/>
+          <circle cx="44" cy="44" r="3" fill="currentColor"/>
+        </svg>
+      </div>
+      <h3>Cipher Drops</h3>
+      <p>Caesar, Vigenère, Playfair, book ciphers and the occasional steganographic image. Decrypt the dispatch to unlock next week's coordinates.</p>
+      <div class="foot">
+        <div class="difficulty"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
+        <div class="go">ENTER →</div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="num"><span>FILE 02 / 04</span><b>WEEKLY</b></div>
+      <div class="icon-frame">
+        <svg class="glyph" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="32" cy="32" r="20"/>
+          <circle cx="32" cy="32" r="10"/>
+          <circle cx="32" cy="32" r="2" fill="currentColor"/>
+          <path d="M32 6v8M32 50v8M6 32h8M50 32h8"/>
+        </svg>
+      </div>
+      <h3>Cohesion Drills</h3>
+      <p>Timed squad exercises that require talking, trusting and dividing labor. Bring four. Leave with a callsign that sticks.</p>
+      <div class="foot">
+        <div class="difficulty"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
+        <div class="go">ENTER →</div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="num"><span>FILE 03 / 04</span><b>LIVE</b></div>
+      <div class="icon-frame">
+        <svg class="glyph" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 52L32 12l20 40z"/>
+          <path d="M32 28v12M32 46v2"/>
+        </svg>
+      </div>
+      <h3>Lateral Riddles</h3>
+      <p>Single questions with a thousand wrong answers and one quiet truth. Submit a reasoning trace — partial credit awarded.</p>
+      <div class="foot">
+        <div class="difficulty"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
+        <div class="go">ENTER →</div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="num"><span>FILE 04 / 04</span><b>SLOW BURN</b></div>
+      <div class="icon-frame">
+        <svg class="glyph" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="32" cy="32" r="18"/>
+          <path d="M32 14v18l12 8"/>
+          <path d="M32 4v4M32 56v4M4 32h4M56 32h4"/>
+        </svg>
+      </div>
+      <h3>Observation Decks</h3>
+      <p>A photo. A paragraph. A 4-minute audio clip. Notice five things the rest of the squad missed. Submit anytime before Sunday.</p>
+      <div class="foot">
+        <div class="difficulty"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
+        <div class="go">ENTER →</div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- CIPHER CONSOLE -->
+<section id="cipher" style="padding-top:0">
+  <div class="section-head">
+    <div>
+      <div class="section-label">Section 02 · Live Sample</div>
+      <h2>Try a piece<br/>of <em>tonight's</em><br/>dispatch.</h2>
+    </div>
+    <p class="copy">A live Caesar shift, lifted from the archive. Slide it. Find the offset. Decrypt the line. The full op nests three more rotors inside this one — but this gets you in the door.</p>
+  </div>
+
+  <div class="console-wrap">
+    <div class="console-head">
+      <div class="left">
+        <span class="file-id">FILE DIS-026-0512 / FRAGMENT 03</span>
+        <span style="color:#7a734f">·</span>
+        <span>CAESAR ROTOR · TIER I</span>
+      </div>
+      <div>STATUS: <b style="color:var(--signal)">UNDECRYPTED</b></div>
+    </div>
+    <div class="console-body">
+      <div class="console-pane">
+        <span class="label-tag">INTERCEPT</span>
+        <h4>Ciphertext as received</h4>
+        <div class="cipher-text" id="cipher-in">XLI VSSJ MW UYMIX EJXIV QMHRMKLX</div>
+      </div>
+      <div class="divider-col"></div>
+      <div class="console-pane">
+        <span class="label-tag" style="background:var(--signal)">DECRYPT</span>
+        <h4>Plaintext (live)</h4>
+        <div class="cipher-text" id="cipher-out" style="color:var(--signal-2)">XLI VSSJ MW UYMIX EJXIV QMHRMKLX</div>
+      </div>
+    </div>
+    <div style="padding:0 40px">
+      <div class="shift-control">
+        <label for="shift">Rotor offset</label>
+        <input type="range" id="shift" class="slider" min="0" max="25" value="0" />
+        <div class="shift-val" id="shift-val">+00</div>
+      </div>
+    </div>
+    <div class="console-foot">
+      <div>HINT · COMMON ENGLISH OFFSET RANGE 03 – 13</div>
+      <div style="display:flex;gap:16px;align-items:center">
+        <span class="status-pill idle" id="verdict">AWAITING DECRYPT</span>
+        <button class="submit-btn" id="submit-cipher">SUBMIT →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COHESION LADDER -->
+<section id="cohesion" style="padding-top:0">
+  <div class="section-head">
+    <div>
+      <div class="section-label">Section 03 · Squad Standings</div>
+      <h2>Cohesion is<br/>the only<br/><em>real</em> score.</h2>
+    </div>
+    <p class="copy">Solo points earn you a tab. Cohesion points — earned when your squad solves under time, with everyone contributing — earn you a name people remember.</p>
+  </div>
+
+  <div class="ladder">
+    <div class="ladder-side">
+      <div>
+        <div class="section-label" style="margin-bottom:8px">Week 19 / 52</div>
+        <h3>Standings, as<br/>of <em style="font-style:italic;color:var(--amber)">06:00 today.</em></h3>
+        <p>Top eight squads carry their score into the May invitational. Bottom-four pair off with mentors next cycle.</p>
+      </div>
+      <div>
+        <div class="num-big">08</div>
+        <div style="font-family:var(--mono);font-size:11px;letter-spacing:0.15em;color:var(--muted);text-transform:uppercase">SQUADS ABOVE THE LINE</div>
+      </div>
+    </div>
+    <div class="ladder-rows">
+      <div class="ladder-row">
+        <div class="rank">01</div>
+        <div class="name">Pale Lantern<span class="codename">CHAPTER · MERIDIAN</span></div>
+        <div class="bar"><i style="width:96%"></i></div>
+        <div class="score">4,820 PTS</div>
+        <div class="change up">▲ 3</div>
+      </div>
+      <div class="ladder-row">
+        <div class="rank">02</div>
+        <div class="name">North-9<span class="codename">CHAPTER · OXBOW</span></div>
+        <div class="bar"><i style="width:91%"></i></div>
+        <div class="score">4,565 PTS</div>
+        <div class="change up">▲ 1</div>
+      </div>
+      <div class="ladder-row">
+        <div class="rank">03</div>
+        <div class="name">Quiet Rooftop<span class="codename">CHAPTER · KESTREL</span></div>
+        <div class="bar"><i style="width:84%"></i></div>
+        <div class="score">4,212 PTS</div>
+        <div class="change dn">▼ 2</div>
+      </div>
+      <div class="ladder-row">
+        <div class="rank">04</div>
+        <div class="name">Golden River<span class="codename">CHAPTER · MERIDIAN</span></div>
+        <div class="bar"><i style="width:78%"></i></div>
+        <div class="score">3,910 PTS</div>
+        <div class="change up">▲ 4</div>
+      </div>
+      <div class="ladder-row">
+        <div class="rank">05</div>
+        <div class="name">Twelve Owls<span class="codename">CHAPTER · OXBOW</span></div>
+        <div class="bar"><i style="width:71%"></i></div>
+        <div class="score">3,553 PTS</div>
+        <div class="change">—</div>
+      </div>
+      <div class="ladder-row">
+        <div class="rank">06</div>
+        <div class="name">Slow Iron<span class="codename">CHAPTER · KESTREL</span></div>
+        <div class="bar"><i style="width:64%"></i></div>
+        <div class="score">3,201 PTS</div>
+        <div class="change dn">▼ 1</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ STRIP -->
+<section id="briefing" style="padding-top:0">
+  <div class="section-head">
+    <div>
+      <div class="section-label">Section 04 · Sample Briefing</div>
+      <h2>A question<br/>from this<br/>week's <em>quiz.</em></h2>
+    </div>
+    <p class="copy">No timer here. Talk it out. Submit a single squad answer — only one of you can press the button, so figure out which one of you is the most certain, and the most wrong.</p>
+  </div>
+
+  <div class="quiz-card">
+    <div>
+      <div class="meta">Question 04 of 12 · Cohesion track · 30 PTS</div>
+      <h3>Three watchers, <em>two</em> compasses, one map.</h3>
+      <p class="q-body">"Each of you has been told a different lie about which direction the rendezvous is. Without naming the direction, agree on a heading you can all live with — and explain your reasoning in five words or fewer."</p>
+      <div class="meta" style="margin-top:24px">→ ANSWER WITH YOUR SQUAD</div>
+    </div>
+    <div class="options">
+      <button class="opt"><span class="letter">A.</span><span>Walk toward the loudest doubt.</span></button>
+      <button class="opt correct"><span class="letter">B.</span><span>Stand still. Wait for noon.</span></button>
+      <button class="opt"><span class="letter">C.</span><span>Split the difference between us.</span></button>
+      <button class="opt"><span class="letter">D.</span><span>Trust whoever brought the map.</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-inner">
+    <div class="foot-brand">
+      <h4>Decode together,<br/>or <em>not at all.</em></h4>
+      <p>DIS Mission Hub is built by and for the people who'd rather puzzle than scroll. New ops every Friday. Quiet rooms always open.</p>
+    </div>
+    <div class="foot-col">
+      <h5>Missions</h5>
+      <ul>
+        <li><a href="#">Cipher Drops</a></li>
+        <li><a href="#">Cohesion Drills</a></li>
+        <li><a href="#">Lateral Riddles</a></li>
+        <li><a href="#">Observation Decks</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h5>Chapters</h5>
+      <ul>
+        <li><a href="#">Meridian</a></li>
+        <li><a href="#">Oxbow</a></li>
+        <li><a href="#">Kestrel</a></li>
+        <li><a href="#">Start your own</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h5>Signal</h5>
+      <ul>
+        <li><a href="#">Field guide</a></li>
+        <li><a href="#">Dispatch (weekly)</a></li>
+        <li><a href="#">Archive · 134 ops</a></li>
+        <li><a href="#">Contact ops desk</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <div>© DIS · MISSION HUB 2026 · FILE DIS-026</div>
+    <div>BUILT IN THE QUIET HOURS · v2.6.0</div>
+  </div>
+</footer>
+
+<script>
+  // --- Landing gate + handle ---
+  const landing = document.getElementById('landing');
+  const handleForm = document.getElementById('handle-form');
+  const handleInput = document.getElementById('handle');
+  const handleRow = handleInput.closest('.handle-row');
+  const welcomeModal = document.getElementById('welcome-modal');
+  const welcomeHandle = document.getElementById('welcome-handle');
+  const welcomeHandle2 = document.getElementById('welcome-handle-2');
+  const welcomeTime = document.getElementById('welcome-time');
+  const welcomeCta = document.getElementById('welcome-cta');
+
+  function sanitizeHandle(raw){
+    return (raw || '').trim().replace(/^@+/, '').replace(/\s+/g, '_').replace(/[^A-Za-z0-9_\-\.]/g, '').slice(0, 24);
+  }
+
+  handleForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const h = sanitizeHandle(handleInput.value);
+    if (!h || h.length < 2) {
+      handleRow.classList.remove('shake');
+      void handleRow.offsetWidth;
+      handleRow.classList.add('shake');
+      handleInput.focus();
+      return;
+    }
+    welcomeHandle.textContent = '@' + h;
+    welcomeHandle2.textContent = '@' + h;
+    const now = new Date();
+    welcomeTime.textContent = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ' LCL';
+    try { localStorage.setItem('dis_handle', h); } catch(_){}
+    welcomeModal.classList.add('show');
+    welcomeModal.setAttribute('aria-hidden','false');
+  });
+
+  function enterHub(){
+    welcomeModal.classList.remove('show');
+    welcomeModal.setAttribute('aria-hidden','true');
+    landing.classList.add('hide');
+    setTimeout(() => { document.body.classList.add('entered'); }, 650);
+  }
+  welcomeCta.addEventListener('click', enterHub);
+
+  document.getElementById('back-btn').addEventListener('click', () => {
+    document.body.classList.remove('entered');
+    landing.style.display = '';
+    requestAnimationFrame(() => landing.classList.remove('hide'));
+    window.scrollTo({top:0, behavior:'instant'});
+    setTimeout(() => handleInput.focus(), 400);
+  });
+
+  // restore prior handle if any
+  try {
+    const saved = localStorage.getItem('dis_handle');
+    if (saved) handleInput.value = saved;
+  } catch(_){}
+
+  // --- Accessibility toggle (color-blind safe palette) ---
+  const a11yBtn = document.getElementById('a11y-btn');
+  function applyA11y(on){
+    document.body.classList.toggle('cb-safe', !!on);
+    a11yBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    a11yBtn.querySelector('.icon')?.classList.toggle('on', !!on);
+    try { localStorage.setItem('dis_cb', on ? '1' : '0'); } catch(_){}
+  }
+  a11yBtn.addEventListener('click', () => {
+    applyA11y(!document.body.classList.contains('cb-safe'));
+  });
+  try {
+    if (localStorage.getItem('dis_cb') === '1') applyA11y(true);
+  } catch(_){}
+
+  // --- Caesar cipher live demo ---
+  const CIPHERTEXT = "XLI VSSJ MW UYMIX EJXIV QMHRMKLX";
+  const TARGET_SHIFT = 4; // shifts back by 4 -> "THE ROOF IS QUIET AFTER MIDNIGHT"
+  const inEl = document.getElementById("cipher-in");
+  const outEl = document.getElementById("cipher-out");
+  const shiftEl = document.getElementById("shift");
+  const shiftVal = document.getElementById("shift-val");
+  const verdict = document.getElementById("verdict");
+
+  function decode(text, shift) {
+    return text.split("").map(c => {
+      const code = c.charCodeAt(0);
+      if (code >= 65 && code <= 90) {
+        return String.fromCharCode(((code - 65 - shift + 26) % 26) + 65);
+      }
+      return c;
+    }).join("");
+  }
+
+  function renderCharSpans(text) {
+    return text.split("").map(c => {
+      if (c === " ") return '<span class="sp"> </span>';
+      return `<span class="char">${c}</span>`;
+    }).join("");
+  }
+
+  inEl.innerHTML = renderCharSpans(CIPHERTEXT);
+  outEl.innerHTML = renderCharSpans(CIPHERTEXT);
+
+  shiftEl.addEventListener("input", () => {
+    const s = parseInt(shiftEl.value, 10);
+    shiftVal.textContent = "+" + String(s).padStart(2, "0");
+    const decoded = decode(CIPHERTEXT, s);
+    outEl.innerHTML = renderCharSpans(decoded);
+    if (s === TARGET_SHIFT) {
+      verdict.textContent = "READY TO SUBMIT";
+      verdict.className = "status-pill ready";
+    } else {
+      verdict.textContent = "AWAITING DECRYPT";
+      verdict.className = "status-pill idle";
+    }
+  });
+
+  document.getElementById("submit-cipher").addEventListener("click", () => {
+    const s = parseInt(shiftEl.value, 10);
+    if (s === TARGET_SHIFT) {
+      verdict.textContent = "CLEARED · +30 PTS";
+      verdict.className = "status-pill ok";
+    } else {
+      verdict.textContent = "NEGATIVE · TRY AGAIN";
+      verdict.className = "status-pill bad";
+    }
+  });
+
+  // quiz: tap to reveal
+  document.querySelectorAll(".opt").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".opt").forEach(o => o.classList.remove("correct"));
+      btn.classList.add("correct");
+    });
+  });
+</script>
+
+</body>
+</html>
