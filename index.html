@@ -502,6 +502,12 @@
   .pw-caption b{color:var(--paper);display:block;font-weight:600}
   .pw-empty{grid-column:1/-1;font-family:var(--mono);font-size:11px;letter-spacing:0.15em;
     text-transform:uppercase;color:var(--paper-3);padding:20px 0;text-align:center}
+  .pw-loading{grid-column:1/-1;font-family:var(--mono);font-size:11px;letter-spacing:0.15em;
+    text-transform:uppercase;color:var(--paper-3);padding:20px 0;text-align:center;opacity:0.5}
+  .pw-more{display:none;width:100%;margin-top:10px;padding:9px 0;background:none;
+    border:1px solid var(--rule);color:var(--paper-3);font-family:var(--mono);font-size:10px;
+    letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;transition:border-color 0.15s,color 0.15s}
+  .pw-more:hover{border-color:var(--orange);color:var(--paper)}
   @media(max-width:680px){.pw-grid{grid-template-columns:repeat(2,1fr)}}
 
   /* lightbox */
@@ -973,6 +979,7 @@
       <div class="pw-grid" id="pw-grid">
         <div class="pw-empty">No photos yet — be the first.</div>
       </div>
+      <button class="pw-more" id="pw-more">Load more</button>
     </div>
   </div>
 </div>
@@ -1423,29 +1430,50 @@ function resetPhotoState(ch) {
   updateConfirmBtn(ch);
 }
 
-async function loadExpeditionPhotos() {
+const PW_PAGE = 12;
+let pwOffset  = 0;
+let pwTotal   = 0;
+let pwBusy    = false;
+
+async function loadExpeditionPhotos(reset = true) {
   const grid    = document.getElementById('pw-grid');
   const counter = document.getElementById('pw-count');
-  if (!grid || !sb) return;
+  const moreBtn = document.getElementById('pw-more');
+  if (!grid || !sb || pwBusy) return;
+  pwBusy = true;
 
-  const { data, error } = await sb
+  if (reset) {
+    pwOffset = 0;
+    grid.innerHTML = '<div class="pw-loading">Loading…</div>';
+    if (moreBtn) moreBtn.style.display = 'none';
+  }
+
+  const { data, error, count } = await sb
     .from('completions')
-    .select('handle, challenge_id, photo_url, completed_at')
+    .select('handle, challenge_id, photo_url, completed_at', { count: 'exact' })
     .in('challenge_id', ['exp-1','exp-2','exp-3','exp-4'])
     .not('photo_url', 'is', null)
-    .order('completed_at', { ascending: false });
+    .order('completed_at', { ascending: false })
+    .range(pwOffset, pwOffset + PW_PAGE - 1);
 
-  if (error || !data) return;
+  pwBusy = false;
 
-  if (counter) counter.textContent = data.length ? `${data.length} photo${data.length === 1 ? '' : 's'}` : '';
-
-  if (data.length === 0) {
-    grid.innerHTML = '<div class="pw-empty">No photos yet — be the first.</div>';
+  if (error) {
+    if (reset) grid.innerHTML = '<div class="pw-empty">Could not load photos.</div>';
     return;
   }
 
-  grid.innerHTML = '';
-  data.forEach(row => {
+  if (reset) {
+    pwTotal = count || 0;
+    if (counter) counter.textContent = pwTotal ? `${pwTotal} photo${pwTotal === 1 ? '' : 's'}` : '';
+    grid.innerHTML = '';
+    if (pwTotal === 0) {
+      grid.innerHTML = '<div class="pw-empty">No photos yet — be the first.</div>';
+      return;
+    }
+  }
+
+  (data || []).forEach(row => {
     const card = document.createElement('div');
     card.className = 'pw-card';
     card.dataset.src = row.photo_url;
@@ -1454,7 +1482,12 @@ async function loadExpeditionPhotos() {
       `<div class="pw-caption"><b>${row.handle}</b>${CHALLENGE_LABELS[row.challenge_id] || row.challenge_id}</div>`;
     grid.appendChild(card);
   });
+
+  pwOffset += (data || []).length;
+  if (moreBtn) moreBtn.style.display = pwOffset < pwTotal ? 'block' : 'none';
 }
+
+document.getElementById('pw-more').addEventListener('click', () => loadExpeditionPhotos(false));
 
 // ============================================================
 // CHALLENGE COMPLETION
@@ -1522,7 +1555,7 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
     ch.classList.add('complete');
     refreshPointsUI(pointsFromIds(list));
     loadLeaderboard();
-    loadExpeditionPhotos();
+    loadExpeditionPhotos(true);
   });
 });
 
