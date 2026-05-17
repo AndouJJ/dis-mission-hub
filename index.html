@@ -6,7 +6,7 @@
 <title>DIS Mission Hub — Year IV</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <!-- Supabase JS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
@@ -24,7 +24,7 @@
     --orange-soft:rgba(255,115,0,0.10);
     --muted:#6e6a60;
     --good:#7fc28d;
-    --serif:"JetBrains Mono", ui-monospace, monospace;
+    --serif:"Instrument Serif", "Times New Roman", serif;
     --sans:"JetBrains Mono", ui-monospace, monospace;
     --mono:"JetBrains Mono", ui-monospace, monospace;
     --maxw:1200px;
@@ -73,7 +73,7 @@
     font-size:clamp(72px, 11vw, 156px);line-height:0.9;letter-spacing:-0.025em;margin:0;
     animation:fadeUp 0.8s 0.1s ease both;
   }
-  .landing-title em{color:var(--orange)}
+  .landing-title em{font-style:italic;color:var(--orange)}
   .landing-sub{
     font-family:var(--mono);font-size:12px;letter-spacing:0.4em;color:var(--paper-2);text-transform:uppercase;
     animation:fadeUp 0.8s 0.2s ease both;
@@ -247,7 +247,7 @@
     font-size:clamp(64px, 10vw, 144px);line-height:0.92;letter-spacing:-0.025em;
     margin:0 0 32px;color:var(--paper);max-width:14ch;
   }
-  .hero h1 em{color:var(--orange)}
+  .hero h1 em{font-style:italic;color:var(--orange)}
   .hero-lede{
     font-family:var(--serif);font-size:22px;line-height:1.4;
     color:var(--paper-2);max-width:560px;margin:0;
@@ -287,7 +287,7 @@
     font-family:var(--serif);font-weight:400;font-size:clamp(40px, 6vw, 72px);
     line-height:1;letter-spacing:-0.02em;margin:0;color:var(--paper);
   }
-  .block-head h2 em{color:var(--orange)}
+  .block-head h2 em{font-style:italic;color:var(--orange)}
   .block-head .meta{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;color:var(--paper-3);text-transform:uppercase;text-align:right}
   .block-head .meta b{color:var(--paper);font-weight:500;display:block;margin-top:4px;font-size:13px;letter-spacing:0.1em}
 
