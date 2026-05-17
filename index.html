@@ -1343,13 +1343,24 @@ try { if (localStorage.getItem('dis_cb') === '1') applyA11y(true); } catch(_) {}
 // MISSION CARDS
 // ============================================================
 const missionModal = document.getElementById('mission-modal');
+let pwPollTimer = null;
+
+function startPhotoWallPoll() {
+  stopPhotoWallPoll();
+  pwPollTimer = setInterval(() => loadExpeditionPhotos(true), 30000);
+}
+
+function stopPhotoWallPoll() {
+  if (pwPollTimer) { clearInterval(pwPollTimer); pwPollTimer = null; }
+}
 
 document.querySelectorAll('.mission-card').forEach(card => {
   card.addEventListener('click', () => {
     if (card.classList.contains('has-detail')) {
       missionModal.classList.add('show');
       missionModal.setAttribute('aria-hidden', 'false');
-      loadExpeditionPhotos();
+      loadExpeditionPhotos(true);
+      startPhotoWallPoll();
       return;
     }
     if (card.classList.contains('locked') || card.dataset.status === 'locked') return;
@@ -1361,6 +1372,7 @@ document.querySelectorAll('.mission-card').forEach(card => {
 function closeMissionModal() {
   missionModal.classList.remove('show');
   missionModal.setAttribute('aria-hidden', 'true');
+  stopPhotoWallPoll();
 }
 document.getElementById('mission-close').addEventListener('click', closeMissionModal);
 missionModal.addEventListener('click', (e) => { if (e.target === missionModal) closeMissionModal(); });
