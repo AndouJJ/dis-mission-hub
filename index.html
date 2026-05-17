@@ -474,13 +474,40 @@
   }
   .photo-btn:hover{border-color:var(--orange);color:var(--orange)}
   .photo-btn.ready{border-style:solid;border-color:var(--orange);color:var(--orange);background:rgba(255,115,0,0.06)}
-  .photo-preview{width:44px;height:44px;object-fit:cover;border:1px solid var(--rule);display:none;flex-shrink:0}
+  .photo-preview{width:auto;height:120px;max-width:200px;object-fit:cover;border:1px solid var(--rule);display:none;flex-shrink:0;cursor:zoom-in}
   .photo-preview.show{display:block}
+  .ack-row{display:flex;align-items:center;gap:8px;width:100%;cursor:pointer;
+    font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--paper-3);
+  }
+  .ack-input{width:13px;height:13px;accent-color:var(--orange);cursor:pointer;flex-shrink:0}
   .photo-err{
     font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
     color:#ff6b6b;display:none;width:100%;
   }
   .photo-err.show{display:block}
+
+  /* photo wall */
+  .photo-wall{margin-top:28px;padding-top:24px;border-top:1px solid var(--rule)}
+  .photo-wall-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;
+    font-family:var(--mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--paper-3);
+  }
+  .photo-wall-head .pw-title{color:var(--paper)}
+  .pw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .pw-card{border:1px solid var(--rule);overflow:hidden;cursor:zoom-in;transition:border-color 0.15s}
+  .pw-card:hover{border-color:var(--orange)}
+  .pw-img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+  .pw-caption{padding:5px 8px;background:var(--ink-2);font-family:var(--mono);font-size:9px;
+    letter-spacing:0.1em;text-transform:uppercase;color:var(--paper-3);line-height:1.5}
+  .pw-caption b{color:var(--paper);display:block;font-weight:600}
+  .pw-empty{grid-column:1/-1;font-family:var(--mono);font-size:11px;letter-spacing:0.15em;
+    text-transform:uppercase;color:var(--paper-3);padding:20px 0;text-align:center}
+  @media(max-width:680px){.pw-grid{grid-template-columns:repeat(2,1fr)}}
+
+  /* lightbox */
+  .photo-lb{position:fixed;inset:0;z-index:500;background:rgba(12,10,8,0.95);
+    display:none;align-items:center;justify-content:center;cursor:zoom-out;padding:24px}
+  .photo-lb.show{display:flex}
+  .photo-lb img{max-width:min(92vw,1400px);max-height:90vh;object-fit:contain}
   .mission-foot{
     display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
     font-family:var(--mono);font-size:11px;letter-spacing:0.15em;color:var(--paper-3);
@@ -851,6 +878,10 @@
             <span class="photo-btn">+ Attach photo</span>
             <img class="photo-preview" alt="preview" />
           </label>
+          <label class="ack-row">
+            <input type="checkbox" class="ack-input" />
+            <span>I confirm this image is appropriate</span>
+          </label>
           <span class="photo-err"></span>
           <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
         </div>
@@ -870,6 +901,10 @@
             <input type="file" accept="image/*" capture="environment" class="photo-input" />
             <span class="photo-btn">+ Attach photo</span>
             <img class="photo-preview" alt="preview" />
+          </label>
+          <label class="ack-row">
+            <input type="checkbox" class="ack-input" />
+            <span>I confirm this image is appropriate</span>
           </label>
           <span class="photo-err"></span>
           <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
@@ -891,6 +926,10 @@
             <span class="photo-btn">+ Attach photo</span>
             <img class="photo-preview" alt="preview" />
           </label>
+          <label class="ack-row">
+            <input type="checkbox" class="ack-input" />
+            <span>I confirm this image is appropriate</span>
+          </label>
           <span class="photo-err"></span>
           <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
         </div>
@@ -911,6 +950,10 @@
             <span class="photo-btn">+ Attach photo</span>
             <img class="photo-preview" alt="preview" />
           </label>
+          <label class="ack-row">
+            <input type="checkbox" class="ack-input" />
+            <span>I confirm this image is appropriate</span>
+          </label>
           <span class="photo-err"></span>
           <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
         </div>
@@ -920,7 +963,22 @@
       <span>Total · <b class="o">260 PTS</b></span>
       <span>Submissions open OCT 28, 1800H GMT+8</span>
     </div>
+
+    <div class="photo-wall">
+      <div class="photo-wall-head">
+        <span class="pw-title">Field Photos</span>
+        <span id="pw-count"></span>
+      </div>
+      <div class="pw-grid" id="pw-grid">
+        <div class="pw-empty">No photos yet — be the first.</div>
+      </div>
+    </div>
   </div>
+</div>
+
+<!-- lightbox -->
+<div class="photo-lb" id="photo-lb">
+  <img id="photo-lb-img" src="" alt="" />
 </div>
 
 <!-- ============ FOOTER ============ -->
@@ -953,6 +1011,13 @@ const CHALLENGE_PTS = {
 };
 
 const PHOTO_CHALLENGES = new Set(['exp-1', 'exp-2', 'exp-3', 'exp-4']);
+
+const CHALLENGE_LABELS = {
+  'exp-1': 'USS Globe',
+  'exp-2': 'Transformer Ride',
+  'exp-3': 'Scare Actor',
+  'exp-4': 'Scare the Actor',
+};
 
 // ============================================================
 // HELPERS
@@ -1276,6 +1341,7 @@ document.querySelectorAll('.mission-card').forEach(card => {
     if (card.classList.contains('has-detail')) {
       missionModal.classList.add('show');
       missionModal.setAttribute('aria-hidden', 'false');
+      loadExpeditionPhotos();
       return;
     }
     if (card.classList.contains('locked') || card.dataset.status === 'locked') return;
@@ -1332,17 +1398,61 @@ async function uploadPhoto(handle, cid, file) {
   return sb.storage.from('challenge-photos').getPublicUrl(path).data.publicUrl;
 }
 
+function updateConfirmBtn(ch) {
+  const yesBtn = ch.querySelector('.cc-yes');
+  if (!yesBtn) return;
+  const input  = ch.querySelector('.photo-input');
+  const ackBox = ch.querySelector('.ack-input');
+  const hasPhoto = input && input.files.length > 0;
+  const hasAck   = !ackBox || ackBox.checked;
+  yesBtn.disabled = !(hasPhoto && hasAck);
+}
+
 function resetPhotoState(ch) {
   const input   = ch.querySelector('.photo-input');
   const preview = ch.querySelector('.photo-preview');
   const photBtn = ch.querySelector('.photo-btn');
-  const yesBtn  = ch.querySelector('.cc-yes');
+  const ackBox  = ch.querySelector('.ack-input');
   const errEl   = ch.querySelector('.photo-err');
   if (input)   input.value = '';
   if (preview) { preview.src = ''; preview.classList.remove('show'); }
   if (photBtn) photBtn.classList.remove('ready');
-  if (yesBtn && PHOTO_CHALLENGES.has(ch.dataset.cid)) yesBtn.disabled = true;
+  if (ackBox)  ackBox.checked = false;
   if (errEl)   { errEl.textContent = ''; errEl.classList.remove('show'); }
+  updateConfirmBtn(ch);
+}
+
+async function loadExpeditionPhotos() {
+  const grid    = document.getElementById('pw-grid');
+  const counter = document.getElementById('pw-count');
+  if (!grid || !sb) return;
+
+  const { data, error } = await sb
+    .from('completions')
+    .select('handle, challenge_id, photo_url, completed_at')
+    .in('challenge_id', ['exp-1','exp-2','exp-3','exp-4'])
+    .not('photo_url', 'is', null)
+    .order('completed_at', { ascending: false });
+
+  if (error || !data) return;
+
+  if (counter) counter.textContent = data.length ? `${data.length} photo${data.length === 1 ? '' : 's'}` : '';
+
+  if (data.length === 0) {
+    grid.innerHTML = '<div class="pw-empty">No photos yet — be the first.</div>';
+    return;
+  }
+
+  grid.innerHTML = '';
+  data.forEach(row => {
+    const card = document.createElement('div');
+    card.className = 'pw-card';
+    card.dataset.src = row.photo_url;
+    card.innerHTML =
+      `<img class="pw-img" src="${row.photo_url}" alt="Field photo" loading="lazy" />` +
+      `<div class="pw-caption"><b>${row.handle}</b>${CHALLENGE_LABELS[row.challenge_id] || row.challenge_id}</div>`;
+    grid.appendChild(card);
+  });
 }
 
 // ============================================================
@@ -1411,6 +1521,7 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
     ch.classList.add('complete');
     refreshPointsUI(pointsFromIds(list));
     loadLeaderboard();
+    loadExpeditionPhotos();
   });
 });
 
@@ -1448,7 +1559,7 @@ document.querySelectorAll('.photo-input').forEach(input => {
     if (!file) {
       if (preview) { preview.src = ''; preview.classList.remove('show'); }
       if (photBtn) photBtn.classList.remove('ready');
-      if (yesBtn)  yesBtn.disabled = true;
+      updateConfirmBtn(ch);
       return;
     }
 
@@ -1465,8 +1576,38 @@ document.querySelectorAll('.photo-input').forEach(input => {
     const url = URL.createObjectURL(file);
     if (preview) { preview.src = url; preview.classList.add('show'); }
     if (photBtn) photBtn.classList.add('ready');
-    if (yesBtn)  yesBtn.disabled = false;
+    updateConfirmBtn(ch);
   });
+});
+
+document.querySelectorAll('.ack-input').forEach(box => {
+  box.addEventListener('change', () => updateConfirmBtn(box.closest('.challenge')));
+});
+
+// Lightbox — opens on preview thumbnail or photo wall card click
+const photoLb    = document.getElementById('photo-lb');
+const photoLbImg = document.getElementById('photo-lb-img');
+
+function openLightbox(src) {
+  photoLbImg.src = src;
+  photoLb.classList.add('show');
+}
+photoLb.addEventListener('click', () => {
+  photoLb.classList.remove('show');
+  photoLbImg.src = '';
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && photoLb.classList.contains('show')) {
+    photoLb.classList.remove('show');
+    photoLbImg.src = '';
+  }
+});
+
+document.addEventListener('click', e => {
+  const preview = e.target.closest('.photo-preview');
+  if (preview && preview.src) { openLightbox(preview.src); return; }
+  const card = e.target.closest('.pw-card');
+  if (card && card.dataset.src) openLightbox(card.dataset.src);
 });
 
 // ============================================================
