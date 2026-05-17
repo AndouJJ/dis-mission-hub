@@ -1388,7 +1388,7 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
         console.warn('Photo upload failed:', err.message);
         btn.textContent = orig;
         btn.disabled = false;
-        if (errEl) { errEl.textContent = 'Upload failed — check your connection and try again'; errEl.classList.add('show'); }
+        if (errEl) { errEl.textContent = 'Upload failed: ' + (err.message || 'unknown error'); errEl.classList.add('show'); }
         return;
       }
     }
