@@ -24,7 +24,8 @@
     --orange-soft:rgba(255,115,0,0.10);
     --muted:#6e6a60;
     --good:#7fc28d;
-    --serif:"Instrument Serif", "Times New Roman", serif;
+    --serif:"JetBrains Mono", ui-monospace, monospace;
+    --display:"Instrument Serif", "Times New Roman", serif;
     --sans:"JetBrains Mono", ui-monospace, monospace;
     --mono:"JetBrains Mono", ui-monospace, monospace;
     --maxw:1200px;
@@ -69,7 +70,7 @@
   }
   .landing-logo{height:64px;width:auto;animation:fadeUp 0.8s ease both}
   .landing-title{
-    font-family:var(--serif);font-weight:400;
+    font-family:var(--display);font-weight:400;
     font-size:clamp(72px, 11vw, 156px);line-height:0.9;letter-spacing:-0.025em;margin:0;
     animation:fadeUp 0.8s 0.1s ease both;
   }
@@ -243,7 +244,7 @@
   }
   .hero-eyebrow::before{content:"";width:32px;height:1px;background:var(--orange)}
   .hero h1{
-    font-family:var(--serif);font-weight:400;
+    font-family:var(--display);font-weight:400;
     font-size:clamp(64px, 10vw, 144px);line-height:0.92;letter-spacing:-0.025em;
     margin:0 0 32px;color:var(--paper);max-width:14ch;
   }
@@ -284,7 +285,7 @@
     display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;margin-bottom:40px;
   }
   .block-head h2{
-    font-family:var(--serif);font-weight:400;font-size:clamp(40px, 6vw, 72px);
+    font-family:var(--display);font-weight:400;font-size:clamp(40px, 6vw, 72px);
     line-height:1;letter-spacing:-0.02em;margin:0;color:var(--paper);
   }
   .block-head h2 em{font-style:italic;color:var(--orange)}
