@@ -1489,9 +1489,17 @@ async function loadExpeditionPhotos(reset = true) {
     const card = document.createElement('div');
     card.className = 'pw-card';
     card.dataset.src = row.photo_url;
-    card.innerHTML =
-      `<img class="pw-img" src="${row.photo_url}" alt="Field photo" loading="lazy" />` +
-      `<div class="pw-caption"><b>${row.handle}</b>${CHALLENGE_LABELS[row.challenge_id] || row.challenge_id}</div>`;
+    const img = document.createElement('img');
+    img.className = 'pw-img';
+    img.alt = 'Field photo';
+    img.loading = 'lazy';
+    img.onerror = () => card.remove();
+    img.src = row.photo_url;
+    card.appendChild(img);
+    const cap = document.createElement('div');
+    cap.className = 'pw-caption';
+    cap.innerHTML = `<b>${row.handle}</b>${CHALLENGE_LABELS[row.challenge_id] || row.challenge_id}`;
+    card.appendChild(cap);
     grid.appendChild(card);
   });
 
@@ -1500,6 +1508,14 @@ async function loadExpeditionPhotos(reset = true) {
 }
 
 document.getElementById('pw-more').addEventListener('click', () => loadExpeditionPhotos(false));
+
+if (sb) {
+  sb.channel('pw-realtime')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'completions' }, () => {
+      if (missionModal.classList.contains('show')) loadExpeditionPhotos(true);
+    })
+    .subscribe();
+}
 
 // ============================================================
 // CHALLENGE COMPLETION
