@@ -975,13 +975,20 @@ async function loadLeaderboard() {
     return;
   }
 
-  const { data, error } = await sb
-    .from('handles')
-    .select('handle, points')
-    .order('points', { ascending: false })
-    .limit(20);
+  // Aggregate points from completions directly — no trigger dependency
+  const { data: rows, error } = await sb
+    .from('completions')
+    .select('handle, points');
 
-  if (error || !data) return;
+  if (error || !rows) return;
+
+  const totals = {};
+  rows.forEach(r => { totals[r.handle] = (totals[r.handle] || 0) + Number(r.points); });
+
+  const data = Object.entries(totals)
+    .map(([h, pts]) => ({ handle: h, points: pts }))
+    .sort((a, b) => b.points - a.points)
+    .slice(0, 20);
 
   const userIdx  = data.findIndex(r => r.handle === handle);
   const top8     = data.slice(0, 8);
