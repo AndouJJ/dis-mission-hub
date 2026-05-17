@@ -459,6 +459,22 @@
   .cc-yes{background:var(--orange);color:var(--ink);border-color:var(--orange)}
   .cc-yes:hover{background:var(--orange-2);border-color:var(--orange-2)}
   .cc-no:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .cc-yes:disabled{opacity:0.35;cursor:not-allowed;pointer-events:none}
+
+  /* photo upload inside challenge confirm */
+  .challenge-confirm.needs-photo{flex-direction:column;align-items:flex-start}
+  .challenge-confirm.needs-photo .cc-actions{align-self:flex-end}
+  .photo-upload-row{display:flex;align-items:center;gap:10px;width:100%}
+  .photo-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+  .photo-btn{
+    font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;
+    padding:8px 14px;border:1px dashed var(--rule-2);color:var(--paper-3);cursor:pointer;
+    white-space:nowrap;transition:all 0.15s;display:inline-block;flex-shrink:0;
+  }
+  .photo-btn:hover{border-color:var(--orange);color:var(--orange)}
+  .photo-btn.ready{border-style:solid;border-color:var(--orange);color:var(--orange);background:rgba(255,115,0,0.06)}
+  .photo-preview{width:44px;height:44px;object-fit:cover;border:1px solid var(--rule);display:none;flex-shrink:0}
+  .photo-preview.show{display:block}
   .mission-foot{
     display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
     font-family:var(--mono);font-size:11px;letter-spacing:0.15em;color:var(--paper-3);
@@ -822,9 +838,14 @@
         <button class="challenge-check" aria-label="Mark complete">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
         </button>
-        <div class="challenge-confirm">
-          <span>Are you sure you have completed this challenge?</span>
-          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes">Confirm</button></div>
+        <div class="challenge-confirm needs-photo">
+          <span>Attach a photo to confirm this challenge.</span>
+          <label class="photo-upload-row">
+            <input type="file" accept="image/*" capture="environment" class="photo-input" />
+            <span class="photo-btn">+ Attach photo</span>
+            <img class="photo-preview" alt="preview" />
+          </label>
+          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
         </div>
       </li>
       <li class="challenge" data-cid="exp-2" data-pts="70">
@@ -836,9 +857,14 @@
         <button class="challenge-check" aria-label="Mark complete">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
         </button>
-        <div class="challenge-confirm">
-          <span>Are you sure you have completed this challenge?</span>
-          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes">Confirm</button></div>
+        <div class="challenge-confirm needs-photo">
+          <span>Attach a photo to confirm this challenge.</span>
+          <label class="photo-upload-row">
+            <input type="file" accept="image/*" capture="environment" class="photo-input" />
+            <span class="photo-btn">+ Attach photo</span>
+            <img class="photo-preview" alt="preview" />
+          </label>
+          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
         </div>
       </li>
       <li class="challenge" data-cid="exp-3" data-pts="80">
@@ -850,9 +876,14 @@
         <button class="challenge-check" aria-label="Mark complete">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
         </button>
-        <div class="challenge-confirm">
-          <span>Are you sure you have completed this challenge?</span>
-          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes">Confirm</button></div>
+        <div class="challenge-confirm needs-photo">
+          <span>Attach a photo to confirm this challenge.</span>
+          <label class="photo-upload-row">
+            <input type="file" accept="image/*" capture="environment" class="photo-input" />
+            <span class="photo-btn">+ Attach photo</span>
+            <img class="photo-preview" alt="preview" />
+          </label>
+          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
         </div>
       </li>
       <li class="challenge" data-cid="exp-4" data-pts="100">
@@ -864,9 +895,14 @@
         <button class="challenge-check" aria-label="Mark complete">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
         </button>
-        <div class="challenge-confirm">
-          <span>Are you sure you have completed this challenge?</span>
-          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes">Confirm</button></div>
+        <div class="challenge-confirm needs-photo">
+          <span>Attach a photo to confirm this challenge.</span>
+          <label class="photo-upload-row">
+            <input type="file" accept="image/*" capture="environment" class="photo-input" />
+            <span class="photo-btn">+ Attach photo</span>
+            <img class="photo-preview" alt="preview" />
+          </label>
+          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
         </div>
       </li>
     </ol>
@@ -897,7 +933,7 @@ const sb = (SUPABASE_URL && SUPABASE_ANON_KEY)
   : null;
 
 // ============================================================
-// CHALLENGE POINT VALUES
+// CHALLENGE POINT VALUES + PHOTO REQUIREMENTS
 // ============================================================
 const CHALLENGE_PTS = {
   'exp-1': 10,
@@ -905,6 +941,8 @@ const CHALLENGE_PTS = {
   'exp-3': 80,
   'exp-4': 100,
 };
+
+const PHOTO_CHALLENGES = new Set(['exp-1', 'exp-2', 'exp-3', 'exp-4']);
 
 // ============================================================
 // HELPERS
@@ -1247,6 +1285,51 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ============================================================
+// PHOTO UPLOAD HELPERS
+// ============================================================
+async function compressImage(file) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX = 1600;
+      let w = img.naturalWidth, h = img.naturalHeight;
+      if (Math.max(w, h) > MAX) {
+        if (w >= h) { h = Math.round(h * MAX / w); w = MAX; }
+        else        { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      canvas.toBlob(resolve, 'image/jpeg', 0.82);
+    };
+    img.src = url;
+  });
+}
+
+async function uploadPhoto(handle, cid, file) {
+  const blob = await compressImage(file);
+  const path = `${handle}/${cid}/${Date.now()}.jpg`;
+  const { error } = await sb.storage
+    .from('challenge-photos')
+    .upload(path, blob, { contentType: 'image/jpeg', upsert: false });
+  if (error) throw error;
+  return sb.storage.from('challenge-photos').getPublicUrl(path).data.publicUrl;
+}
+
+function resetPhotoState(ch) {
+  const input   = ch.querySelector('.photo-input');
+  const preview = ch.querySelector('.photo-preview');
+  const photBtn = ch.querySelector('.photo-btn');
+  const yesBtn  = ch.querySelector('.cc-yes');
+  if (input)   input.value = '';
+  if (preview) { preview.src = ''; preview.classList.remove('show'); }
+  if (photBtn) photBtn.classList.remove('ready');
+  if (yesBtn && PHOTO_CHALLENGES.has(ch.dataset.cid)) yesBtn.disabled = true;
+}
+
+// ============================================================
 // CHALLENGE COMPLETION
 // ============================================================
 document.querySelectorAll('.challenge-check').forEach(btn => {
@@ -1255,7 +1338,7 @@ document.querySelectorAll('.challenge-check').forEach(btn => {
     const ch = btn.closest('.challenge');
     if (ch.classList.contains('complete')) return;
     document.querySelectorAll('.challenge.confirming').forEach(o => {
-      if (o !== ch) o.classList.remove('confirming');
+      if (o !== ch) { o.classList.remove('confirming'); resetPhotoState(o); }
     });
     ch.classList.toggle('confirming');
   });
@@ -1270,12 +1353,33 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
     const handle = getHandle();
     if (!handle) return;
 
+    let photoUrl = null;
+
+    if (sb && PHOTO_CHALLENGES.has(cid)) {
+      const input = ch.querySelector('.photo-input');
+      const file  = input && input.files[0];
+      if (!file) return;
+
+      const orig = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Uploading…';
+      try {
+        photoUrl = await uploadPhoto(handle, cid, file);
+      } catch (err) {
+        console.warn('Photo upload failed:', err.message);
+        btn.textContent = orig;
+        btn.disabled = false;
+        return;
+      }
+    }
+
     ch.classList.remove('confirming');
+    resetPhotoState(ch);
 
     if (sb) {
       const { error } = await sb
         .from('completions')
-        .insert({ handle, challenge_id: cid, points: pts });
+        .insert({ handle, challenge_id: cid, points: pts, photo_url: photoUrl });
       if (error && error.code !== '23505') {
         console.warn('Completion error (saving locally):', error.message);
       }
@@ -1293,7 +1397,29 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
 document.querySelectorAll('.cc-no').forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
-    btn.closest('.challenge').classList.remove('confirming');
+    const ch = btn.closest('.challenge');
+    ch.classList.remove('confirming');
+    resetPhotoState(ch);
+  });
+});
+
+document.querySelectorAll('.photo-input').forEach(input => {
+  input.addEventListener('change', () => {
+    const ch      = input.closest('.challenge');
+    const file    = input.files[0];
+    const preview = ch.querySelector('.photo-preview');
+    const photBtn = ch.querySelector('.photo-btn');
+    const yesBtn  = ch.querySelector('.cc-yes');
+    if (file) {
+      const url = URL.createObjectURL(file);
+      if (preview) { preview.src = url; preview.classList.add('show'); }
+      if (photBtn) photBtn.classList.add('ready');
+      if (yesBtn)  yesBtn.disabled = false;
+    } else {
+      if (preview) { preview.src = ''; preview.classList.remove('show'); }
+      if (photBtn) photBtn.classList.remove('ready');
+      if (yesBtn)  yesBtn.disabled = true;
+    }
   });
 });
 

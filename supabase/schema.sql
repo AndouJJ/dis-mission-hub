@@ -66,3 +66,20 @@ CREATE POLICY "completions_insert" ON completions FOR INSERT WITH CHECK (true);
 
 ALTER PUBLICATION supabase_realtime ADD TABLE handles;
 ALTER PUBLICATION supabase_realtime ADD TABLE completions;
+
+-- ============================================================
+-- 5. PHOTO UPLOADS
+-- Step 1: Create the storage bucket manually in Supabase Dashboard
+--   Storage → New bucket → Name: challenge-photos → Public: ON
+-- Step 2: Run the statements below in the SQL Editor
+-- ============================================================
+
+ALTER TABLE completions ADD COLUMN IF NOT EXISTS photo_url TEXT;
+
+CREATE POLICY "challenge_photos_insert" ON storage.objects
+  FOR INSERT TO anon
+  WITH CHECK (bucket_id = 'challenge-photos');
+
+CREATE POLICY "challenge_photos_select" ON storage.objects
+  FOR SELECT TO anon
+  USING (bucket_id = 'challenge-photos');
