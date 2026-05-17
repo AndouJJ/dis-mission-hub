@@ -1,0 +1,1313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DIS Mission Hub — Year IV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<!-- Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  :root{
+    --ink:#0c0a08;
+    --ink-2:#15120e;
+    --ink-3:#1f1a13;
+    --paper:#f4ede0;
+    --paper-2:#d4cdbe;
+    --paper-3:#8a8576;
+    --rule:#2a2520;
+    --rule-2:#3a3329;
+    --orange:#FF7300;
+    --orange-2:#ff8a2e;
+    --orange-soft:rgba(255,115,0,0.10);
+    --muted:#6e6a60;
+    --good:#7fc28d;
+    --serif:"Instrument Serif", "Times New Roman", serif;
+    --sans:"Inter", system-ui, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, monospace;
+    --maxw:1200px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--ink);color:var(--paper);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  body{overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit}
+  ::selection{background:var(--orange);color:var(--ink)}
+
+  /* ---------- shared chrome ---------- */
+  .mono{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--paper-3)}
+  .mono b{color:var(--paper);font-weight:500}
+  .mono .o{color:var(--orange)}
+
+  .container{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+  .rule{height:1px;background:var(--rule);border:none;margin:0}
+
+  /* ---------- landing ---------- */
+  .landing{
+    position:fixed;inset:0;z-index:200;background:var(--ink);
+    display:flex;flex-direction:column;
+    transition:opacity 0.5s ease, visibility 0.5s;
+    overflow-y:auto;
+  }
+  .landing.hide{opacity:0;visibility:hidden;pointer-events:none}
+  body.entered .landing{display:none}
+
+  .landing-top{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:24px 32px;border-bottom:1px solid var(--rule);
+    font-family:var(--mono);font-size:11px;letter-spacing:0.18em;color:var(--paper-3);text-transform:uppercase;
+  }
+  .landing-top b{color:var(--paper);font-weight:500}
+  .landing-top .o{color:var(--orange)}
+
+  .landing-body{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:48px 24px;gap:32px;
+  }
+  .landing-logo{height:64px;width:auto;animation:fadeUp 0.8s ease both}
+  .landing-title{
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(72px, 11vw, 156px);line-height:0.9;letter-spacing:-0.025em;margin:0;
+    animation:fadeUp 0.8s 0.1s ease both;
+  }
+  .landing-title em{font-style:italic;color:var(--orange)}
+  .landing-sub{
+    font-family:var(--mono);font-size:12px;letter-spacing:0.4em;color:var(--paper-2);text-transform:uppercase;
+    animation:fadeUp 0.8s 0.2s ease both;
+  }
+
+  .countdown{
+    display:flex;gap:24px;justify-content:center;animation:fadeUp 0.8s 0.3s ease both;
+    margin-top:8px;
+  }
+  .countdown-cell{display:flex;flex-direction:column;align-items:center;gap:4px}
+  .countdown-num{
+    font-family:var(--serif);font-size:clamp(40px, 6vw, 56px);line-height:1;
+    color:var(--paper);font-variant-numeric:tabular-nums;
+  }
+  .countdown-cell.accent .countdown-num{color:var(--orange)}
+  .countdown-label{font-family:var(--mono);font-size:10px;letter-spacing:0.25em;color:var(--paper-3);text-transform:uppercase}
+  .countdown-sep{
+    font-family:var(--serif);font-size:clamp(36px, 5vw, 48px);color:var(--rule-2);line-height:1.2;align-self:center;
+  }
+
+  /* handle form */
+  .handle-form{
+    display:flex;flex-direction:column;gap:10px;width:min(440px, 100%);
+    animation:fadeUp 0.8s 0.4s ease both;
+  }
+  .handle-label{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
+    color:var(--paper-2);text-align:left;
+  }
+  .handle-row{
+    display:flex;align-items:stretch;border:1px solid var(--rule-2);background:var(--ink-2);
+    transition:border-color 0.2s, background 0.2s;
+  }
+  .handle-row:focus-within{border-color:var(--orange);background:var(--ink-3)}
+  .handle-prefix{
+    display:grid;place-items:center;padding:0 14px;
+    font-family:var(--mono);font-size:18px;color:var(--orange);
+    border-right:1px solid var(--rule-2);
+  }
+  .handle-input{
+    flex:1;min-width:0;background:transparent;border:none;outline:none;
+    color:var(--paper);font-family:var(--mono);font-size:15px;letter-spacing:0.04em;
+    padding:14px;
+  }
+  .handle-input::placeholder{color:var(--paper-3);letter-spacing:0.15em;text-transform:uppercase}
+  .handle-submit{
+    border:none;background:var(--orange);color:var(--ink);cursor:pointer;
+    font-family:var(--mono);font-size:11px;letter-spacing:0.2em;font-weight:700;
+    padding:0 22px;display:flex;align-items:center;gap:8px;text-transform:uppercase;
+    transition:background 0.15s;white-space:nowrap;
+  }
+  .handle-submit:hover{background:var(--orange-2)}
+  .handle-submit .arrow{transition:transform 0.15s}
+  .handle-submit:hover .arrow{transform:translateX(3px)}
+  .handle-submit:disabled{opacity:0.6;cursor:not-allowed}
+  .handle-foot{
+    font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--paper-3);
+    text-transform:uppercase;text-align:left;
+  }
+  .handle-error{
+    font-family:var(--mono);font-size:10px;letter-spacing:0.15em;color:#ff6b6b;
+    text-transform:uppercase;text-align:left;min-height:14px;
+  }
+  .handle-row.shake{animation:shake 0.35s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+  .landing-bottom{
+    padding:20px 32px;border-top:1px solid var(--rule);
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--paper-3);text-transform:uppercase;
+  }
+  .landing-bottom kbd{
+    border:1px solid var(--rule-2);padding:2px 6px;background:var(--ink-2);color:var(--paper-2);
+    font-family:inherit;margin:0 2px;
+  }
+
+  /* ---------- welcome modal ---------- */
+  .welcome-modal{
+    position:fixed;inset:0;z-index:300;background:rgba(12,10,8,0.86);backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;padding:24px;
+    opacity:0;visibility:hidden;transition:opacity 0.3s, visibility 0.3s;
+  }
+  .welcome-modal.show{opacity:1;visibility:visible}
+  .welcome-card{
+    background:var(--ink-2);border:1px solid var(--rule-2);
+    width:min(460px,100%);padding:36px 32px 28px;position:relative;
+    transform:translateY(16px);transition:transform 0.4s ease;
+    max-height:90vh;overflow-y:auto;
+  }
+  .welcome-modal.show .welcome-card{transform:translateY(0)}
+  .welcome-meta{
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:10px;letter-spacing:0.18em;color:var(--paper-3);
+    text-transform:uppercase;margin-bottom:24px;
+  }
+  .welcome-meta b{color:var(--orange)}
+  .welcome-title{
+    font-family:var(--serif);font-weight:400;font-size:clamp(36px,5vw,48px);
+    line-height:0.98;letter-spacing:-0.015em;margin:0 0 12px;color:var(--paper);
+  }
+  .welcome-title em{font-style:italic;color:var(--orange)}
+  .welcome-handle{
+    font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:0.04em;color:var(--paper);
+    margin-bottom:20px;word-break:break-all;
+  }
+  .welcome-body{
+    font-family:var(--serif);font-size:18px;font-style:italic;line-height:1.4;color:var(--paper-2);
+    margin:0 0 24px;
+  }
+  .welcome-grid{
+    border-top:1px dashed var(--rule-2);border-bottom:1px dashed var(--rule-2);
+    padding:4px 0;margin-bottom:24px;font-family:var(--mono);font-size:11px;letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+  .welcome-grid .r{
+    display:flex;justify-content:space-between;padding:10px 0;border-top:1px dashed var(--rule-2);
+    color:var(--paper-3);
+  }
+  .welcome-grid .r:first-child{border-top:none}
+  .welcome-grid .r b{color:var(--paper);font-weight:500}
+  .welcome-grid #welcome-handle-2{text-transform:none;letter-spacing:0.03em}
+  .welcome-cta{
+    width:100%;background:var(--orange);color:var(--ink);border:none;cursor:pointer;
+    font-family:var(--mono);font-size:12px;letter-spacing:0.2em;text-transform:uppercase;font-weight:700;
+    padding:16px;display:flex;align-items:center;justify-content:center;gap:10px;
+    transition:background 0.15s;
+  }
+  .welcome-cta:hover{background:var(--orange-2)}
+  .welcome-cta .arrow{transition:transform 0.15s}
+  .welcome-cta:hover .arrow{transform:translateX(4px)}
+
+  /* ---------- topbar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:50;background:rgba(12,10,8,0.85);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--rule);
+  }
+  .topbar-inner{
+    max-width:var(--maxw);margin:0 auto;padding:14px 32px;
+    display:flex;align-items:center;gap:24px;
+  }
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand-logo{height:24px;width:auto;display:block}
+  .brand-divider{width:1px;height:14px;background:var(--rule-2)}
+  .brand-name{font-family:var(--mono);font-size:11px;letter-spacing:0.2em;color:var(--paper);font-weight:600;text-transform:uppercase}
+  .topbar-spacer{flex:1}
+  .topbar-action{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.15em;color:var(--paper-2);
+    background:transparent;border:1px solid var(--rule-2);padding:7px 12px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;text-transform:uppercase;
+    transition:all 0.15s;
+  }
+  .topbar-action:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .topbar-action.on{background:var(--orange);color:var(--ink);border-color:var(--orange)}
+
+  /* ---------- hero (anniversary) ---------- */
+  .hero{padding:96px 0 64px;position:relative;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;top:-200px;right:-200px;width:600px;height:600px;
+    background:radial-gradient(circle, var(--orange-soft) 0%, transparent 60%);
+    pointer-events:none;
+  }
+  .hero-inner{position:relative}
+  .hero-eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:0.3em;color:var(--orange);
+    text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;gap:12px;
+  }
+  .hero-eyebrow::before{content:"";width:32px;height:1px;background:var(--orange)}
+  .hero h1{
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(64px, 10vw, 144px);line-height:0.92;letter-spacing:-0.025em;
+    margin:0 0 32px;color:var(--paper);max-width:14ch;
+  }
+  .hero h1 em{font-style:italic;color:var(--orange)}
+  .hero-lede{
+    font-family:var(--serif);font-style:italic;font-size:22px;line-height:1.4;
+    color:var(--paper-2);max-width:560px;margin:0;
+  }
+
+  .hero-countdown{
+    margin-top:56px;padding:32px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+    display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center;
+  }
+  .hero-countdown-label{font-family:var(--mono);font-size:14px;letter-spacing:0.2em;color:var(--paper);text-transform:uppercase}
+  .hero-countdown-label b{color:var(--orange);font-weight:600;display:block;font-size:16px;letter-spacing:0.12em;margin-top:8px}
+  .hero-countdown-cells{display:flex;gap:20px;align-items:flex-end}
+  .hero-countdown-cells .countdown-cell .countdown-num{font-size:clamp(48px, 7vw, 72px)}
+
+  /* ---------- profile strip ---------- */
+  .profile{
+    border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+    background:var(--ink-2);
+  }
+  .profile-inner{
+    max-width:var(--maxw);margin:0 auto;padding:24px 32px;
+    display:grid;grid-template-columns:auto auto auto 1fr auto;gap:32px;align-items:center;
+  }
+  .profile-cell .k{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--paper-3);text-transform:uppercase;margin-bottom:6px}
+  .profile-cell .v{font-family:var(--serif);font-size:24px;line-height:1;color:var(--paper)}
+  .profile-cell .v.handle{font-family:var(--mono);font-weight:600;letter-spacing:0.03em;font-size:18px}
+  .profile-cell .v.pts{color:var(--orange);font-variant-numeric:tabular-nums}
+  .profile-cell .v.pts small{font-family:var(--mono);font-size:11px;color:var(--paper-3);letter-spacing:0.1em;margin-left:6px;text-transform:uppercase}
+  .profile-divider{width:1px;height:36px;background:var(--rule-2)}
+
+  /* ---------- section ---------- */
+  section.block{padding:96px 0}
+  .block-head{
+    display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;margin-bottom:40px;
+  }
+  .block-head h2{
+    font-family:var(--serif);font-weight:400;font-size:clamp(40px, 6vw, 72px);
+    line-height:1;letter-spacing:-0.02em;margin:0;color:var(--paper);
+  }
+  .block-head h2 em{font-style:italic;color:var(--orange)}
+  .block-head .meta{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;color:var(--paper-3);text-transform:uppercase;text-align:right}
+  .block-head .meta b{color:var(--paper);font-weight:500;display:block;margin-top:4px;font-size:13px;letter-spacing:0.1em}
+
+  /* ---------- missions grid ---------- */
+  .missions-grid{
+    display:grid;grid-template-columns:repeat(3, 1fr);gap:16px;
+  }
+  .mission-card{
+    background:var(--ink-2);border:1px solid var(--rule);
+    padding:28px;display:flex;flex-direction:column;gap:20px;
+    cursor:pointer;transition:border-color 0.2s, background 0.2s, transform 0.2s;
+    position:relative;min-height:280px;
+  }
+  .mission-card:hover{border-color:var(--orange);background:var(--ink-3)}
+  .mission-card.locked{opacity:0.65;cursor:not-allowed}
+  .mission-card.locked:hover{border-color:var(--rule);background:var(--ink-2);transform:none}
+  .mission-card.featured{
+    grid-column:span 2;background:linear-gradient(135deg, var(--ink-3), var(--ink-2));
+    border-color:var(--rule-2);
+  }
+  .mission-card.featured:hover{border-color:var(--orange)}
+
+  .mc-head{display:flex;justify-content:space-between;align-items:center}
+  .mc-id{font-family:var(--mono);font-size:11px;letter-spacing:0.2em;color:var(--paper-3);text-transform:uppercase}
+  .mc-status{
+    font-family:var(--mono);font-size:10px;letter-spacing:0.2em;font-weight:600;
+    padding:4px 8px;border:1px solid currentColor;text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .mc-status.open{color:var(--orange)}
+  .mc-status.open::before{content:"";width:6px;height:6px;background:var(--orange);border-radius:50%}
+  .mc-status.cleared{color:var(--good)}
+  .mc-status.cleared::before{content:"\2713";font-size:11px}
+  .mc-status.locked{color:var(--paper-3)}
+  .mc-status.locked::before{content:"\25a0";font-size:9px}
+
+  .mc-title{font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.02;letter-spacing:-0.01em;margin:0;color:var(--paper)}
+  .mc-title em{font-style:italic;color:var(--orange)}
+  .mission-card.featured .mc-title{font-size:44px}
+  .mc-desc{font-size:14px;line-height:1.55;color:var(--paper-2);margin:0}
+
+  .mc-foot{
+    margin-top:auto;display:flex;justify-content:space-between;align-items:center;
+    padding-top:20px;border-top:1px solid var(--rule);
+    font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--paper-3);
+  }
+  .mc-pts{color:var(--orange);font-weight:600}
+  .mc-pts b{font-family:var(--serif);font-size:20px;letter-spacing:0;font-weight:400;margin-right:2px}
+  .mc-tier{display:flex;gap:3px}
+  .mc-tier span{width:12px;height:4px;background:var(--rule-2)}
+  .mc-tier span.on{background:var(--orange)}
+
+  /* ---------- leaderboard ---------- */
+  .ldr{border:1px solid var(--rule);background:var(--ink-2)}
+  .ldr-row{
+    display:grid;grid-template-columns:48px 1fr 140px 100px;gap:20px;
+    padding:16px 28px;border-top:1px solid var(--rule);align-items:center;
+    transition:background 0.15s;
+  }
+  .ldr-row:first-child{border-top:none}
+  .ldr-row:hover{background:var(--ink-3)}
+  .ldr-row.you{background:rgba(255,115,0,0.06);border-left:2px solid var(--orange);padding-left:26px}
+  .ldr-row.you:hover{background:rgba(255,115,0,0.10)}
+  .ldr-rank{font-family:var(--serif);font-size:24px;color:var(--paper-3);font-style:italic;text-align:center}
+  .ldr-row:nth-child(1) .ldr-rank, .ldr-row.top .ldr-rank{color:var(--orange);font-style:normal;font-family:var(--mono);font-weight:600;font-size:18px}
+  .ldr-name{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--paper);letter-spacing:0.03em}
+  .ldr-name .badge{
+    font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:0.15em;
+    padding:2px 6px;border:1px solid var(--rule-2);color:var(--paper-3);
+    margin-left:10px;text-transform:uppercase;
+  }
+  .ldr-name .badge.you{color:var(--orange);border-color:var(--orange)}
+  .ldr-clear{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;color:var(--paper-3);text-transform:uppercase}
+  .ldr-pts{font-family:var(--mono);font-size:14px;color:var(--orange);text-align:right;font-variant-numeric:tabular-nums;font-weight:600;letter-spacing:0.04em}
+
+  /* ---------- footer ---------- */
+  footer{
+    border-top:1px solid var(--rule);background:var(--ink);padding:32px 0;margin-top:64px;
+  }
+  .foot-inner{
+    max-width:var(--maxw);margin:0 auto;padding:0 32px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
+    font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--paper-3);text-transform:uppercase;
+  }
+  .foot-inner .o{color:var(--orange)}
+
+  /* ---------- mission detail modal ---------- */
+  .mission-modal{
+    position:fixed;inset:0;z-index:300;background:rgba(12,10,8,0.86);backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;padding:24px;
+    opacity:0;visibility:hidden;transition:opacity 0.3s, visibility 0.3s;
+  }
+  .mission-modal.show{opacity:1;visibility:visible}
+  .mission-card-detail{
+    background:var(--ink-2);border:1px solid var(--rule-2);
+    width:min(560px, 100%);padding:36px 36px 28px;position:relative;
+    transform:translateY(16px);transition:transform 0.4s ease;
+    max-height:90vh;overflow-y:auto;
+  }
+  .mission-modal.show .mission-card-detail{transform:translateY(0)}
+  .mission-close{
+    position:absolute;top:18px;right:18px;background:transparent;border:1px solid var(--rule-2);
+    color:var(--paper-2);width:30px;height:30px;cursor:pointer;font-size:14px;
+    display:grid;place-items:center;transition:all 0.15s;
+  }
+  .mission-close:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .mission-meta{
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--paper-3);
+    text-transform:uppercase;margin-bottom:20px;padding-right:48px;
+  }
+  .mission-meta .o{color:var(--orange);font-weight:600}
+  .mission-h{
+    font-family:var(--serif);font-weight:400;font-size:clamp(36px,5vw,48px);
+    line-height:1;letter-spacing:-0.015em;margin:0 0 12px;color:var(--paper);
+  }
+  .mission-h em{font-style:italic;color:var(--orange)}
+  .mission-sub{
+    font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.45;
+    color:var(--paper-2);margin:0 0 24px;
+  }
+  .challenge-list{
+    list-style:none;padding:0;margin:0 0 24px;border-top:1px solid var(--rule);
+  }
+  .challenge{
+    display:grid;grid-template-columns:auto 1fr auto;column-gap:18px;row-gap:0;
+    align-items:flex-start;padding:18px 0;
+    border-bottom:1px solid var(--rule);transition:opacity 0.2s;
+  }
+  .challenge-no{
+    font-family:var(--mono);font-size:12px;letter-spacing:0.15em;color:var(--orange);
+    font-weight:600;padding-top:6px;flex-shrink:0;
+  }
+  .challenge-body{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;min-width:0}
+  .challenge-body h4{
+    font-family:var(--sans);font-size:15px;font-weight:500;line-height:1.45;
+    color:var(--paper);margin:0;letter-spacing:-0.005em;transition:color 0.2s;
+  }
+  .challenge-pts{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.12em;color:var(--paper-3);
+    text-transform:uppercase;white-space:nowrap;padding-top:2px;transition:color 0.2s;
+  }
+  .challenge-check{
+    width:34px;height:34px;background:transparent;border:1px solid var(--rule-2);cursor:pointer;
+    color:var(--paper-3);display:grid;place-items:center;flex-shrink:0;padding:0;
+    transition:all 0.15s;
+  }
+  .challenge-check:hover{border-color:var(--orange);color:var(--orange)}
+  .challenge-check svg{width:14px;height:14px;display:block}
+  .challenge.complete .challenge-check{
+    background:var(--orange);border-color:var(--orange);color:var(--ink);cursor:default;
+  }
+  .challenge.complete .challenge-body h4{color:var(--paper-3)}
+  .challenge.complete .challenge-pts{color:var(--orange)}
+
+  .challenge-confirm{
+    display:none;grid-column:1/-1;margin-top:14px;padding-top:14px;
+    border-top:1px dashed var(--rule);justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--paper-2);
+  }
+  .challenge.confirming .challenge-confirm{display:flex}
+  .challenge.confirming{background:rgba(255,115,0,0.04)}
+  .challenge.confirming .challenge-check{border-color:var(--orange);color:var(--orange)}
+  .cc-actions{display:flex;gap:8px}
+  .cc-yes,.cc-no{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
+    padding:8px 14px;border:1px solid var(--rule-2);cursor:pointer;background:transparent;
+    color:var(--paper);font-weight:600;transition:all 0.15s;
+  }
+  .cc-yes{background:var(--orange);color:var(--ink);border-color:var(--orange)}
+  .cc-yes:hover{background:var(--orange-2);border-color:var(--orange-2)}
+  .cc-no:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .mission-foot{
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11px;letter-spacing:0.15em;color:var(--paper-3);
+    text-transform:uppercase;
+  }
+  .mission-foot b{color:var(--paper);font-weight:600}
+  .mission-foot .o{color:var(--orange)}
+  .mission-card.has-detail{cursor:pointer;opacity:1}
+  .mission-card.has-detail:hover{border-color:var(--orange);background:var(--ink-3);transform:none}
+
+  @media (max-width:680px){
+    .mission-modal{padding:16px}
+    .mission-card-detail{padding:28px 22px 22px}
+    .mission-h{font-size:32px}
+    .mission-sub{font-size:16px}
+    .challenge{grid-template-columns:auto 1fr auto;column-gap:12px}
+    .challenge-body{flex-direction:column;gap:6px}
+    .challenge-pts{padding-top:0}
+    .challenge-check{width:30px;height:30px}
+    .challenge-confirm{font-size:10px;flex-direction:column;align-items:stretch;text-align:left}
+    .cc-actions{justify-content:flex-end}
+  }
+
+  /* ---------- color-blind safe palette ---------- */
+  body.cb-safe{
+    --orange:#2A84FF;
+    --orange-2:#5aa0ff;
+    --orange-soft:rgba(42,132,255,0.12);
+  }
+  body.cb-safe ::selection{background:var(--orange);color:#fff}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:960px){
+    .container{padding:0 24px}
+    .missions-grid{grid-template-columns:repeat(2, 1fr)}
+    .mission-card.featured{grid-column:span 2}
+    .profile-inner{grid-template-columns:1fr 1fr;gap:20px;padding:20px 24px}
+    .profile-divider{display:none}
+    .hero-countdown{grid-template-columns:1fr;gap:20px}
+  }
+  @media (max-width:680px){
+    .container{padding:0 20px}
+    .topbar-inner{padding:12px 20px;gap:12px}
+    .brand-name{font-size:10px;letter-spacing:0.15em}
+    .brand-logo{height:20px}
+    .brand-divider{display:none}
+    .topbar-action{font-size:10px;padding:6px 10px;letter-spacing:0.1em}
+    .topbar-action .label-long{display:none}
+
+    .landing-top{padding:18px 20px;flex-direction:column;gap:6px;text-align:center;font-size:10px}
+    .landing-body{padding:32px 20px;gap:24px}
+    .landing-logo{height:48px}
+    .countdown{gap:14px}
+    .countdown-num{font-size:36px}
+    .countdown-sep{font-size:28px}
+    .countdown-label{font-size:9px;letter-spacing:0.2em}
+    .handle-form{width:100%}
+    .handle-row{flex-wrap:wrap}
+    .handle-input{flex:1 1 60%;font-size:14px;padding:12px}
+    .handle-submit{flex:1 1 100%;padding:14px;justify-content:center;border-top:1px solid var(--rule-2)}
+    .landing-bottom{padding:14px 20px;flex-direction:column;gap:6px;font-size:9px;text-align:center}
+
+    .welcome-modal{padding:16px}
+    .welcome-card{padding:28px 22px 22px}
+    .welcome-title{font-size:32px}
+    .welcome-handle{font-size:16px}
+    .welcome-body{font-size:16px}
+
+    .hero{padding:56px 0 40px}
+    .hero h1{font-size:clamp(48px, 13vw, 80px);margin-bottom:24px}
+    .hero-lede{font-size:18px}
+    .hero-eyebrow{font-size:11px;letter-spacing:0.2em}
+    .hero-countdown{margin-top:36px;padding:24px 0}
+    .hero-countdown-cells{gap:14px}
+
+    .profile-inner{grid-template-columns:1fr;gap:14px;padding:20px}
+    .profile-cell .v{font-size:20px}
+
+    section.block{padding:64px 0}
+    .block-head{grid-template-columns:1fr;gap:12px;margin-bottom:28px}
+    .block-head h2{font-size:clamp(36px, 9vw, 56px)}
+    .block-head .meta{text-align:left}
+
+    .missions-grid{grid-template-columns:1fr;gap:12px}
+    .mission-card.featured{grid-column:auto}
+    .mission-card{padding:22px;min-height:auto}
+    .mc-title{font-size:28px}
+    .mission-card.featured .mc-title{font-size:32px}
+
+    .ldr-row{grid-template-columns:36px 1fr 70px;gap:12px;padding:14px 18px}
+    .ldr-row.you{padding-left:16px}
+    .ldr-clear{display:none}
+    .ldr-rank{font-size:20px}
+    .ldr-name{font-size:14px}
+    .ldr-name .badge{display:none}
+    .ldr-pts{font-size:13px}
+
+    footer{padding:24px 0;margin-top:48px}
+    .foot-inner{padding:0 20px;flex-direction:column;text-align:center;font-size:9px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LANDING ============ -->
+<div class="landing" id="landing">
+  <div class="landing-top">
+    <span>FILE NO. <b>DIS-004</b></span>
+    <span><span class="o">YEAR IV</span> · OCT 28 2026</span>
+  </div>
+
+  <div class="landing-body">
+    <img src="assets/dis-logo.png" alt="DIS — Guardians of the New Frontier" class="landing-logo" />
+    <h1 class="landing-title">Mission<br/><em>Hub.</em></h1>
+    <div class="landing-sub">Decode · Cohere · Prevail</div>
+
+    <div class="countdown" id="cd-landing">
+      <div class="countdown-cell accent"><div class="countdown-num" data-cd="d">—</div><div class="countdown-label">Days</div></div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-cell"><div class="countdown-num" data-cd="h">—</div><div class="countdown-label">Hours</div></div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-cell"><div class="countdown-num" data-cd="m">—</div><div class="countdown-label">Min</div></div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-cell"><div class="countdown-num" data-cd="s">—</div><div class="countdown-label">Sec</div></div>
+    </div>
+
+    <form class="handle-form" id="handle-form" autocomplete="off">
+      <label for="handle" class="handle-label">// Identify yourself, personnel</label>
+      <div class="handle-row">
+        <span class="handle-prefix">@</span>
+        <input id="handle" name="handle" type="text" class="handle-input" placeholder="DIGITAL HANDLE" maxlength="24" required />
+        <button type="submit" class="handle-submit" id="handle-submit-btn">
+          <span>SUBMIT</span>
+          <span class="arrow">→</span>
+        </button>
+      </div>
+      <div class="handle-foot">Case-sensitive · letters, numbers and _ . -</div>
+      <div class="handle-error" id="handle-error"></div>
+    </form>
+  </div>
+
+  <div class="landing-bottom">
+    <span>DIS · GUARDIANS OF THE NEW FRONTIER</span>
+    <span>PRESS <kbd>⏎</kbd> TO ENTER</span>
+  </div>
+</div>
+
+<!-- ============ WELCOME MODAL ============ -->
+<div class="welcome-modal" id="welcome-modal" aria-hidden="true">
+  <div class="welcome-card">
+    <div class="welcome-meta">
+      <span>FILE NO. <b>DIS-004</b></span>
+      <span>ACCESS <b id="welcome-time">06:00 GMT+8</b></span>
+    </div>
+    <h2 class="welcome-title">Welcome to the<br/><em>Mission Hub.</em></h2>
+    <div class="welcome-handle" id="welcome-handle">@operator</div>
+    <p class="welcome-body">Year IV begins. Your handle is logged. Missions await.</p>
+    <div class="welcome-grid">
+      <div class="r"><span>Digital Handle</span><b id="welcome-handle-2">@operator</b></div>
+      <div class="r"><span>Clearance</span><b>CAT1A</b></div>
+      <div class="r"><span>Anniversary</span><b>OCT 28</b></div>
+    </div>
+    <button class="welcome-cta" id="welcome-cta">Enter the hub <span class="arrow">→</span></button>
+  </div>
+</div>
+
+<!-- ============ TOPBAR ============ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <img src="assets/dis-logo.png" alt="DIS" class="brand-logo" />
+      <span class="brand-divider"></span>
+      <span class="brand-name">Mission Hub</span>
+    </div>
+    <div class="topbar-spacer"></div>
+    <button class="topbar-action" id="a11y-btn" title="Toggle color-blind safe palette" aria-pressed="false">
+      <span>CB</span>
+      <span class="label-long">MODE</span>
+    </button>
+    <button class="topbar-action" id="back-btn" title="Return to landing">
+      <span>←</span>
+      <span class="label-long">EXIT</span>
+    </button>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-eyebrow">DIS 4th Anniversary</div>
+    <h1>Four years,<br/>one <em>frontier.</em></h1>
+    <p class="hero-lede">A hub for personnel — decode the ciphers, run the cohesion drills, earn your standing. Built for the lead-up to October 28.</p>
+
+    <div class="hero-countdown">
+      <div class="hero-countdown-label">
+        Countdown to DIS 4th Anniversary @ USS
+        <b>October 28, 2026 · 1800H GMT+8</b>
+      </div>
+      <div class="hero-countdown-cells" id="cd-hero">
+        <div class="countdown-cell accent"><div class="countdown-num" data-cd="d">—</div><div class="countdown-label">Days</div></div>
+        <div class="countdown-cell"><div class="countdown-num" data-cd="h">—</div><div class="countdown-label">Hr</div></div>
+        <div class="countdown-cell"><div class="countdown-num" data-cd="m">—</div><div class="countdown-label">Min</div></div>
+        <div class="countdown-cell"><div class="countdown-num" data-cd="s">—</div><div class="countdown-label">Sec</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROFILE ============ -->
+<section class="profile">
+  <div class="profile-inner">
+    <div class="profile-cell">
+      <div class="k">Digital Handle</div>
+      <div class="v handle" id="profile-handle">@operator</div>
+    </div>
+    <div class="profile-divider"></div>
+    <div class="profile-cell">
+      <div class="k">Clearance</div>
+      <div class="v" style="font-family:var(--mono);font-size:14px;letter-spacing:0.1em">CAT1A</div>
+    </div>
+    <div class="profile-divider"></div>
+    <div class="profile-cell">
+      <div class="k">Points</div>
+      <div class="v pts"><span id="profile-pts">0</span><small>PTS</small></div>
+    </div>
+    <div></div>
+    <div class="profile-cell">
+      <div class="k">Standing</div>
+      <div class="v" style="font-size:18px">Guardian</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MISSIONS ============ -->
+<section class="block">
+  <div class="container">
+    <div class="block-head">
+      <h2>Missions for <em>Year IV.</em></h2>
+      <div class="meta">06 missions queued<b id="missions-open">All unlock OCT 28 · YEAR IV</b></div>
+    </div>
+
+    <div class="missions-grid">
+      <article class="mission-card locked" data-mission="anniversary" data-pts="500" data-status="locked">
+        <div class="mc-head">
+          <span class="mc-id">M-001 · ANNIVERSARY CIPHER</span>
+          <span class="mc-status locked">Unlocks Oct 28</span>
+        </div>
+        <h3 class="mc-title">The <em>Four-Year</em> Decrypt.</h3>
+        <p class="mc-desc">A four-rotor cipher seeded with every milestone since founding. Drops at midnight on the anniversary. Top three submissions are stamped into the archive.</p>
+        <div class="mc-foot">
+          <span class="mc-pts"><b>500</b>PTS</span>
+          <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
+        </div>
+      </article>
+
+      <article class="mission-card locked has-detail" data-mission="expedition" data-pts="260" data-status="locked">
+        <div class="mc-head">
+          <span class="mc-id">M-002 · EXPEDITION</span>
+          <span class="mc-status locked">Unlocks Oct 28</span>
+        </div>
+        <h3 class="mc-title"><em>DIS</em> Expedition.</h3>
+        <p class="mc-desc">A field run at Universal Studios. Four challenges. Bring your unit, bring your nerve. Tap for the briefing.</p>
+        <div class="mc-foot">
+          <span class="mc-pts"><b>260</b>PTS</span>
+          <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></span>
+        </div>
+      </article>
+
+      <article class="mission-card locked" data-mission="quiz" data-pts="40" data-status="locked">
+        <div class="mc-head">
+          <span class="mc-id">M-003 · QUIZ</span>
+          <span class="mc-status locked">Unlocks Oct 28</span>
+        </div>
+        <h3 class="mc-title">Field Manual <em>I.</em></h3>
+        <p class="mc-desc">Twelve questions on cohesion fundamentals. Pass at 80% to advance to manual II.</p>
+        <div class="mc-foot">
+          <span class="mc-pts"><b>40</b>PTS</span>
+          <span class="mc-tier"><span class="on"></span><span></span><span></span><span></span><span></span></span>
+        </div>
+      </article>
+
+      <article class="mission-card locked" data-mission="cohesion" data-pts="120" data-status="locked">
+        <div class="mc-head">
+          <span class="mc-id">M-004 · COHESION</span>
+          <span class="mc-status locked">Unlocks Oct 28</span>
+        </div>
+        <h3 class="mc-title">Three watchers, <em>one</em> map.</h3>
+        <p class="mc-desc">Squad of four. Forty-five minutes. Conflicting briefings. Reach the rendezvous without naming the heading.</p>
+        <div class="mc-foot">
+          <span class="mc-pts"><b>120</b>PTS</span>
+          <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></span>
+        </div>
+      </article>
+
+      <article class="mission-card locked" data-mission="riddle" data-pts="80" data-status="locked">
+        <div class="mc-head">
+          <span class="mc-id">M-005 · RIDDLE</span>
+          <span class="mc-status locked">Unlocks Oct 28</span>
+        </div>
+        <h3 class="mc-title">A door, <em>two</em> lies.</h3>
+        <p class="mc-desc">One sentence. One correct heading. Partial credit for the reasoning trace alone.</p>
+        <div class="mc-foot">
+          <span class="mc-pts"><b>80</b>PTS</span>
+          <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></span>
+        </div>
+      </article>
+
+      <article class="mission-card locked" data-mission="observation" data-pts="100" data-status="locked">
+        <div class="mc-head">
+          <span class="mc-id">M-006 · OBSERVATION</span>
+          <span class="mc-status locked">Unlocks Oct 28</span>
+        </div>
+        <h3 class="mc-title">The slow photo.</h3>
+        <p class="mc-desc">Notice five things the rest of the squad missed. Submissions stay open until Sunday.</p>
+        <div class="mc-foot">
+          <span class="mc-pts"><b>100</b>PTS</span>
+          <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LEADERBOARD ============ -->
+<section class="block" style="padding-top:0">
+  <div class="container">
+    <div class="block-head">
+      <h2><em>Personnel</em> standings.</h2>
+    </div>
+
+    <div class="ldr" id="leaderboard">
+      <!-- Populated by JS (Supabase when configured, static placeholder otherwise) -->
+      <div class="ldr-row top"><div class="ldr-rank">01</div><div class="ldr-name">V1per <span class="badge">MERIDIAN</span></div><div class="ldr-clear">CAT1A</div><div class="ldr-pts">—</div></div>
+      <div class="ldr-row top"><div class="ldr-rank">02</div><div class="ldr-name">Kestrel.06 <span class="badge">OXBOW</span></div><div class="ldr-clear">CAT1A</div><div class="ldr-pts">—</div></div>
+      <div class="ldr-row top"><div class="ldr-rank">03</div><div class="ldr-name">PaleLantern <span class="badge">KESTREL</span></div><div class="ldr-clear">CAT1B</div><div class="ldr-pts">—</div></div>
+      <div class="ldr-row you" id="ldr-you"><div class="ldr-rank">—</div><div class="ldr-name" id="ldr-you-name">@operator <span class="badge you">YOU</span></div><div class="ldr-clear">CAT1A</div><div class="ldr-pts" id="ldr-you-pts">0</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MISSION DETAIL MODAL ============ -->
+<div class="mission-modal" id="mission-modal" aria-hidden="true">
+  <div class="mission-card-detail">
+    <button class="mission-close" id="mission-close" aria-label="Close">✕</button>
+    <div class="mission-meta">
+      <span>M-002 · EXPEDITION</span>
+      <span class="o">UNLOCKS OCT 28</span>
+    </div>
+    <h2 class="mission-h"><em>DIS</em> Expedition.</h2>
+    <p class="mission-sub">A field run at Universal Studios. Complete every challenge with your unit to clear the mission. Tap a challenge to log it on Oct 28.</p>
+    <ol class="challenge-list">
+      <li class="challenge" data-cid="exp-1" data-pts="10">
+        <span class="challenge-no">01</span>
+        <div class="challenge-body">
+          <h4>Take a photo together with your unit with the USS globe in the background.</h4>
+          <span class="challenge-pts">+10 PTS</span>
+        </div>
+        <button class="challenge-check" aria-label="Mark complete">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+        </button>
+        <div class="challenge-confirm">
+          <span>Are you sure you have completed this challenge?</span>
+          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes">Confirm</button></div>
+        </div>
+      </li>
+      <li class="challenge" data-cid="exp-2" data-pts="70">
+        <span class="challenge-no">02</span>
+        <div class="challenge-body">
+          <h4>Take a selfie while on the Transformer ride.</h4>
+          <span class="challenge-pts">+70 PTS</span>
+        </div>
+        <button class="challenge-check" aria-label="Mark complete">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+        </button>
+        <div class="challenge-confirm">
+          <span>Are you sure you have completed this challenge?</span>
+          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes">Confirm</button></div>
+        </div>
+      </li>
+      <li class="challenge" data-cid="exp-3" data-pts="80">
+        <span class="challenge-no">03</span>
+        <div class="challenge-body">
+          <h4>Take a photo together with your unit with a scare actor.</h4>
+          <span class="challenge-pts">+80 PTS</span>
+        </div>
+        <button class="challenge-check" aria-label="Mark complete">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+        </button>
+        <div class="challenge-confirm">
+          <span>Are you sure you have completed this challenge?</span>
+          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes">Confirm</button></div>
+        </div>
+      </li>
+      <li class="challenge" data-cid="exp-4" data-pts="100">
+        <span class="challenge-no">04</span>
+        <div class="challenge-body">
+          <h4>Scare a scare actor.</h4>
+          <span class="challenge-pts">+100 PTS</span>
+        </div>
+        <button class="challenge-check" aria-label="Mark complete">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+        </button>
+        <div class="challenge-confirm">
+          <span>Are you sure you have completed this challenge?</span>
+          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes">Confirm</button></div>
+        </div>
+      </li>
+    </ol>
+    <div class="mission-foot">
+      <span>Total · <b class="o">260 PTS</b></span>
+      <span>Submissions open OCT 28, 1800H GMT+8</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="foot-inner">
+    <span>DIS · MISSION HUB · <span class="o">YEAR IV</span></span>
+    <span>FILE DIS-004 · OCT 28 2026</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// SUPABASE CONFIG
+// 1. Create a project at https://app.supabase.com
+// 2. Run supabase/schema.sql in the SQL Editor
+// 3. Paste your project URL and anon key below
+// ============================================================
+const SUPABASE_URL      = '';  // e.g. 'https://xxxx.supabase.co'
+const SUPABASE_ANON_KEY = '';  // e.g. 'eyJhbGci...'
+
+const sb = (SUPABASE_URL && SUPABASE_ANON_KEY)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+// ============================================================
+// CHALLENGE POINT VALUES (add new challenge IDs here too)
+// ============================================================
+const CHALLENGE_PTS = {
+  'exp-1': 10,
+  'exp-2': 70,
+  'exp-3': 80,
+  'exp-4': 100,
+};
+
+// ============================================================
+// HELPERS
+// ============================================================
+function sanitizeHandle(raw) {
+  return (raw || '').trim().replace(/^@+/, '').replace(/\s+/g, '_')
+    .replace(/[^A-Za-z0-9_\-\.]/g, '').slice(0, 24);
+}
+
+function getHandle() {
+  try { return localStorage.getItem('dis_handle') || ''; } catch(_) { return ''; }
+}
+
+function completionsKey(h) { return 'dis_completions_' + h; }
+
+function getLocalCompletions(h) {
+  if (!h) return [];
+  try { return JSON.parse(localStorage.getItem(completionsKey(h)) || '[]'); } catch(_) { return []; }
+}
+
+function saveLocalCompletions(h, list) {
+  try { localStorage.setItem(completionsKey(h), JSON.stringify(list)); } catch(_) {}
+}
+
+function pointsFromIds(ids) {
+  return ids.reduce((sum, cid) => sum + (CHALLENGE_PTS[cid] || 0), 0);
+}
+
+// ============================================================
+// UI UPDATERS
+// ============================================================
+function setHandleUI(h) {
+  const at = '@' + h;
+  document.getElementById('welcome-handle').textContent  = at;
+  document.getElementById('welcome-handle-2').textContent = at;
+  document.getElementById('profile-handle').textContent  = at;
+  const yn = document.getElementById('ldr-you-name');
+  if (yn) yn.innerHTML = at + ' <span class="badge you">YOU</span>';
+}
+
+function refreshPointsUI(pts) {
+  document.getElementById('profile-pts').textContent = pts.toLocaleString();
+  const yp = document.getElementById('ldr-you-pts');
+  if (yp) yp.textContent = pts.toLocaleString();
+}
+
+function renderChallengeStates(completedIds) {
+  const done = new Set(completedIds);
+  document.querySelectorAll('.challenge').forEach(ch => {
+    const cid = ch.dataset.cid;
+    ch.classList.remove('confirming');
+    ch.classList.toggle('complete', !!(cid && done.has(cid)));
+  });
+}
+
+// ============================================================
+// LEADERBOARD
+// ============================================================
+async function loadLeaderboard() {
+  const handle = getHandle();
+  const ldr = document.getElementById('leaderboard');
+  if (!ldr) return;
+
+  if (!sb) {
+    // No Supabase: just keep static placeholder, update the YOU row only
+    const yn = document.getElementById('ldr-you-name');
+    if (yn && handle) yn.innerHTML = '@' + handle + ' <span class="badge you">YOU</span>';
+    refreshPointsUI(pointsFromIds(getLocalCompletions(handle)));
+    return;
+  }
+
+  const { data, error } = await sb
+    .from('handles')
+    .select('handle, points')
+    .order('points', { ascending: false })
+    .limit(20);
+
+  if (error || !data) return;
+
+  const userIdx  = data.findIndex(r => r.handle === handle);
+  const top8     = data.slice(0, 8);
+  const inTop8   = userIdx >= 0 && userIdx < 8;
+
+  ldr.innerHTML = '';
+
+  top8.forEach((row, i) => {
+    const rank  = i + 1;
+    const isYou = row.handle === handle;
+    const div   = document.createElement('div');
+    div.className = 'ldr-row' + (rank <= 3 ? ' top' : '') + (isYou ? ' you' : '');
+    if (isYou) div.id = 'ldr-you';
+    div.innerHTML =
+      `<div class="ldr-rank">${String(rank).padStart(2, '0')}</div>` +
+      `<div class="ldr-name"${isYou ? ' id="ldr-you-name"' : ''}>${row.handle}` +
+        (isYou ? ' <span class="badge you">YOU</span>' : '') +
+      `</div>` +
+      `<div class="ldr-clear">CAT1A</div>` +
+      `<div class="ldr-pts"${isYou ? ' id="ldr-you-pts"' : ''}>${Number(row.points).toLocaleString()}</div>`;
+    ldr.appendChild(div);
+  });
+
+  // User below top 8
+  if (!inTop8 && handle) {
+    const sep = document.createElement('div');
+    sep.className = 'ldr-row';
+    sep.style.cssText = 'opacity:0.35;pointer-events:none';
+    sep.innerHTML = `<div class="ldr-rank" style="font-style:italic;color:var(--paper-3)">···</div><div class="ldr-name"></div><div class="ldr-clear"></div><div class="ldr-pts"></div>`;
+    ldr.appendChild(sep);
+
+    const youRow = document.createElement('div');
+    youRow.className = 'ldr-row you';
+    youRow.id = 'ldr-you';
+    const pts = userIdx >= 0 ? Number(data[userIdx].points) : 0;
+    const rankLabel = userIdx >= 0 ? String(userIdx + 1).padStart(2, '0') : '—';
+    youRow.innerHTML =
+      `<div class="ldr-rank">${rankLabel}</div>` +
+      `<div class="ldr-name" id="ldr-you-name">@${handle} <span class="badge you">YOU</span></div>` +
+      `<div class="ldr-clear">CAT1A</div>` +
+      `<div class="ldr-pts" id="ldr-you-pts">${pts.toLocaleString()}</div>`;
+    ldr.appendChild(youRow);
+  }
+}
+
+function subscribeLeaderboard() {
+  if (!sb) return;
+  sb.channel('handles-live')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'handles' }, () => {
+      loadLeaderboard();
+    })
+    .subscribe();
+}
+
+// ============================================================
+// HANDLE FORM SUBMIT
+// ============================================================
+const handleForm      = document.getElementById('handle-form');
+const handleInput     = document.getElementById('handle');
+const handleRow       = handleInput.closest('.handle-row');
+const handleErrorEl   = document.getElementById('handle-error');
+const handleSubmitBtn = document.getElementById('handle-submit-btn');
+const welcomeModal    = document.getElementById('welcome-modal');
+const welcomeTime     = document.getElementById('welcome-time');
+
+function shakeInput(msg) {
+  handleErrorEl.textContent = msg || '';
+  handleRow.classList.remove('shake');
+  void handleRow.offsetWidth;
+  handleRow.classList.add('shake');
+  handleInput.focus();
+}
+
+handleForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  handleErrorEl.textContent = '';
+
+  const h = sanitizeHandle(handleInput.value);
+  if (!h || h.length < 2) { shakeInput(''); return; }
+
+  const savedHandle  = getHandle();
+  const isReturning  = savedHandle === h;
+
+  if (sb && !isReturning) {
+    handleSubmitBtn.disabled = true;
+    const { error } = await sb.from('handles').insert({ handle: h });
+    handleSubmitBtn.disabled = false;
+
+    if (error) {
+      if (error.code === '23505') {
+        shakeInput('Handle already registered — choose a different one.');
+        return;
+      }
+      // Other Supabase error: fall through to localStorage-only mode
+      console.warn('Handle registration error (falling back to local):', error.message);
+    }
+  }
+
+  // Persist handle locally
+  try { localStorage.setItem('dis_handle', h); } catch(_) {}
+
+  setHandleUI(h);
+
+  // Load existing completions (from Supabase if available, else localStorage)
+  let completedIds = [];
+  if (sb) {
+    const { data } = await sb
+      .from('completions')
+      .select('challenge_id')
+      .eq('handle', h);
+    if (data) {
+      completedIds = data.map(r => r.challenge_id);
+      saveLocalCompletions(h, completedIds);
+    }
+  } else {
+    completedIds = getLocalCompletions(h);
+  }
+
+  renderChallengeStates(completedIds);
+  refreshPointsUI(pointsFromIds(completedIds));
+
+  // Show welcome modal
+  const now = new Date();
+  welcomeTime.textContent =
+    String(now.getHours()).padStart(2, '0') + ':' +
+    String(now.getMinutes()).padStart(2, '0') + ' GMT+8';
+  welcomeModal.classList.add('show');
+  welcomeModal.setAttribute('aria-hidden', 'false');
+});
+
+// ============================================================
+// HUB ENTRY / BACK
+// ============================================================
+const landing    = document.getElementById('landing');
+const welcomeCta = document.getElementById('welcome-cta');
+
+function enterHub() {
+  welcomeModal.classList.remove('show');
+  welcomeModal.setAttribute('aria-hidden', 'true');
+  landing.classList.add('hide');
+  setTimeout(() => { document.body.classList.add('entered'); }, 500);
+  loadLeaderboard();
+}
+
+welcomeCta.addEventListener('click', enterHub);
+
+document.getElementById('back-btn').addEventListener('click', () => {
+  document.body.classList.remove('entered');
+  landing.style.display = '';
+  requestAnimationFrame(() => landing.classList.remove('hide'));
+  window.scrollTo({ top: 0 });
+  setTimeout(() => handleInput.focus(), 300);
+});
+
+// ============================================================
+// RESTORE SESSION ON LOAD
+// ============================================================
+(async () => {
+  const saved = getHandle();
+  if (!saved) return;
+
+  handleInput.value = saved;
+  setHandleUI(saved);
+
+  let completedIds = getLocalCompletions(saved);
+
+  if (sb) {
+    const { data } = await sb
+      .from('completions')
+      .select('challenge_id')
+      .eq('handle', saved);
+    if (data) {
+      completedIds = data.map(r => r.challenge_id);
+      saveLocalCompletions(saved, completedIds);
+    }
+  }
+
+  renderChallengeStates(completedIds);
+  refreshPointsUI(pointsFromIds(completedIds));
+})();
+
+// ============================================================
+// COUNTDOWN — Oct 28 2026 18:00 local time (matches design)
+// ============================================================
+const TARGET   = new Date(2026, 9, 28, 18, 0, 0).getTime();
+const cdNodes  = document.querySelectorAll('[data-cd]');
+function pad(n) { return String(Math.max(0, n)).padStart(2, '0'); }
+
+let unlocked = false;
+function unlockMissions() {
+  if (unlocked) return;
+  unlocked = true;
+  document.querySelectorAll('.mission-card.locked').forEach(card => {
+    card.classList.remove('locked');
+    card.dataset.status = 'open';
+    const pill = card.querySelector('.mc-status');
+    if (pill) { pill.classList.remove('locked'); pill.classList.add('open'); pill.textContent = 'Open'; }
+  });
+  const summary = document.getElementById('missions-open');
+  if (summary) summary.textContent = 'All missions live';
+  document.querySelectorAll('#mission-modal .mission-meta .o').forEach(el => { el.textContent = 'OPEN'; });
+}
+
+function tickCountdown() {
+  const diff = TARGET - Date.now();
+  if (diff <= 0) {
+    cdNodes.forEach(n => { n.textContent = n.dataset.cd === 'd' ? '0' : '00'; });
+    unlockMissions();
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000)  / 60000);
+  const s = Math.floor((diff % 60000)    / 1000);
+  cdNodes.forEach(n => {
+    const k = n.dataset.cd;
+    if (k === 'd') n.textContent = d;
+    else if (k === 'h') n.textContent = pad(h);
+    else if (k === 'm') n.textContent = pad(m);
+    else if (k === 's') n.textContent = pad(s);
+  });
+}
+tickCountdown();
+setInterval(tickCountdown, 1000);
+
+// ============================================================
+// COLOR-BLIND TOGGLE
+// ============================================================
+const a11yBtn = document.getElementById('a11y-btn');
+function applyA11y(on) {
+  document.body.classList.toggle('cb-safe', !!on);
+  a11yBtn.classList.toggle('on', !!on);
+  a11yBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  try { localStorage.setItem('dis_cb', on ? '1' : '0'); } catch(_) {}
+}
+a11yBtn.addEventListener('click', () => applyA11y(!document.body.classList.contains('cb-safe')));
+try { if (localStorage.getItem('dis_cb') === '1') applyA11y(true); } catch(_) {}
+
+// ============================================================
+// MISSION CARDS — click to open detail (locked cards are no-ops)
+// ============================================================
+const missionModal = document.getElementById('mission-modal');
+
+document.querySelectorAll('.mission-card').forEach(card => {
+  card.addEventListener('click', () => {
+    if (card.classList.contains('has-detail')) {
+      missionModal.classList.add('show');
+      missionModal.setAttribute('aria-hidden', 'false');
+      return;
+    }
+    if (card.classList.contains('locked') || card.dataset.status === 'locked') return;
+    card.style.transform = 'scale(0.99)';
+    setTimeout(() => { card.style.transform = ''; }, 120);
+  });
+});
+
+// Mission modal close
+function closeMissionModal() {
+  missionModal.classList.remove('show');
+  missionModal.setAttribute('aria-hidden', 'true');
+}
+document.getElementById('mission-close').addEventListener('click', closeMissionModal);
+missionModal.addEventListener('click', (e) => { if (e.target === missionModal) closeMissionModal(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && missionModal.classList.contains('show')) closeMissionModal();
+});
+
+// ============================================================
+// CHALLENGE COMPLETION
+// ============================================================
+document.querySelectorAll('.challenge-check').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const ch = btn.closest('.challenge');
+    if (ch.classList.contains('complete')) return;
+    document.querySelectorAll('.challenge.confirming').forEach(o => {
+      if (o !== ch) o.classList.remove('confirming');
+    });
+    ch.classList.toggle('confirming');
+  });
+});
+
+document.querySelectorAll('.cc-yes').forEach(btn => {
+  btn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const ch     = btn.closest('.challenge');
+    const cid    = ch.dataset.cid;
+    const pts    = parseInt(ch.dataset.pts, 10) || 0;
+    const handle = getHandle();
+    if (!handle) return;
+
+    ch.classList.remove('confirming');
+
+    if (sb) {
+      const { error } = await sb
+        .from('completions')
+        .insert({ handle, challenge_id: cid, points: pts });
+      if (error && error.code !== '23505') {
+        console.warn('Completion error (saving locally):', error.message);
+      }
+    }
+
+    // Always update localStorage
+    const list = getLocalCompletions(handle);
+    if (!list.includes(cid)) { list.push(cid); saveLocalCompletions(handle, list); }
+
+    ch.classList.add('complete');
+    refreshPointsUI(pointsFromIds(list));
+    loadLeaderboard();
+  });
+});
+
+document.querySelectorAll('.cc-no').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    btn.closest('.challenge').classList.remove('confirming');
+  });
+});
+
+// ============================================================
+// INIT — load leaderboard + subscribe to live updates
+// ============================================================
+loadLeaderboard();
+subscribeLeaderboard();
+</script>
+
+</body>
+</html>
