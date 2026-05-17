@@ -794,9 +794,9 @@
 
     <div class="ldr" id="leaderboard">
       <!-- Populated by JS (Supabase when configured, static placeholder otherwise) -->
-      <div class="ldr-row top"><div class="ldr-rank">01</div><div class="ldr-name">V1per <span class="badge">MERIDIAN</span></div><div class="ldr-clear">CAT1A</div><div class="ldr-pts">—</div></div>
-      <div class="ldr-row top"><div class="ldr-rank">02</div><div class="ldr-name">Kestrel.06 <span class="badge">OXBOW</span></div><div class="ldr-clear">CAT1A</div><div class="ldr-pts">—</div></div>
-      <div class="ldr-row top"><div class="ldr-rank">03</div><div class="ldr-name">PaleLantern <span class="badge">KESTREL</span></div><div class="ldr-clear">CAT1B</div><div class="ldr-pts">—</div></div>
+      <div class="ldr-row top"><div class="ldr-rank">01</div><div class="ldr-name">—</div><div class="ldr-clear">CAT1A</div><div class="ldr-pts">—</div></div>
+      <div class="ldr-row top"><div class="ldr-rank">02</div><div class="ldr-name">—</div><div class="ldr-clear">CAT1A</div><div class="ldr-pts">—</div></div>
+      <div class="ldr-row top"><div class="ldr-rank">03</div><div class="ldr-name">—</div><div class="ldr-clear">CAT1A</div><div class="ldr-pts">—</div></div>
       <div class="ldr-row you" id="ldr-you"><div class="ldr-rank">—</div><div class="ldr-name" id="ldr-you-name">@operator <span class="badge you">YOU</span></div><div class="ldr-clear">CAT1A</div><div class="ldr-pts" id="ldr-you-pts">0</div></div>
     </div>
   </div>
@@ -888,9 +888,6 @@
 <script>
 // ============================================================
 // SUPABASE CONFIG
-// 1. Create a project at https://app.supabase.com
-// 2. Run supabase/schema.sql in the SQL Editor
-// 3. Paste your project URL and anon key below
 // ============================================================
 const SUPABASE_URL      = 'https://bdbgbhedupsjqukgethi.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkYmdiaGVkdXBzanF1a2dldGhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTM3OTIsImV4cCI6MjA5NDU2OTc5Mn0.Z0NTdA8DDJ4AJxLYV1kiN7lKkJ7nAduxhJxKiAS2-Q0';
@@ -900,7 +897,7 @@ const sb = (SUPABASE_URL && SUPABASE_ANON_KEY)
   : null;
 
 // ============================================================
-// CHALLENGE POINT VALUES (add new challenge IDs here too)
+// CHALLENGE POINT VALUES
 // ============================================================
 const CHALLENGE_PTS = {
   'exp-1': 10,
@@ -972,7 +969,6 @@ async function loadLeaderboard() {
   if (!ldr) return;
 
   if (!sb) {
-    // No Supabase: just keep static placeholder, update the YOU row only
     const yn = document.getElementById('ldr-you-name');
     if (yn && handle) yn.innerHTML = '@' + handle + ' <span class="badge you">YOU</span>';
     refreshPointsUI(pointsFromIds(getLocalCompletions(handle)));
@@ -1009,7 +1005,6 @@ async function loadLeaderboard() {
     ldr.appendChild(div);
   });
 
-  // User below top 8
   if (!inTop8 && handle) {
     const sep = document.createElement('div');
     sep.className = 'ldr-row';
@@ -1075,17 +1070,14 @@ handleForm.addEventListener('submit', async (e) => {
         shakeInput('Handle already registered — choose a different one.');
         return;
       }
-      // Other Supabase error: fall through to localStorage-only mode
       console.warn('Handle registration error (falling back to local):', error.message);
     }
   }
 
-  // Persist handle locally
   try { localStorage.setItem('dis_handle', h); } catch(_) {}
 
   setHandleUI(h);
 
-  // Load existing completions (from Supabase if available, else localStorage)
   let completedIds = [];
   if (sb) {
     const { data } = await sb
@@ -1103,7 +1095,6 @@ handleForm.addEventListener('submit', async (e) => {
   renderChallengeStates(completedIds);
   refreshPointsUI(pointsFromIds(completedIds));
 
-  // Show welcome modal
   const now = new Date();
   welcomeTime.textContent =
     String(now.getHours()).padStart(2, '0') + ':' +
@@ -1164,7 +1155,7 @@ document.getElementById('back-btn').addEventListener('click', () => {
 })();
 
 // ============================================================
-// COUNTDOWN — Oct 28 2026 18:00 local time (matches design)
+// COUNTDOWN — Oct 28 2026 18:00 local time
 // ============================================================
 const TARGET   = new Date(2026, 9, 28, 18, 0, 0).getTime();
 const cdNodes  = document.querySelectorAll('[data-cd]');
@@ -1221,7 +1212,7 @@ a11yBtn.addEventListener('click', () => applyA11y(!document.body.classList.conta
 try { if (localStorage.getItem('dis_cb') === '1') applyA11y(true); } catch(_) {}
 
 // ============================================================
-// MISSION CARDS — click to open detail (locked cards are no-ops)
+// MISSION CARDS
 // ============================================================
 const missionModal = document.getElementById('mission-modal');
 
@@ -1238,7 +1229,6 @@ document.querySelectorAll('.mission-card').forEach(card => {
   });
 });
 
-// Mission modal close
 function closeMissionModal() {
   missionModal.classList.remove('show');
   missionModal.setAttribute('aria-hidden', 'true');
@@ -1284,7 +1274,6 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
       }
     }
 
-    // Always update localStorage
     const list = getLocalCompletions(handle);
     if (!list.includes(cid)) { list.push(cid); saveLocalCompletions(handle, list); }
 
@@ -1302,7 +1291,7 @@ document.querySelectorAll('.cc-no').forEach(btn => {
 });
 
 // ============================================================
-// INIT — load leaderboard + subscribe to live updates
+// INIT
 // ============================================================
 loadLeaderboard();
 subscribeLeaderboard();
