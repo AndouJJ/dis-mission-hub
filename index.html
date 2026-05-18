@@ -1665,6 +1665,10 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
     }
 
     if (sb) {
+      // Guarantee the handle row exists — Android devices sometimes miss
+      // the initial registration insert (network hiccup + localStorage fallback).
+      await sb.from('handles').upsert({ handle }, { onConflict: 'handle', ignoreDuplicates: true });
+
       const { error } = await sb
         .from('completions')
         .insert({ handle, challenge_id: cid, points: pts, photo_url: photoUrl });
