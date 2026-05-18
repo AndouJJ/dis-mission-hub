@@ -80,12 +80,20 @@ ALTER TABLE handles     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE completions ENABLE ROW LEVEL SECURITY;
 
 -- handles: anyone can register a new handle and view the list
+DROP POLICY IF EXISTS "handles_select" ON handles;
+DROP POLICY IF EXISTS "handles_insert" ON handles;
+DROP POLICY IF EXISTS "handles_update" ON handles;
+DROP POLICY IF EXISTS "handles_delete" ON handles;
 CREATE POLICY "handles_select" ON handles FOR SELECT USING (true);
 CREATE POLICY "handles_insert" ON handles FOR INSERT WITH CHECK (true);
 CREATE POLICY "handles_update" ON handles FOR UPDATE USING (false);  -- explicit deny
 CREATE POLICY "handles_delete" ON handles FOR DELETE USING (false);  -- explicit deny
 
 -- completions: anyone can view; anyone can insert; no updates or deletes
+DROP POLICY IF EXISTS "completions_select" ON completions;
+DROP POLICY IF EXISTS "completions_insert" ON completions;
+DROP POLICY IF EXISTS "completions_update" ON completions;
+DROP POLICY IF EXISTS "completions_delete" ON completions;
 CREATE POLICY "completions_select" ON completions FOR SELECT USING (true);
 CREATE POLICY "completions_insert" ON completions FOR INSERT WITH CHECK (true);
 CREATE POLICY "completions_update" ON completions FOR UPDATE USING (false);  -- explicit deny
@@ -107,6 +115,8 @@ ALTER PUBLICATION supabase_realtime ADD TABLE completions;
 
 ALTER TABLE completions ADD COLUMN IF NOT EXISTS photo_url TEXT;
 
+DROP POLICY IF EXISTS "challenge_photos_insert" ON storage.objects;
+DROP POLICY IF EXISTS "challenge_photos_select" ON storage.objects;
 CREATE POLICY "challenge_photos_insert" ON storage.objects
   FOR INSERT TO anon
   WITH CHECK (bucket_id = 'challenge-photos');
