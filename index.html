@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
 <title>DIS Mission Hub — Year IV</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -869,7 +870,7 @@
     <h2 class="mission-h"><em>DIS</em> Expedition.</h2>
     <p class="mission-sub">A field run at Universal Studios. Complete every challenge with your unit to clear the mission. Tap a challenge to log it on Oct 28.</p>
     <ol class="challenge-list">
-      <li class="challenge" data-cid="exp-1" data-pts="10">
+      <li class="challenge" data-cid="exp-1">
         <span class="challenge-no">01</span>
         <div class="challenge-body">
           <h4>Take a photo together with your unit with the USS globe in the background.</h4>
@@ -895,7 +896,7 @@
           <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
         </div>
       </li>
-      <li class="challenge" data-cid="exp-2" data-pts="70">
+      <li class="challenge" data-cid="exp-2">
         <span class="challenge-no">02</span>
         <div class="challenge-body">
           <h4>Take a selfie while on the Transformer ride.</h4>
@@ -921,7 +922,7 @@
           <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
         </div>
       </li>
-      <li class="challenge" data-cid="exp-3" data-pts="80">
+      <li class="challenge" data-cid="exp-3">
         <span class="challenge-no">03</span>
         <div class="challenge-body">
           <h4>Take a photo together with your unit with a scare actor.</h4>
@@ -947,7 +948,7 @@
           <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
         </div>
       </li>
-      <li class="challenge" data-cid="exp-4" data-pts="100">
+      <li class="challenge" data-cid="exp-4">
         <span class="challenge-no">04</span>
         <div class="challenge-body">
           <h4>Scare a scare actor.</h4>
@@ -1020,7 +1021,11 @@ try {
 
 const STORAGE_ORIGIN = SUPABASE_URL + '/storage/v1/object/public/challenge-photos/';
 function isSafePhotoUrl(url) {
-  return typeof url === 'string' && url.startsWith(STORAGE_ORIGIN);
+  if (typeof url !== 'string' || !url.startsWith(STORAGE_ORIGIN)) return false;
+  try {
+    const u = new URL(url);
+    return u.search === '' && u.hash === '';
+  } catch(_) { return false; }
 }
 
 // ============================================================
@@ -1046,8 +1051,9 @@ const CHALLENGE_LABELS = {
 // HELPERS
 // ============================================================
 function sanitizeHandle(raw) {
-  return (raw || '').trim().replace(/^@+/, '').replace(/\s+/g, '_')
+  const clean = (raw || '').trim().replace(/^@+/, '').replace(/\s+/g, '_')
     .replace(/[^A-Za-z0-9_\-\.]/g, '').slice(0, 24);
+  return /[A-Za-z0-9]/.test(clean) ? clean : '';
 }
 
 function getHandle() {
@@ -1229,9 +1235,10 @@ async function loadLeaderboard() {
   }
 }
 
+let ldrPollTimer = null;
 function subscribeLeaderboard() {
-  if (!sb) return;
-  setInterval(loadLeaderboard, 30000);
+  if (!sb || ldrPollTimer) return;
+  ldrPollTimer = setInterval(loadLeaderboard, 30000);
 }
 
 // ============================================================
@@ -1465,7 +1472,9 @@ async function compressImage(file) {
     img.onload = () => {
       URL.revokeObjectURL(url);
       const MAX = 1600;
+      const MAX_MP = 50 * 1024 * 1024; // 50 megapixels — reject before allocating canvas
       let w = img.naturalWidth, h = img.naturalHeight;
+      if (w * h > MAX_MP) { reject(new Error('Image is too large to process')); return; }
       if (Math.max(w, h) > MAX) {
         if (w >= h) { h = Math.round(h * MAX / w); w = MAX; }
         else        { w = Math.round(w * MAX / h); h = MAX; }
@@ -1590,11 +1599,18 @@ async function loadExpeditionPhotos(reset = true) {
 
 document.getElementById('pw-more').addEventListener('click', () => loadExpeditionPhotos(false));
 
+let pwReloadTimer = null;
+function schedulePwReload() {
+  if (pwReloadTimer) return; // already scheduled — absorb the burst
+  pwReloadTimer = setTimeout(() => {
+    pwReloadTimer = null;
+    if (missionModal.classList.contains('show')) loadExpeditionPhotos(true);
+  }, 3000);
+}
+
 if (sb) {
   sb.channel('pw-realtime')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'completions' }, () => {
-      if (missionModal.classList.contains('show')) loadExpeditionPhotos(true);
-    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'completions' }, schedulePwReload)
     .subscribe();
 }
 
@@ -1737,6 +1753,7 @@ const photoLb    = document.getElementById('photo-lb');
 const photoLbImg = document.getElementById('photo-lb-img');
 
 function openLightbox(src) {
+  if (!isSafePhotoUrl(src)) return;
   photoLbImg.src = src;
   photoLb.classList.add('show');
 }
@@ -1753,9 +1770,14 @@ document.addEventListener('keydown', e => {
 
 document.addEventListener('click', e => {
   const preview = e.target.closest('.photo-preview');
-  if (preview && preview.classList.contains('show')) { openLightbox(preview.src); return; }
+  if (preview && preview.classList.contains('show') && preview.src) {
+    // Local blob: URL from file picker — skip origin check, open directly
+    photoLbImg.src = preview.src;
+    photoLb.classList.add('show');
+    return;
+  }
   const card = e.target.closest('.pw-card');
-  if (card && card.dataset.src) openLightbox(card.dataset.src);
+  if (card && card.dataset.src) openLightbox(card.dataset.src); // validated inside openLightbox
 });
 
 // ============================================================

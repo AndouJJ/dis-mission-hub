@@ -145,9 +145,16 @@ ALTER TABLE completions ADD COLUMN IF NOT EXISTS photo_url TEXT;
 
 DROP POLICY IF EXISTS "challenge_photos_insert" ON storage.objects;
 DROP POLICY IF EXISTS "challenge_photos_select" ON storage.objects;
+
+-- Restrict uploads to the exact path format the app produces:
+--   <handle>/<challenge-id>/<unix-timestamp>.jpg
+-- Prevents uploading to arbitrary paths even if someone calls the API directly.
 CREATE POLICY "challenge_photos_insert" ON storage.objects
   FOR INSERT TO anon
-  WITH CHECK (bucket_id = 'challenge-photos');
+  WITH CHECK (
+    bucket_id = 'challenge-photos' AND
+    name ~ '^[A-Za-z0-9_\-\.]{1,64}/[A-Za-z0-9_\-]{1,32}/[0-9]{10,16}\.jpg$'
+  );
 
 CREATE POLICY "challenge_photos_select" ON storage.objects
   FOR SELECT TO anon
