@@ -625,8 +625,7 @@
     display:flex;align-items:center;justify-content:center;padding:24px}
   .gate-overlay.hidden{display:none}
   .gate-card{width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;gap:28px}
-  .gate-logo{font-family:var(--mono);font-size:10px;letter-spacing:0.3em;
-    text-transform:uppercase;color:var(--paper-3)}
+  .gate-logo-img{height:72px;width:auto}
   .gate-title{font-family:var(--mono);font-size:11px;letter-spacing:0.22em;
     text-transform:uppercase;color:var(--paper);text-align:center;line-height:1.8}
   .gate-form{width:100%;display:flex;flex-direction:column;gap:10px}
@@ -650,7 +649,7 @@
 <!-- ============ ACCESS CODE GATE ============ -->
 <div class="gate-overlay" id="gate-overlay">
   <div class="gate-card">
-    <div class="gate-logo">DIS · Mission Hub</div>
+    <img src="assets/dis-logo.png" alt="DIS — Guardians of the New Frontier" class="gate-logo-img" />
     <div class="gate-title">YEAR IV · CLASSIFIED<br>ENTER ACCESS CODE TO CONTINUE</div>
     <form class="gate-form" id="gate-form" autocomplete="off">
       <input type="password" id="gate-input" class="gate-input"
