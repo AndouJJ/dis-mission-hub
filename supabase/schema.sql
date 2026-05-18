@@ -37,6 +37,8 @@ CREATE TABLE IF NOT EXISTS completions (
 
 -- Overwrite client-supplied points with the server-authoritative value
 -- and reject any challenge_id not in the challenges table.
+-- SECURITY DEFINER: runs as the function owner (bypasses RLS) so it can
+-- read the challenges table regardless of the caller's role.
 CREATE OR REPLACE FUNCTION enforce_challenge_points()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -46,13 +48,15 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 DROP TRIGGER IF EXISTS before_completion_insert ON completions;
 CREATE TRIGGER before_completion_insert
   BEFORE INSERT ON completions
   FOR EACH ROW EXECUTE FUNCTION enforce_challenge_points();
 
+-- SECURITY DEFINER: runs as function owner so it can UPDATE handles even
+-- though the anon role has an explicit UPDATE deny policy on that table.
 CREATE OR REPLACE FUNCTION update_handle_points()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -65,7 +69,7 @@ BEGIN
   WHERE handle = NEW.handle;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 DROP TRIGGER IF EXISTS after_completion_insert ON completions;
 CREATE TRIGGER after_completion_insert
@@ -76,8 +80,19 @@ CREATE TRIGGER after_completion_insert
 -- 3. ROW LEVEL SECURITY
 -- ============================================================
 
+ALTER TABLE challenges  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE handles     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE completions ENABLE ROW LEVEL SECURITY;
+
+-- challenges: publicly readable, immutable by anon
+DROP POLICY IF EXISTS "challenges_select" ON challenges;
+DROP POLICY IF EXISTS "challenges_insert" ON challenges;
+DROP POLICY IF EXISTS "challenges_update" ON challenges;
+DROP POLICY IF EXISTS "challenges_delete" ON challenges;
+CREATE POLICY "challenges_select" ON challenges FOR SELECT USING (true);
+CREATE POLICY "challenges_insert" ON challenges FOR INSERT WITH CHECK (false);
+CREATE POLICY "challenges_update" ON challenges FOR UPDATE USING (false);
+CREATE POLICY "challenges_delete" ON challenges FOR DELETE USING (false);
 
 -- handles: anyone can register a new handle and view the list
 DROP POLICY IF EXISTS "handles_select" ON handles;

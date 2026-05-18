@@ -1622,6 +1622,10 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
     const handle = getHandle();
     if (!handle || pts === undefined) return;
 
+    const errEl = ch.querySelector('.photo-err');
+    const showErr = msg => { if (errEl) { errEl.textContent = msg; errEl.classList.add('show'); } };
+    const clearErr = ()  => { if (errEl) { errEl.textContent = ''; errEl.classList.remove('show'); } };
+
     let photoUrl = null;
 
     if (sb && PHOTO_CHALLENGES.has(cid)) {
@@ -1629,39 +1633,40 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
       const file  = input && input.files[0];
       if (!file) return;
 
-      const errEl = ch.querySelector('.photo-err');
-      if (errEl) { errEl.textContent = ''; errEl.classList.remove('show'); }
-
+      clearErr();
       const orig = btn.textContent;
       btn.disabled = true;
       btn.textContent = 'Uploading…';
       try {
         photoUrl = await uploadPhoto(handle, cid, file);
       } catch (err) {
-        console.warn('Photo upload failed:', err.message);
+        showErr('Upload failed: ' + (err.message || 'unknown error'));
         btn.textContent = orig;
         btn.disabled = false;
-        if (errEl) { errEl.textContent = 'Upload failed: ' + (err.message || 'unknown error'); errEl.classList.add('show'); }
+        return;
+      }
+      btn.textContent = 'Saving…';
+    }
+
+    if (sb) {
+      const { error } = await sb
+        .from('completions')
+        .insert({ handle, challenge_id: cid, points: pts, photo_url: photoUrl });
+
+      if (error && error.code !== '23505') {
+        showErr('Save failed: ' + (error.message || 'unknown error'));
+        btn.textContent = 'Confirm';
+        btn.disabled = false;
         return;
       }
     }
 
     ch.classList.remove('confirming');
     resetPhotoState(ch);
-
-    if (sb) {
-      const { error } = await sb
-        .from('completions')
-        .insert({ handle, challenge_id: cid, points: pts, photo_url: photoUrl });
-      if (error && error.code !== '23505') {
-        console.warn('Completion error (saving locally):', error.message);
-      }
-    }
+    ch.classList.add('complete');
 
     const list = getLocalCompletions(handle);
     if (!list.includes(cid)) { list.push(cid); saveLocalCompletions(handle, list); }
-
-    ch.classList.add('complete');
     refreshPointsUI(pointsFromIds(list));
     loadLeaderboard();
     loadExpeditionPhotos(true);
