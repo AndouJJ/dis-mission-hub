@@ -619,9 +619,48 @@
     footer{padding:24px 0;margin-top:48px}
     .foot-inner{padding:0 20px;flex-direction:column;text-align:center;font-size:9px}
   }
+
+  /* ============ ACCESS CODE GATE ============ */
+  .gate-overlay{position:fixed;inset:0;z-index:9999;background:var(--ink);
+    display:flex;align-items:center;justify-content:center;padding:24px}
+  .gate-overlay.hidden{display:none}
+  .gate-card{width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;gap:28px}
+  .gate-logo{font-family:var(--mono);font-size:10px;letter-spacing:0.3em;
+    text-transform:uppercase;color:var(--paper-3)}
+  .gate-title{font-family:var(--mono);font-size:11px;letter-spacing:0.22em;
+    text-transform:uppercase;color:var(--paper);text-align:center;line-height:1.8}
+  .gate-form{width:100%;display:flex;flex-direction:column;gap:10px}
+  .gate-input{width:100%;background:var(--ink-2);border:1px solid var(--rule);
+    color:var(--paper);font-family:var(--mono);font-size:13px;letter-spacing:0.18em;
+    text-transform:uppercase;padding:13px 16px;outline:none;text-align:center;
+    -webkit-appearance:none;box-sizing:border-box}
+  .gate-input:focus{border-color:var(--orange)}
+  .gate-input::placeholder{color:var(--paper-3);letter-spacing:0.18em}
+  .gate-btn{width:100%;padding:13px;background:var(--orange);border:none;
+    color:#fff;font-family:var(--mono);font-size:11px;letter-spacing:0.22em;
+    text-transform:uppercase;cursor:pointer;transition:opacity 0.15s}
+  .gate-btn:hover{opacity:0.85}
+  .gate-btn:disabled{opacity:0.4;cursor:not-allowed}
+  .gate-err{font-family:var(--mono);font-size:10px;letter-spacing:0.15em;
+    text-transform:uppercase;color:#e05c5c;min-height:16px;text-align:center}
 </style>
 </head>
 <body>
+
+<!-- ============ ACCESS CODE GATE ============ -->
+<div class="gate-overlay" id="gate-overlay">
+  <div class="gate-card">
+    <div class="gate-logo">DIS · Mission Hub</div>
+    <div class="gate-title">YEAR IV · CLASSIFIED<br>ENTER ACCESS CODE TO CONTINUE</div>
+    <form class="gate-form" id="gate-form" autocomplete="off">
+      <input type="password" id="gate-input" class="gate-input"
+             placeholder="ACCESS CODE" maxlength="32"
+             autocomplete="new-password" spellcheck="false" />
+      <button type="submit" class="gate-btn" id="gate-btn">ENTER</button>
+    </form>
+    <div class="gate-err" id="gate-err"></div>
+  </div>
+</div>
 
 <!-- ============ LANDING ============ -->
 <div class="landing" id="landing">
@@ -1007,6 +1046,59 @@
 </footer>
 
 <script>
+// ============================================================
+// ACCESS CODE GATE
+// SHA-256 of the access code (case-insensitive, trimmed).
+// To change the code: https://emn178.github.io/online-tools/sha256.html
+//   → type your new code in UPPERCASE → copy the hash → paste below.
+// Current code: DIS2026
+// ============================================================
+const GATE_HASH = 'e2a8272b3b3f009d513e8536cdb20f5b135c03310885692e014985a689b6dd45';
+
+(function () {
+  const overlay = document.getElementById('gate-overlay');
+  const form    = document.getElementById('gate-form');
+  const input   = document.getElementById('gate-input');
+  const btn     = document.getElementById('gate-btn');
+  const errEl   = document.getElementById('gate-err');
+
+  async function hashCode(raw) {
+    const buf = await crypto.subtle.digest(
+      'SHA-256', new TextEncoder().encode(raw.trim().toUpperCase())
+    );
+    return Array.from(new Uint8Array(buf))
+      .map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  async function tryUnlock() {
+    try {
+      if (sessionStorage.getItem('dis_gate') === '1') {
+        overlay.classList.add('hidden'); return;
+      }
+    } catch(_) {}
+    overlay.classList.remove('hidden');
+    input.focus();
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    errEl.textContent = '';
+    btn.disabled = true;
+    const hash = await hashCode(input.value);
+    if (hash === GATE_HASH) {
+      try { sessionStorage.setItem('dis_gate', '1'); } catch(_) {}
+      overlay.classList.add('hidden');
+    } else {
+      errEl.textContent = 'INCORRECT CODE — TRY AGAIN';
+      input.value = '';
+      input.focus();
+    }
+    btn.disabled = false;
+  });
+
+  tryUnlock();
+}());
+
 // ============================================================
 // SUPABASE CONFIG
 // ============================================================
