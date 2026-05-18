@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <!-- Supabase JS SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" integrity="sha384-rRoXxn2yHlrZYB587Ki9RO1tONhLdM6XfORg7Rw4uwH4/Fh/5nP7IUX91bkaKUgs" crossorigin="anonymous"></script>
 <style>
   :root{
     --ink:#0c0a08;
@@ -1016,6 +1016,11 @@ const sb = (SUPABASE_URL && SUPABASE_ANON_KEY)
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   : null;
 
+const STORAGE_ORIGIN = SUPABASE_URL + '/storage/v1/object/public/challenge-photos/';
+function isSafePhotoUrl(url) {
+  return typeof url === 'string' && url.startsWith(STORAGE_ORIGIN);
+}
+
 // ============================================================
 // CHALLENGE POINT VALUES + PHOTO REQUIREMENTS
 // ============================================================
@@ -1071,7 +1076,14 @@ function setHandleUI(h) {
   document.getElementById('welcome-handle-2').textContent = at;
   document.getElementById('profile-handle').textContent  = at;
   const yn = document.getElementById('ldr-you-name');
-  if (yn) yn.innerHTML = at + ' <span class="badge you">YOU</span>';
+  if (yn) {
+    yn.textContent = at;
+    const b = document.createElement('span');
+    b.className = 'badge you';
+    b.textContent = 'YOU';
+    yn.appendChild(document.createTextNode(' '));
+    yn.appendChild(b);
+  }
 }
 
 function refreshPointsUI(pts) {
@@ -1099,7 +1111,14 @@ async function loadLeaderboard() {
 
   if (!sb) {
     const yn = document.getElementById('ldr-you-name');
-    if (yn && handle) yn.innerHTML = '@' + handle + ' <span class="badge you">YOU</span>';
+    if (yn && handle) {
+      yn.textContent = '@' + handle;
+      const b = document.createElement('span');
+      b.className = 'badge you';
+      b.textContent = 'YOU';
+      yn.appendChild(document.createTextNode(' '));
+      yn.appendChild(b);
+    }
     refreshPointsUI(pointsFromIds(getLocalCompletions(handle)));
     return;
   }
@@ -1131,13 +1150,36 @@ async function loadLeaderboard() {
     const div   = document.createElement('div');
     div.className = 'ldr-row' + (rank <= 3 ? ' top' : '') + (isYou ? ' you' : '');
     if (isYou) div.id = 'ldr-you';
-    div.innerHTML =
-      `<div class="ldr-rank">${String(rank).padStart(2, '0')}</div>` +
-      `<div class="ldr-name"${isYou ? ' id="ldr-you-name"' : ''}>${row.handle}` +
-        (isYou ? ' <span class="badge you">YOU</span>' : '') +
-      `</div>` +
-      `<div class="ldr-clear">CAT1A</div>` +
-      `<div class="ldr-pts"${isYou ? ' id="ldr-you-pts"' : ''}>${Number(row.points).toLocaleString()}</div>`;
+
+    const rankEl = document.createElement('div');
+    rankEl.className = 'ldr-rank';
+    rankEl.textContent = String(rank).padStart(2, '0');
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'ldr-name';
+    if (isYou) nameEl.id = 'ldr-you-name';
+    nameEl.textContent = row.handle;
+    if (isYou) {
+      const badge = document.createElement('span');
+      badge.className = 'badge you';
+      badge.textContent = 'YOU';
+      nameEl.appendChild(document.createTextNode(' '));
+      nameEl.appendChild(badge);
+    }
+
+    const clearEl = document.createElement('div');
+    clearEl.className = 'ldr-clear';
+    clearEl.textContent = 'CAT1A';
+
+    const ptsEl = document.createElement('div');
+    ptsEl.className = 'ldr-pts';
+    if (isYou) ptsEl.id = 'ldr-you-pts';
+    ptsEl.textContent = Number(row.points).toLocaleString();
+
+    div.appendChild(rankEl);
+    div.appendChild(nameEl);
+    div.appendChild(clearEl);
+    div.appendChild(ptsEl);
     ldr.appendChild(div);
   });
 
@@ -1153,11 +1195,34 @@ async function loadLeaderboard() {
     youRow.id = 'ldr-you';
     const pts = userIdx >= 0 ? Number(data[userIdx].points) : 0;
     const rankLabel = userIdx >= 0 ? String(userIdx + 1).padStart(2, '0') : '—';
-    youRow.innerHTML =
-      `<div class="ldr-rank">${rankLabel}</div>` +
-      `<div class="ldr-name" id="ldr-you-name">@${handle} <span class="badge you">YOU</span></div>` +
-      `<div class="ldr-clear">CAT1A</div>` +
-      `<div class="ldr-pts" id="ldr-you-pts">${pts.toLocaleString()}</div>`;
+
+    const yrEl = document.createElement('div');
+    yrEl.className = 'ldr-rank';
+    yrEl.textContent = rankLabel;
+
+    const ynEl = document.createElement('div');
+    ynEl.className = 'ldr-name';
+    ynEl.id = 'ldr-you-name';
+    ynEl.textContent = '@' + handle;
+    const ybadge = document.createElement('span');
+    ybadge.className = 'badge you';
+    ybadge.textContent = 'YOU';
+    ynEl.appendChild(document.createTextNode(' '));
+    ynEl.appendChild(ybadge);
+
+    const ycEl = document.createElement('div');
+    ycEl.className = 'ldr-clear';
+    ycEl.textContent = 'CAT1A';
+
+    const ypEl = document.createElement('div');
+    ypEl.className = 'ldr-pts';
+    ypEl.id = 'ldr-you-pts';
+    ypEl.textContent = pts.toLocaleString();
+
+    youRow.appendChild(yrEl);
+    youRow.appendChild(ynEl);
+    youRow.appendChild(ycEl);
+    youRow.appendChild(ypEl);
     ldr.appendChild(youRow);
   }
 }
@@ -1417,8 +1482,10 @@ async function compressImage(file) {
 }
 
 async function uploadPhoto(handle, cid, file) {
-  const blob = await compressImage(file);
-  const path = `${handle}/${cid}/${Date.now()}.jpg`;
+  const blob       = await compressImage(file);
+  const safeHandle = handle.replace(/[^A-Za-z0-9_\-\.]/g, '').slice(0, 64);
+  const safeCid    = cid.replace(/[^A-Za-z0-9_\-]/g, '').slice(0, 32);
+  const path       = `${safeHandle}/${safeCid}/${Date.now()}.jpg`;
   const { error } = await sb.storage
     .from('challenge-photos')
     .upload(path, blob, { contentType: 'image/jpeg', upsert: false });
@@ -1494,6 +1561,7 @@ async function loadExpeditionPhotos(reset = true) {
   }
 
   (data || []).forEach(row => {
+    if (!isSafePhotoUrl(row.photo_url)) return;
     const card = document.createElement('div');
     card.className = 'pw-card';
     card.dataset.src = row.photo_url;
@@ -1506,7 +1574,10 @@ async function loadExpeditionPhotos(reset = true) {
     card.appendChild(img);
     const cap = document.createElement('div');
     cap.className = 'pw-caption';
-    cap.innerHTML = `<b>${row.handle}</b>${CHALLENGE_LABELS[row.challenge_id] || row.challenge_id}`;
+    const capB = document.createElement('b');
+    capB.textContent = row.handle;
+    cap.appendChild(capB);
+    cap.appendChild(document.createTextNode(CHALLENGE_LABELS[row.challenge_id] || ''));
     card.appendChild(cap);
     grid.appendChild(card);
   });
@@ -1545,9 +1616,9 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
     e.stopPropagation();
     const ch     = btn.closest('.challenge');
     const cid    = ch.dataset.cid;
-    const pts    = parseInt(ch.dataset.pts, 10) || 0;
+    const pts    = CHALLENGE_PTS[cid];
     const handle = getHandle();
-    if (!handle) return;
+    if (!handle || pts === undefined) return;
 
     let photoUrl = null;
 

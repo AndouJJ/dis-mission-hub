@@ -12,19 +12,46 @@ CREATE TABLE IF NOT EXISTS handles (
   points       INT         DEFAULT 0
 );
 
+-- Challenge reference table — single source of truth for valid IDs and point values
+CREATE TABLE IF NOT EXISTS challenges (
+  id     TEXT PRIMARY KEY,
+  points INT  NOT NULL
+);
+INSERT INTO challenges (id, points) VALUES
+  ('exp-1', 10), ('exp-2', 70), ('exp-3', 80), ('exp-4', 100)
+ON CONFLICT DO NOTHING;
+
 -- Individual challenge completions
 CREATE TABLE IF NOT EXISTS completions (
   id           UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   handle       TEXT REFERENCES handles(handle) ON DELETE CASCADE,
-  challenge_id TEXT        NOT NULL,
+  challenge_id TEXT REFERENCES challenges(id) NOT NULL,
   points       INT         NOT NULL DEFAULT 0,
   completed_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(handle, challenge_id)   -- prevents double-submission
 );
 
 -- ============================================================
--- 2. TRIGGER — keep handles.points in sync
+-- 2. TRIGGER — enforce correct points and keep handles.points in sync
 -- ============================================================
+
+-- Overwrite client-supplied points with the server-authoritative value
+-- and reject any challenge_id not in the challenges table.
+CREATE OR REPLACE FUNCTION enforce_challenge_points()
+RETURNS TRIGGER AS $$
+BEGIN
+  SELECT points INTO NEW.points FROM challenges WHERE id = NEW.challenge_id;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Invalid challenge_id: %', NEW.challenge_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS before_completion_insert ON completions;
+CREATE TRIGGER before_completion_insert
+  BEFORE INSERT ON completions
+  FOR EACH ROW EXECUTE FUNCTION enforce_challenge_points();
 
 CREATE OR REPLACE FUNCTION update_handle_points()
 RETURNS TRIGGER AS $$
@@ -55,10 +82,14 @@ ALTER TABLE completions ENABLE ROW LEVEL SECURITY;
 -- handles: anyone can register a new handle and view the list
 CREATE POLICY "handles_select" ON handles FOR SELECT USING (true);
 CREATE POLICY "handles_insert" ON handles FOR INSERT WITH CHECK (true);
+CREATE POLICY "handles_update" ON handles FOR UPDATE USING (false);  -- explicit deny
+CREATE POLICY "handles_delete" ON handles FOR DELETE USING (false);  -- explicit deny
 
--- completions: anyone can view; anyone can insert their own
+-- completions: anyone can view; anyone can insert; no updates or deletes
 CREATE POLICY "completions_select" ON completions FOR SELECT USING (true);
 CREATE POLICY "completions_insert" ON completions FOR INSERT WITH CHECK (true);
+CREATE POLICY "completions_update" ON completions FOR UPDATE USING (false);  -- explicit deny
+CREATE POLICY "completions_delete" ON completions FOR DELETE USING (false);  -- explicit deny
 
 -- ============================================================
 -- 4. REALTIME — enable live leaderboard updates
