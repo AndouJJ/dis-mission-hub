@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <!-- Supabase JS SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" integrity="sha384-rRoXxn2yHlrZYB587Ki9RO1tONhLdM6XfORg7Rw4uwH4/Fh/5nP7IUX91bkaKUgs" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
 <style>
   :root{
     --ink:#0c0a08;
@@ -1012,9 +1012,11 @@
 const SUPABASE_URL      = 'https://bdbgbhedupsjqukgethi.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkYmdiaGVkdXBzanF1a2dldGhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTM3OTIsImV4cCI6MjA5NDU2OTc5Mn0.Z0NTdA8DDJ4AJxLYV1kiN7lKkJ7nAduxhJxKiAS2-Q0';
 
-const sb = (SUPABASE_URL && SUPABASE_ANON_KEY)
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  : null;
+let sb = null;
+try {
+  if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase)
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch(e) { console.warn('Supabase init failed:', e); }
 
 const STORAGE_ORIGIN = SUPABASE_URL + '/storage/v1/object/public/challenge-photos/';
 function isSafePhotoUrl(url) {
