@@ -722,20 +722,41 @@
   .mcq-explain.show{display:block}
   .mcq-foot{display:flex;justify-content:flex-end;align-items:center;gap:12px;min-height:48px}
 
-  /* Game 2 — hotspot scenes */
+  /* Game 2 — photo hotspot scenes */
+  #g2-modal .game-card{width:min(920px,100%)}
   .scene-objective{
     font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
     color:var(--paper-3);margin-bottom:12px;
   }
   .scene-objective b{color:var(--paper)}
-  .scene-wrap{width:100%;border:1px solid var(--rule);background:#15120e;margin-bottom:14px;overflow:hidden}
-  .scene-svg{display:block;width:100%;height:auto}
-  .hotspot{cursor:pointer}
-  .hotspot .frame{fill:transparent;stroke:var(--paper-3);stroke-opacity:0.35;stroke-width:1.5;stroke-dasharray:4 4}
-  .hotspot:hover .frame{stroke:var(--paper-2);stroke-opacity:0.65}
-  .hotspot.good .frame{stroke:var(--good);stroke-opacity:1;stroke-dasharray:none;stroke-width:3}
-  .hotspot.bad  .frame{stroke:#e05c5c;stroke-opacity:1;stroke-dasharray:none;stroke-width:3}
+  .scene-wrap{
+    position:relative;width:100%;border:1px solid var(--rule);background:#15120e;
+    margin-bottom:10px;overflow:hidden;line-height:0;
+  }
+  .scene-img{display:block;width:100%;height:auto}
+  .scene-noimg{
+    font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--paper-3);text-align:center;line-height:1.6;padding:24px 10px;
+  }
+  .hotspot{
+    position:absolute;cursor:pointer;border:2px dashed rgba(244,237,224,0.55);
+    border-radius:5px;background:rgba(12,10,8,0.04);transition:border-color 0.15s,background 0.15s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .hotspot:hover{border-color:rgba(244,237,224,0.95);background:rgba(244,237,224,0.10)}
+  .hotspot.good{border-color:var(--good);border-style:solid;background:rgba(127,194,141,0.22)}
+  .hotspot.bad{border-color:#e05c5c;border-style:solid;background:rgba(224,92,92,0.22)}
   .hotspot.locked{pointer-events:none}
+  .hotspot .pin{
+    position:absolute;top:-11px;right:-11px;width:22px;height:22px;border-radius:50%;
+    display:none;place-items:center;font-size:12px;font-weight:700;color:#0c0a08;line-height:1;
+  }
+  .hotspot.good .pin{display:grid;background:var(--good)}
+  .hotspot.bad .pin{display:grid;background:#e05c5c;color:#fff}
+  .scene-hint{
+    font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
+    color:var(--paper-3);opacity:0.7;margin-bottom:12px;
+  }
   .scene-log{
     font-family:var(--mono);font-size:12px;line-height:1.5;letter-spacing:0.02em;
     color:var(--paper-2);min-height:42px;margin-bottom:14px;
@@ -748,11 +769,15 @@
 
   /* Game 3 — sliding puzzle */
   .puzzle-top{
-    display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px;
+    display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:16px;
     font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--paper-3);
   }
   .puzzle-top .stat b{color:var(--orange)}
-  .puzzle-ref{width:84px;height:56px;object-fit:cover;border:1px solid var(--rule-2);flex-shrink:0}
+  .puzzle-ref-label{font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--paper-3)}
+  .puzzle-ref{
+    width:100%;max-width:300px;aspect-ratio:3/2;object-fit:cover;
+    border:1px solid var(--rule-2);display:block;
+  }
   .puzzle-board{
     position:relative;width:100%;max-width:420px;aspect-ratio:3/2;margin:0 auto 16px;
     --puz-img:url('assets/harmony.png');
@@ -932,20 +957,20 @@
   <div class="container">
     <div class="block-head">
       <h2>Missions for <em>Year IV.</em></h2>
-      <div class="meta">06 missions queued<b id="missions-open">All unlock OCT 28 · YEAR IV</b></div>
+      <div class="meta">06 operations · 03 live<b id="missions-open">Three unlock OCT 28 · YEAR IV</b></div>
     </div>
 
     <div class="missions-grid">
-      <article class="mission-card locked" data-mission="anniversary" data-pts="500" data-status="locked">
+      <article class="mission-card has-detail ne-card" data-game="ne-3" data-cid="ne-3" data-pts="80">
         <div class="mc-head">
-          <span class="mc-id">M-001 · ANNIVERSARY CIPHER</span>
-          <span class="mc-status locked">Unlocks Oct 28</span>
+          <span class="mc-id">M-001 · RACIAL HARMONY</span>
+          <span class="mc-status live">Live</span>
         </div>
-        <h3 class="mc-title">The <em>Four-Year</em> Decrypt.</h3>
-        <p class="mc-desc">A four-rotor cipher seeded with every milestone since founding. Drops at midnight on the anniversary. Top three submissions are stamped into the archive.</p>
+        <h3 class="mc-title">Many cultures, <em>one</em> frame.</h3>
+        <p class="mc-desc">Slide the tiles to restore Singapore's multicultural mosaic. One picture, many hands — solve it to log the mission.</p>
         <div class="mc-foot">
-          <span class="mc-pts"><b>500</b>PTS</span>
-          <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
+          <span class="mc-pts"><b>80</b>PTS</span>
+          <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></span>
         </div>
       </article>
 
@@ -962,28 +987,28 @@
         </div>
       </article>
 
-      <article class="mission-card locked" data-mission="quiz" data-pts="40" data-status="locked">
+      <article class="mission-card has-detail ne-card" data-game="ne-1" data-cid="ne-1" data-pts="40">
         <div class="mc-head">
-          <span class="mc-id">M-003 · QUIZ</span>
-          <span class="mc-status locked">Unlocks Oct 28</span>
+          <span class="mc-id">M-003 · FOREIGN INTERFERENCE</span>
+          <span class="mc-status live">Live</span>
         </div>
-        <h3 class="mc-title">Field Manual <em>I.</em></h3>
-        <p class="mc-desc">Twelve questions on cohesion fundamentals. Pass at 80% to advance to manual II.</p>
+        <h3 class="mc-title">Spot the <em>interference.</em></h3>
+        <p class="mc-desc">Eight scenarios. Tell ordinary engagement from foreign influence — and influence from interference. Clear all eight to log the mission.</p>
         <div class="mc-foot">
           <span class="mc-pts"><b>40</b>PTS</span>
-          <span class="mc-tier"><span class="on"></span><span></span><span></span><span></span><span></span></span>
+          <span class="mc-tier"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></span>
         </div>
       </article>
 
-      <article class="mission-card locked" data-mission="cohesion" data-pts="120" data-status="locked">
+      <article class="mission-card has-detail ne-card" data-game="ne-2" data-cid="ne-2" data-pts="60">
         <div class="mc-head">
-          <span class="mc-id">M-004 · COHESION</span>
-          <span class="mc-status locked">Unlocks Oct 28</span>
+          <span class="mc-id">M-004 · SGSECURE</span>
+          <span class="mc-status live">Live</span>
         </div>
-        <h3 class="mc-title">Three watchers, <em>one</em> map.</h3>
-        <p class="mc-desc">Squad of four. Forty-five minutes. Conflicting briefings. Reach the rendezvous without naming the heading.</p>
+        <h3 class="mc-title">The <em>quiet</em> signs.</h3>
+        <p class="mc-desc">Three Singapore scenes. Tap what doesn't belong — the unattended bag, the open panel — without raising a false alarm. Zero mistakes to clear.</p>
         <div class="mc-foot">
-          <span class="mc-pts"><b>120</b>PTS</span>
+          <span class="mc-pts"><b>60</b>PTS</span>
           <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></span>
         </div>
       </article>
@@ -1017,56 +1042,6 @@
   </div>
 </section>
 
-<!-- ============ NATIONAL EDUCATION DRILLS ============ -->
-<section class="block" style="padding-top:0">
-  <div class="container">
-    <div class="block-head">
-      <h2>Cohesion <em>drills.</em></h2>
-      <div class="meta">03 drills · live now<b id="drills-meta">Play anytime · points count</b></div>
-    </div>
-
-    <div class="missions-grid">
-      <article class="mission-card has-detail ne-card" data-game="ne-1" data-cid="ne-1" data-pts="40">
-        <div class="mc-head">
-          <span class="mc-id">D-001 · FOREIGN INTERFERENCE</span>
-          <span class="mc-status live">Live</span>
-        </div>
-        <h3 class="mc-title">Spot the <em>interference.</em></h3>
-        <p class="mc-desc">Eight scenarios. Tell ordinary engagement from foreign influence — and influence from interference. Clear all eight to log the drill.</p>
-        <div class="mc-foot">
-          <span class="mc-pts"><b>40</b>PTS</span>
-          <span class="mc-tier"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></span>
-        </div>
-      </article>
-
-      <article class="mission-card has-detail ne-card" data-game="ne-2" data-cid="ne-2" data-pts="60">
-        <div class="mc-head">
-          <span class="mc-id">D-002 · SGSECURE</span>
-          <span class="mc-status live">Live</span>
-        </div>
-        <h3 class="mc-title">The <em>quiet</em> signs.</h3>
-        <p class="mc-desc">Three everyday scenes. Tap what doesn't belong — the unattended bag, the watcher at the cameras — without raising a false alarm. Zero mistakes to clear.</p>
-        <div class="mc-foot">
-          <span class="mc-pts"><b>60</b>PTS</span>
-          <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></span>
-        </div>
-      </article>
-
-      <article class="mission-card has-detail ne-card" data-game="ne-3" data-cid="ne-3" data-pts="80">
-        <div class="mc-head">
-          <span class="mc-id">D-003 · RACIAL HARMONY</span>
-          <span class="mc-status live">Live</span>
-        </div>
-        <h3 class="mc-title">Many cultures, <em>one</em> frame.</h3>
-        <p class="mc-desc">Slide the tiles to restore Singapore's multicultural mosaic. One picture, many hands. Solve it to log the drill.</p>
-        <div class="mc-foot">
-          <span class="mc-pts"><b>80</b>PTS</span>
-          <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></span>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
 
 <!-- ============ LEADERBOARD ============ -->
 <section class="block" style="padding-top:0">
@@ -1253,194 +1228,9 @@
     <div class="game-progress" id="g2-progress"></div>
     <div id="g2-play">
       <div class="scene-objective" id="g2-objective"></div>
-
-      <!-- SCENE 1 · MRT PLATFORM -->
-      <div class="scene-wrap g2-scene" data-scene="0" data-sus="2">
-        <svg viewBox="0 0 640 360" class="scene-svg" role="img" aria-label="MRT platform">
-          <rect width="640" height="360" fill="#1a1712"/>
-          <rect y="252" width="640" height="108" fill="#2a2520"/>
-          <rect y="246" width="640" height="7" fill="#FF7300" opacity="0.85"/>
-          <rect x="438" width="202" height="252" fill="#13110d"/>
-          <rect x="452" y="44" width="174" height="86" fill="#3a3329"/>
-          <rect x="452" y="150" width="60" height="96" fill="#241f19"/>
-          <rect x="556" y="150" width="60" height="96" fill="#241f19"/>
-          <text x="22" y="34" fill="#6e6a60" font-family="monospace" font-size="13" letter-spacing="2">PLATFORM B · NORTHBOUND</text>
-
-          <!-- NORMAL: commuter on phone -->
-          <g class="hotspot" data-sus="0" data-note="A commuter checking their phone — everyday behaviour.">
-            <circle cx="92" cy="150" r="15" fill="#d4cdbe"/>
-            <rect x="77" y="167" width="30" height="66" rx="6" fill="#6f5bd6"/>
-            <rect x="99" y="186" width="9" height="15" fill="#0c0a08"/>
-            <rect class="frame" x="68" y="132" width="50" height="104" rx="5"/>
-          </g>
-          <!-- SUSPICIOUS: unattended bag -->
-          <g class="hotspot" data-sus="1" data-note="An unattended bag with no owner in sight. Don't touch it — report it and keep clear.">
-            <rect x="232" y="206" width="44" height="34" rx="5" fill="#4a3f2e"/>
-            <rect x="246" y="196" width="16" height="14" rx="4" fill="#4a3f2e"/>
-            <rect class="frame" x="224" y="188" width="62" height="58" rx="5"/>
-          </g>
-          <!-- NORMAL: bench -->
-          <g class="hotspot" data-sus="0" data-note="A station bench. Nothing unusual here.">
-            <rect x="120" y="232" width="80" height="10" fill="#3a3329"/>
-            <rect x="126" y="242" width="8" height="16" fill="#2a2520"/>
-            <rect x="186" y="242" width="8" height="16" fill="#2a2520"/>
-            <rect class="frame" x="114" y="224" width="92" height="40" rx="5"/>
-          </g>
-          <!-- SUSPICIOUS: person filming cameras/exits -->
-          <g class="hotspot" data-sus="1" data-note="Someone discreetly filming the CCTV and exits — possible hostile reconnaissance of the station.">
-            <circle cx="346" cy="150" r="15" fill="#d4cdbe"/>
-            <rect x="331" y="167" width="30" height="66" rx="6" fill="#2f6f4a"/>
-            <rect x="356" y="172" width="22" height="14" rx="3" fill="#0c0a08"/>
-            <circle cx="376" cy="179" r="4" fill="#1a1712"/>
-            <path d="M331 196 l-22 -10" stroke="#2f6f4a" stroke-width="7" stroke-linecap="round"/>
-            <rect class="frame" x="300" y="132" width="86" height="104" rx="5"/>
-          </g>
-          <!-- NORMAL: rubbish bin -->
-          <g class="hotspot" data-sus="0" data-note="A normal station rubbish bin.">
-            <rect x="404" y="206" width="30" height="40" rx="3" fill="#33536b"/>
-            <rect x="400" y="200" width="38" height="8" rx="2" fill="#3f6584"/>
-            <rect class="frame" x="396" y="194" width="46" height="54" rx="5"/>
-          </g>
-          <!-- NORMAL: ad poster -->
-          <g class="hotspot" data-sus="0" data-note="A backlit advertising poster — part of the station.">
-            <rect x="40" y="70" width="70" height="96" rx="4" fill="#241f19" stroke="#3a3329"/>
-            <rect x="50" y="80" width="50" height="40" fill="#FF7300" opacity="0.5"/>
-            <rect x="50" y="128" width="50" height="8" fill="#3a3329"/>
-            <rect x="50" y="142" width="34" height="8" fill="#3a3329"/>
-            <rect class="frame" x="36" y="66" width="78" height="104" rx="5"/>
-          </g>
-        </svg>
-      </div>
-
-      <!-- SCENE 2 · SHOPPING MALL -->
-      <div class="scene-wrap g2-scene" data-scene="1" data-sus="2" style="display:none">
-        <svg viewBox="0 0 640 360" class="scene-svg" role="img" aria-label="Shopping mall atrium">
-          <rect width="640" height="360" fill="#1a1712"/>
-          <rect y="262" width="640" height="98" fill="#2a2520"/>
-          <rect x="40" y="60" width="150" height="150" fill="#211d16" stroke="#3a3329"/>
-          <rect x="450" y="60" width="150" height="150" fill="#211d16" stroke="#3a3329"/>
-          <text x="60" y="96" fill="#6e6a60" font-family="monospace" font-size="12" letter-spacing="2">SHOPS</text>
-          <path d="M250 60 L390 60 L360 210 L280 210 Z" fill="#1d1913"/>
-          <path d="M250 60 L390 60 L360 210 L280 210 Z" fill="none" stroke="#3a3329"/>
-          <line x1="265" y1="92" x2="375" y2="92" stroke="#3a3329"/>
-          <line x1="272" y1="124" x2="368" y2="124" stroke="#3a3329"/>
-          <text x="22" y="32" fill="#6e6a60" font-family="monospace" font-size="13" letter-spacing="2">CENTRAL ATRIUM · L1</text>
-
-          <!-- NORMAL: shopper with bags -->
-          <g class="hotspot" data-sus="0" data-note="A shopper carrying shopping bags — ordinary mall activity.">
-            <circle cx="120" cy="250" r="15" fill="#d4cdbe"/>
-            <rect x="105" y="267" width="30" height="64" rx="6" fill="#a6563f"/>
-            <rect x="92" y="290" width="14" height="20" rx="2" fill="#c9a24a"/>
-            <rect x="134" y="290" width="14" height="20" rx="2" fill="#c9a24a"/>
-            <rect class="frame" x="88" y="232" width="66" height="100" rx="5"/>
-          </g>
-          <!-- SUSPICIOUS: abandoned backpack under stairwell -->
-          <g class="hotspot" data-sus="1" data-note="An abandoned backpack tucked under the stairwell, no owner nearby. Keep back and alert security.">
-            <rect x="206" y="296" width="40" height="44" rx="8" fill="#3a4a2e"/>
-            <rect x="214" y="288" width="24" height="14" rx="6" fill="#3a4a2e"/>
-            <line x1="226" y1="296" x2="226" y2="338" stroke="#26331f" stroke-width="3"/>
-            <rect class="frame" x="198" y="282" width="56" height="60" rx="5"/>
-          </g>
-          <!-- NORMAL: potted plant -->
-          <g class="hotspot" data-sus="0" data-note="A decorative potted plant.">
-            <rect x="408" y="300" width="34" height="34" rx="3" fill="#5a3f28"/>
-            <path d="M425 300 C405 270 420 256 425 250 C430 256 445 270 425 300" fill="#3f6b45"/>
-            <rect class="frame" x="400" y="246" width="52" height="90" rx="5"/>
-          </g>
-          <!-- SUSPICIOUS: person photographing exits / security desk -->
-          <g class="hotspot" data-sus="1" data-note="Someone photographing the fire-exit layout and security desk — mapping the building. Report it.">
-            <circle cx="330" cy="250" r="15" fill="#d4cdbe"/>
-            <rect x="315" y="267" width="30" height="64" rx="6" fill="#2f5d6f"/>
-            <rect x="340" y="252" width="24" height="16" rx="3" fill="#0c0a08"/>
-            <circle cx="362" cy="260" r="4" fill="#1a1712"/>
-            <rect class="frame" x="308" y="232" width="68" height="100" rx="5"/>
-          </g>
-          <!-- NORMAL: directory sign -->
-          <g class="hotspot" data-sus="0" data-note="A store directory sign.">
-            <rect x="486" y="250" width="44" height="84" rx="3" fill="#241f19" stroke="#3a3329"/>
-            <rect x="494" y="260" width="28" height="6" fill="#3a3329"/>
-            <rect x="494" y="272" width="28" height="6" fill="#3a3329"/>
-            <rect x="494" y="284" width="20" height="6" fill="#3a3329"/>
-            <rect class="frame" x="482" y="246" width="52" height="92" rx="5"/>
-          </g>
-          <!-- NORMAL: cleaner with trolley -->
-          <g class="hotspot" data-sus="0" data-note="A cleaner with a service trolley — mall staff at work.">
-            <circle cx="560" cy="252" r="14" fill="#d4cdbe"/>
-            <rect x="546" y="268" width="28" height="60" rx="6" fill="#7a6f3f"/>
-            <rect x="578" y="288" width="26" height="40" rx="3" fill="#3a3329"/>
-            <rect class="frame" x="540" y="236" width="70" height="96" rx="5"/>
-          </g>
-        </svg>
-      </div>
-
-      <!-- SCENE 3 · WATERFRONT -->
-      <div class="scene-wrap g2-scene" data-scene="2" data-sus="2" style="display:none">
-        <svg viewBox="0 0 640 360" class="scene-svg" role="img" aria-label="Marina waterfront">
-          <rect width="640" height="360" fill="#16202b"/>
-          <rect y="150" width="640" height="120" fill="#1c2f3e"/>
-          <rect y="270" width="640" height="90" fill="#2a2520"/>
-          <rect x="120" y="70" width="40" height="90" fill="#23323f"/>
-          <rect x="180" y="40" width="34" height="120" fill="#26384a"/>
-          <rect x="240" y="86" width="30" height="74" fill="#23323f"/>
-          <rect x="470" y="56" width="44" height="104" fill="#26384a"/>
-          <rect x="528" y="86" width="30" height="74" fill="#23323f"/>
-          <line x1="0" y1="200" x2="640" y2="200" stroke="#0c0a08" stroke-width="6"/>
-          <line x1="60" y1="200" x2="60" y2="270" stroke="#0c0a08" stroke-width="5"/>
-          <line x1="300" y1="200" x2="300" y2="270" stroke="#0c0a08" stroke-width="5"/>
-          <line x1="560" y1="200" x2="560" y2="270" stroke="#0c0a08" stroke-width="5"/>
-          <text x="22" y="32" fill="#6e6a60" font-family="monospace" font-size="13" letter-spacing="2">MARINA PROMENADE</text>
-
-          <!-- NORMAL: tourist taking selfie -->
-          <g class="hotspot" data-sus="0" data-note="A tourist taking a selfie — typical at the waterfront.">
-            <circle cx="96" cy="262" r="15" fill="#d4cdbe"/>
-            <rect x="81" y="279" width="30" height="62" rx="6" fill="#c4564f"/>
-            <path d="M111 290 l24 -8" stroke="#c4564f" stroke-width="7" stroke-linecap="round"/>
-            <rect x="132" y="276" width="14" height="10" rx="2" fill="#0c0a08"/>
-            <rect class="frame" x="74" y="244" width="78" height="98" rx="5"/>
-          </g>
-          <!-- NORMAL: bench -->
-          <g class="hotspot" data-sus="0" data-note="A promenade bench.">
-            <rect x="172" y="282" width="70" height="9" fill="#3a3329"/>
-            <rect x="178" y="291" width="7" height="14" fill="#2a2520"/>
-            <rect x="229" y="291" width="7" height="14" fill="#2a2520"/>
-            <rect class="frame" x="166" y="274" width="82" height="34" rx="5"/>
-          </g>
-          <!-- SUSPICIOUS: unattended package beside bench -->
-          <g class="hotspot" data-sus="1" data-note="An unattended package left by the bench, no owner around. Don't touch — clear the area and report.">
-            <rect x="288" y="306" width="44" height="34" rx="3" fill="#7a6a4a"/>
-            <line x1="310" y1="306" x2="310" y2="340" stroke="#5a4d36" stroke-width="3"/>
-            <line x1="288" y1="323" x2="332" y2="323" stroke="#5a4d36" stroke-width="3"/>
-            <rect class="frame" x="282" y="298" width="58" height="46" rx="5"/>
-          </g>
-          <!-- SUSPICIOUS: person flying drone near restricted area -->
-          <g class="hotspot" data-sus="1" data-note="Someone flying a drone over a secured, no-fly zone. Unauthorised — note it and inform the authorities.">
-            <circle cx="372" cy="262" r="15" fill="#d4cdbe"/>
-            <rect x="357" y="279" width="30" height="62" rx="6" fill="#3a5566"/>
-            <g>
-              <rect x="408" y="150" width="44" height="9" rx="3" fill="#2a2520"/>
-              <circle cx="408" cy="154" r="9" fill="none" stroke="#6e6a60" stroke-width="2"/>
-              <circle cx="452" cy="154" r="9" fill="none" stroke="#6e6a60" stroke-width="2"/>
-              <rect x="424" y="159" width="12" height="6" fill="#FF7300"/>
-            </g>
-            <rect class="frame" x="350" y="142" width="110" height="200" rx="5"/>
-          </g>
-          <!-- NORMAL: bicycle -->
-          <g class="hotspot" data-sus="0" data-note="A parked bicycle.">
-            <circle cx="496" cy="320" r="16" fill="none" stroke="#6e6a60" stroke-width="3"/>
-            <circle cx="540" cy="320" r="16" fill="none" stroke="#6e6a60" stroke-width="3"/>
-            <path d="M496 320 L518 296 L540 320 M518 296 L512 304" stroke="#8a8576" stroke-width="3" fill="none"/>
-            <rect class="frame" x="476" y="288" width="84" height="50" rx="5"/>
-          </g>
-          <!-- NORMAL: lamppost / bin -->
-          <g class="hotspot" data-sus="0" data-note="A waterfront litter bin.">
-            <rect x="588" y="290" width="28" height="44" rx="3" fill="#33536b"/>
-            <rect x="584" y="284" width="36" height="8" rx="2" fill="#3f6584"/>
-            <rect class="frame" x="580" y="278" width="44" height="58" rx="5"/>
-          </g>
-        </svg>
-      </div>
-
-      <div class="scene-log" id="g2-log">Tap an item to inspect it.</div>
+      <div class="scene-wrap" id="g2-scene"></div>
+      <div class="scene-hint">Tap the dashed outlines. Some are threats, some are harmless.</div>
+      <div class="scene-log" id="g2-log">Tap an outline to inspect it.</div>
       <div class="scene-foot">
         <span class="scene-tally" id="g2-tally"></span>
         <button class="game-btn ghost" id="g2-retry" style="display:none">Retry scene</button>
@@ -1462,8 +1252,9 @@
     <p class="game-sub">Slide the tiles into the empty space to restore the picture. Tap a tile next to the gap to move it.</p>
     <div id="g3-play">
       <div class="puzzle-top">
-        <span class="stat">Moves · <b id="g3-moves">0</b></span>
+        <span class="puzzle-ref-label">Goal · restore this picture</span>
         <img src="assets/harmony.png" alt="Reference" class="puzzle-ref" id="g3-ref" />
+        <span class="stat">Moves · <b id="g3-moves">0</b></span>
       </div>
       <div class="puzzle-board" id="g3-board"></div>
       <div class="puzzle-noimg" id="g3-noimg">Puzzle image not found — add <b>assets/harmony.png</b> to the repo.</div>
@@ -2470,17 +2261,21 @@ function g1RenderQuestion(){
     const sm = document.createElement('small'); sm.textContent = o.s;
     btn.appendChild(b); btn.appendChild(sm);
     btn.addEventListener('click', () => {
-      if (g1answered) return;
-      g1answered = true;
-      opts.querySelectorAll('.mcq-opt').forEach((bb, k) => {
-        bb.disabled = true;
-        if (k === q.a) bb.classList.add('correct');
-        if (k === idx && idx !== q.a) bb.classList.add('wrong');
-      });
-      if (idx === q.a) g1correct++;
-      explain.textContent = q.why;
-      explain.classList.add('show');
-      nextBtn.style.visibility = 'visible';
+      if (g1answered || btn.classList.contains('wrong')) return;
+      if (idx === q.a) {
+        g1answered = true;
+        opts.querySelectorAll('.mcq-opt').forEach(bb => { bb.disabled = true; });
+        btn.classList.add('correct');
+        explain.textContent = q.why;
+        explain.classList.add('show');
+        nextBtn.style.visibility = 'visible';        // advance only when correct
+      } else {
+        // wrong — flag it, nudge, and let them try another answer
+        btn.classList.add('wrong');
+        btn.disabled = true;
+        explain.textContent = 'Not quite. Ask: is it everyday and open (normal), open but foreign-driven (influence), or hidden, deceptive or coercive (interference)? Try again.';
+        explain.classList.add('show');
+      }
     });
     opts.appendChild(btn);
   });
@@ -2496,39 +2291,68 @@ async function g1Finish(){
   document.getElementById('g1-play').style.display = 'none';
   g1i = G1_Q.length; g1RenderProgress();
 
-  const passed = g1correct === G1_Q.length;
   const end = document.getElementById('g1-end');
   end.style.display = ''; end.innerHTML = '';
 
   const wrap = document.createElement('div'); wrap.className = 'game-result';
-  const badge = document.createElement('div');
-  badge.className = 'badge-big ' + (passed ? 'win' : 'fail');
-  badge.textContent = passed ? 'Drill cleared' : 'Not cleared';
-  const h = document.createElement('h3');
-  h.textContent = g1correct + ' / ' + G1_Q.length + ' correct';
+  const badge = document.createElement('div'); badge.className = 'badge-big win'; badge.textContent = 'Mission cleared';
+  const h = document.createElement('h3'); h.textContent = 'All eight, correct';
   const p = document.createElement('p');
-  const btn = document.createElement('button'); btn.className = 'game-btn';
-
-  if (passed){
-    p.textContent = 'You can reliably tell normal engagement, open influence and covert interference apart. +40 points logged.';
-    const r = await recordNECompletion('ne-1');
-    if (!r.ok) p.textContent = 'Cleared — but saving failed: ' + r.msg;
-    btn.textContent = 'Done';
-    btn.addEventListener('click', () => closeGame(document.getElementById('g1-modal')));
-  } else {
-    p.textContent = '100% is needed to clear this drill. Review the explanations and run it again.';
-    btn.textContent = 'Try again';
-    btn.addEventListener('click', g1Start);
-  }
+  p.textContent = 'You can reliably tell normal engagement, open influence and covert interference apart. +40 points logged.';
+  const btn = document.createElement('button'); btn.className = 'game-btn'; btn.textContent = 'Done';
+  const r = await recordNECompletion('ne-1');
+  if (!r.ok) p.textContent = 'Cleared — but saving failed: ' + r.msg;
+  btn.addEventListener('click', () => closeGame(document.getElementById('g1-modal')));
   wrap.appendChild(badge); wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(btn);
   end.appendChild(wrap);
 }
 
 // ============================================================
 // GAME 2 · SGSECURE HOTSPOTS  (ne-2, 60 pts, 100%)
+// Real Singapore photos with tappable hotspot overlays.
+// Each item: {x,y,w,h} as % of the image, sus:true/false, note.
+// To re-position a hotspot, just tweak its x/y/w/h percentages.
 // ============================================================
-let g2scene = 0, g2found = 0;
-function g2scenes(){ return document.querySelectorAll('#g2-play .g2-scene'); }
+const G2_SCENES = [
+  {
+    img: 'assets/scene-1.jpg',
+    label: 'Marina waterfront',
+    items: [
+      { x:0.5,  y:34, w:8,  h:60, sus:false, note:'A jogger on the promenade — everyday exercise.' },
+      { x:11,   y:48, w:13, h:24, sus:false, note:'A public bench. Nothing unusual about it.' },
+      { x:14,   y:74, w:9,  h:22, sus:true,  note:'A dark bag left under the bench with no owner nearby. Keep clear and report it.' },
+      { x:39,   y:22, w:9,  h:70, sus:false, note:'A photographer with a tripod — taking skyline shots in the open.' },
+      { x:58.5, y:54, w:7,  h:22, sus:true,  note:'An unattended backpack sitting alone on the steps. Do not touch — alert security.' },
+      { x:80,   y:30, w:8,  h:62, sus:false, note:'A busker performing for the crowd.' },
+    ],
+  },
+  {
+    img: 'assets/scene-2.jpg',
+    label: 'Shopping mall',
+    items: [
+      { x:11,   y:52, w:8,  h:40, sus:true,  note:'A hard-shell suitcase standing alone by the escalator, no traveller in sight. Report it.' },
+      { x:22,   y:30, w:11, h:62, sus:false, note:'A shop assistant arranging the window display — staff at work.' },
+      { x:37,   y:62, w:8,  h:26, sus:true,  note:'A cardboard box left in the middle of the walkway with no one attending it. Keep back and report.' },
+      { x:55,   y:38, w:12, h:57, sus:false, note:'A group taking a selfie — ordinary mall visitors.' },
+      { x:80,   y:34, w:7,  h:58, sus:false, note:'A shopper walking through the concourse.' },
+      { x:88,   y:74, w:9,  h:22, sus:false, note:'A paper shopping bag beside an occupied table — attended, no concern.' },
+    ],
+  },
+  {
+    img: 'assets/scene-3.jpg',
+    label: 'MRT platform',
+    items: [
+      { x:1.5, y:30, w:19, h:66, sus:false, note:'A commuter checking his phone with his backpack beside him — attended, no concern.' },
+      { x:30,  y:26, w:11, h:48, sus:true,  note:'A service panel left open with exposed wiring. Tampered infrastructure — do not touch, report it.' },
+      { x:44,  y:44, w:13, h:50, sus:false, note:'A family waiting on the bench together.' },
+      { x:57,  y:48, w:8,  h:22, sus:true,  note:'A duffel bag left alone on the bench with no owner around. Report it and keep clear.' },
+      { x:67,  y:30, w:8,  h:64, sus:false, note:'A commuter walking along the platform.' },
+      { x:84,  y:34, w:13, h:60, sus:false, note:'A station cleaner with a trolley — staff on duty.' },
+    ],
+  },
+];
+
+let g2scene = 0, g2found = 0, g2susTotal = 0;
 
 function g2Start(){
   document.getElementById('g2-end').style.display = 'none';
@@ -2538,7 +2362,7 @@ function g2Start(){
 
 function g2RenderProgress(){
   const p = document.getElementById('g2-progress'); p.innerHTML = '';
-  g2scenes().forEach((_, k) => {
+  G2_SCENES.forEach((_, k) => {
     const sp = document.createElement('span');
     if (k < g2scene) sp.classList.add('on');
     p.appendChild(sp);
@@ -2547,62 +2371,92 @@ function g2RenderProgress(){
 
 function g2ShowScene(idx){
   g2scene = idx; g2found = 0;
-  const scenes = g2scenes();
-  scenes.forEach((sc, k) => { sc.style.display = k === idx ? '' : 'none'; });
-  const scene = scenes[idx];
-  scene.querySelectorAll('.hotspot').forEach(h => h.classList.remove('good','bad','locked'));
+  const scene = G2_SCENES[idx];
+  g2susTotal = scene.items.filter(it => it.sus).length;
+
+  const wrap = document.getElementById('g2-scene');
+  wrap.innerHTML = '';
+  const img = document.createElement('img');
+  img.className = 'scene-img';
+  img.alt = scene.label;
+  const noimg = document.createElement('div');
+  noimg.className = 'scene-noimg';
+  noimg.textContent = 'Scene image missing — add ' + scene.img + ' to the repo.';
+  noimg.style.display = 'none';
+  img.onerror = () => { img.style.display = 'none'; noimg.style.display = 'block'; };
+  img.src = scene.img;
+  wrap.appendChild(img);
+  wrap.appendChild(noimg);
+
+  scene.items.forEach(it => {
+    const hs = document.createElement('div');
+    hs.className = 'hotspot';
+    hs.style.left   = it.x + '%';
+    hs.style.top    = it.y + '%';
+    hs.style.width  = it.w + '%';
+    hs.style.height = it.h + '%';
+    hs.dataset.sus  = it.sus ? '1' : '0';
+    hs.dataset.note = it.note;
+    const pin = document.createElement('span');
+    pin.className = 'pin';
+    hs.appendChild(pin);
+    wrap.appendChild(hs);
+  });
+
   document.getElementById('g2-intro').style.display = idx === 0 ? '' : 'none';
   document.getElementById('g2-objective').innerHTML =
-    'Scene <b>' + (idx + 1) + ' / ' + scenes.length + '</b> — tap everything that looks out of place';
-  document.getElementById('g2-log').textContent = 'Tap an item to inspect it.';
+    'Scene <b>' + (idx + 1) + ' / ' + G2_SCENES.length + '</b> · ' + scene.label +
+    ' — tap everything that looks out of place';
+  document.getElementById('g2-log').textContent = 'Tap an outline to inspect it.';
   document.getElementById('g2-retry').style.display = 'none';
-  g2UpdateTally(Number(scene.dataset.sus));
+  g2UpdateTally();
   g2RenderProgress();
 }
 
-function g2UpdateTally(total){
-  document.getElementById('g2-tally').innerHTML = 'Flagged <b>' + g2found + '</b> / ' + total;
+function g2UpdateTally(){
+  document.getElementById('g2-tally').innerHTML = 'Flagged <b>' + g2found + '</b> / ' + g2susTotal;
 }
 
 function g2Hotspot(h){
   if (h.classList.contains('locked') || h.classList.contains('good')) return;
-  const scene = g2scenes()[g2scene];
-  const susCount = Number(scene.dataset.sus);
-  const log = document.getElementById('g2-log');
+  const wrap = document.getElementById('g2-scene');
+  const log  = document.getElementById('g2-log');
+  const pin  = h.querySelector('.pin');
 
   if (h.dataset.sus === '1'){
     h.classList.add('good','locked');
+    if (pin) pin.textContent = '✓';
     g2found++;
     log.innerHTML = '<span class="ok">⚑ Flagged.</span> ' + (h.dataset.note || '');
-    g2UpdateTally(susCount);
-    if (g2found >= susCount){
-      scene.querySelectorAll('.hotspot').forEach(x => x.classList.add('locked'));
-      setTimeout(g2SceneClear, 700);
+    g2UpdateTally();
+    if (g2found >= g2susTotal){
+      wrap.querySelectorAll('.hotspot').forEach(x => x.classList.add('locked'));
+      setTimeout(g2SceneClear, 750);
     }
   } else {
     h.classList.add('bad');
+    if (pin) pin.textContent = '✕';
     log.innerHTML = '<span class="no">✕ False alarm.</span> ' + (h.dataset.note || '') +
       ' Over-reporting erodes trust — restart the scene.';
-    scene.querySelectorAll('.hotspot').forEach(x => x.classList.add('locked'));
+    wrap.querySelectorAll('.hotspot').forEach(x => x.classList.add('locked'));
     document.getElementById('g2-retry').style.display = '';
   }
 }
 
 function g2SceneClear(){
-  const scenes = g2scenes();
-  if (g2scene < scenes.length - 1) g2ShowScene(g2scene + 1);
+  if (g2scene < G2_SCENES.length - 1) g2ShowScene(g2scene + 1);
   else g2Finish();
 }
 
 async function g2Finish(){
   document.getElementById('g2-intro').style.display = 'none';
   document.getElementById('g2-play').style.display = 'none';
-  g2scene = g2scenes().length; g2RenderProgress();
+  g2scene = G2_SCENES.length; g2RenderProgress();
 
   const end = document.getElementById('g2-end');
   end.style.display = ''; end.innerHTML = '';
   const wrap = document.createElement('div'); wrap.className = 'game-result';
-  const badge = document.createElement('div'); badge.className = 'badge-big win'; badge.textContent = 'Drill cleared';
+  const badge = document.createElement('div'); badge.className = 'badge-big win'; badge.textContent = 'Mission cleared';
   const h = document.createElement('h3'); h.textContent = 'All clear — sharp eyes';
   const p = document.createElement('p');
   p.textContent = 'You spotted every threat with no false alarms across all three scenes. That’s the SGSecure mindset — stay alert, report early. +60 points logged.';
