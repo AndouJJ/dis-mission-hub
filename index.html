@@ -642,6 +642,143 @@
   .gate-btn:disabled{opacity:0.4;cursor:not-allowed}
   .gate-err{font-family:var(--mono);font-size:10px;letter-spacing:0.15em;
     text-transform:uppercase;color:#e05c5c;min-height:16px;text-align:center}
+
+  /* ============ NATIONAL EDUCATION DRILLS ============ */
+  .mc-status.live{color:var(--orange)}
+  .mc-status.live::before{content:"";width:6px;height:6px;background:var(--orange);border-radius:50%}
+
+  /* generic game modal */
+  .game-modal{
+    position:fixed;inset:0;z-index:400;background:rgba(12,10,8,0.9);backdrop-filter:blur(6px);
+    display:none;align-items:center;justify-content:center;padding:24px;
+  }
+  .game-modal.show{display:flex}
+  .game-card{
+    background:var(--ink-2);border:1px solid var(--rule-2);width:min(660px,100%);
+    max-height:92vh;overflow-y:auto;padding:34px 34px 28px;position:relative;
+  }
+  .game-close{
+    position:absolute;top:18px;right:18px;background:transparent;border:1px solid var(--rule-2);
+    color:var(--paper-2);width:30px;height:30px;cursor:pointer;font-size:14px;
+    display:grid;place-items:center;transition:all 0.15s;z-index:3;
+  }
+  .game-close:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .game-meta{
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--paper-3);
+    text-transform:uppercase;margin-bottom:18px;padding-right:48px;
+  }
+  .game-meta .o{color:var(--orange);font-weight:600}
+  .game-h{
+    font-family:var(--serif);font-weight:400;font-size:clamp(30px,4.5vw,42px);
+    line-height:1;letter-spacing:-0.015em;margin:0 0 10px;color:var(--paper);
+  }
+  .game-h em{color:var(--orange)}
+  .game-sub{font-family:var(--serif);font-size:16px;line-height:1.45;color:var(--paper-2);margin:0 0 22px}
+  .game-progress{display:flex;gap:5px;margin-bottom:22px}
+  .game-progress span{flex:1;height:4px;background:var(--rule-2);transition:background 0.2s}
+  .game-progress span.on{background:var(--orange)}
+  .game-progress span.bad{background:#e05c5c}
+  .game-btn{
+    font-family:var(--mono);font-size:12px;letter-spacing:0.2em;text-transform:uppercase;font-weight:700;
+    padding:14px 22px;border:none;background:var(--orange);color:var(--ink);cursor:pointer;transition:background 0.15s;
+  }
+  .game-btn:hover{background:var(--orange-2)}
+  .game-btn:disabled{opacity:0.4;cursor:not-allowed}
+  .game-btn.ghost{background:transparent;border:1px solid var(--rule-2);color:var(--paper);font-weight:600}
+  .game-btn.ghost:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+
+  .game-result{text-align:center;padding:14px 0 4px}
+  .game-result .badge-big{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.25em;text-transform:uppercase;
+    display:inline-block;padding:8px 16px;border:1px solid currentColor;margin-bottom:18px;
+  }
+  .game-result .badge-big.win{color:var(--good)}
+  .game-result .badge-big.fail{color:#e05c5c}
+  .game-result h3{font-family:var(--serif);font-size:32px;color:var(--paper);margin:0 0 10px;font-weight:400}
+  .game-result p{font-family:var(--serif);font-size:16px;color:var(--paper-2);line-height:1.5;margin:0 0 22px}
+  .game-result .game-btn{width:100%}
+
+  /* Game 1 — MCQ */
+  .mcq-scenario{font-family:var(--serif);font-size:21px;line-height:1.38;color:var(--paper);margin:0 0 18px}
+  .mcq-options{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+  .mcq-opt{
+    text-align:left;font-family:var(--mono);font-size:13px;letter-spacing:0.04em;color:var(--paper);
+    background:var(--ink-3);border:1px solid var(--rule-2);padding:15px 17px;cursor:pointer;
+    transition:border-color 0.15s,background 0.15s;line-height:1.4;
+  }
+  .mcq-opt:hover:not(:disabled){border-color:var(--orange)}
+  .mcq-opt:disabled{cursor:default}
+  .mcq-opt b{display:block;font-size:12px;letter-spacing:0.06em;margin-bottom:3px;color:var(--paper)}
+  .mcq-opt small{color:var(--paper-3);font-size:11px;letter-spacing:0.03em}
+  .mcq-opt.correct{border-color:var(--good);background:rgba(127,194,141,0.12)}
+  .mcq-opt.correct b{color:var(--good)}
+  .mcq-opt.wrong{border-color:#e05c5c;background:rgba(224,92,92,0.12)}
+  .mcq-opt.wrong b{color:#e05c5c}
+  .mcq-explain{
+    font-family:var(--serif);font-size:15px;line-height:1.5;color:var(--paper-2);
+    border-left:2px solid var(--orange);padding:6px 0 6px 16px;margin-bottom:20px;display:none;
+  }
+  .mcq-explain.show{display:block}
+  .mcq-foot{display:flex;justify-content:flex-end;align-items:center;gap:12px;min-height:48px}
+
+  /* Game 2 — hotspot scenes */
+  .scene-objective{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--paper-3);margin-bottom:12px;
+  }
+  .scene-objective b{color:var(--paper)}
+  .scene-wrap{width:100%;border:1px solid var(--rule);background:#15120e;margin-bottom:14px;overflow:hidden}
+  .scene-svg{display:block;width:100%;height:auto}
+  .hotspot{cursor:pointer}
+  .hotspot .frame{fill:transparent;stroke:var(--paper-3);stroke-opacity:0.35;stroke-width:1.5;stroke-dasharray:4 4}
+  .hotspot:hover .frame{stroke:var(--paper-2);stroke-opacity:0.65}
+  .hotspot.good .frame{stroke:var(--good);stroke-opacity:1;stroke-dasharray:none;stroke-width:3}
+  .hotspot.bad  .frame{stroke:#e05c5c;stroke-opacity:1;stroke-dasharray:none;stroke-width:3}
+  .hotspot.locked{pointer-events:none}
+  .scene-log{
+    font-family:var(--mono);font-size:12px;line-height:1.5;letter-spacing:0.02em;
+    color:var(--paper-2);min-height:42px;margin-bottom:14px;
+  }
+  .scene-log .ok{color:var(--good);font-weight:600}
+  .scene-log .no{color:#e05c5c;font-weight:600}
+  .scene-foot{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .scene-tally{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--paper-3)}
+  .scene-tally b{color:var(--orange)}
+
+  /* Game 3 — sliding puzzle */
+  .puzzle-top{
+    display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px;
+    font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--paper-3);
+  }
+  .puzzle-top .stat b{color:var(--orange)}
+  .puzzle-ref{width:84px;height:56px;object-fit:cover;border:1px solid var(--rule-2);flex-shrink:0}
+  .puzzle-board{
+    position:relative;width:100%;max-width:420px;aspect-ratio:3/2;margin:0 auto 16px;
+    --puz-img:url('assets/harmony.png');
+    background:var(--ink-3);border:1px solid var(--rule);overflow:hidden;touch-action:manipulation;
+  }
+  .puzzle-tile{
+    position:absolute;width:33.333%;height:33.333%;
+    background-image:var(--puz-img);background-size:300% 300%;background-repeat:no-repeat;
+    box-shadow:inset 0 0 0 1px rgba(12,10,8,0.4);cursor:pointer;
+    transition:left 0.12s ease, top 0.12s ease;
+  }
+  .puzzle-tile.blank{opacity:0;pointer-events:none}
+  .puzzle-board.solved .puzzle-tile{box-shadow:none;cursor:default}
+  .puzzle-board.solved .puzzle-tile.blank{opacity:1}
+  .puzzle-foot{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .puzzle-noimg{
+    font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--paper-3);text-align:center;line-height:1.6;padding:10px;display:none;
+  }
+
+  @media (max-width:680px){
+    .game-card{padding:26px 20px 22px}
+    .game-h{font-size:30px}
+    .mcq-scenario{font-size:18px}
+    .scene-log{font-size:11px}
+  }
 </style>
 </head>
 <body>
@@ -880,6 +1017,57 @@
   </div>
 </section>
 
+<!-- ============ NATIONAL EDUCATION DRILLS ============ -->
+<section class="block" style="padding-top:0">
+  <div class="container">
+    <div class="block-head">
+      <h2>Cohesion <em>drills.</em></h2>
+      <div class="meta">03 drills · live now<b id="drills-meta">Play anytime · points count</b></div>
+    </div>
+
+    <div class="missions-grid">
+      <article class="mission-card has-detail ne-card" data-game="ne-1" data-cid="ne-1" data-pts="40">
+        <div class="mc-head">
+          <span class="mc-id">D-001 · FOREIGN INTERFERENCE</span>
+          <span class="mc-status live">Live</span>
+        </div>
+        <h3 class="mc-title">Spot the <em>interference.</em></h3>
+        <p class="mc-desc">Eight scenarios. Tell ordinary engagement from foreign influence — and influence from interference. Clear all eight to log the drill.</p>
+        <div class="mc-foot">
+          <span class="mc-pts"><b>40</b>PTS</span>
+          <span class="mc-tier"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></span>
+        </div>
+      </article>
+
+      <article class="mission-card has-detail ne-card" data-game="ne-2" data-cid="ne-2" data-pts="60">
+        <div class="mc-head">
+          <span class="mc-id">D-002 · SGSECURE</span>
+          <span class="mc-status live">Live</span>
+        </div>
+        <h3 class="mc-title">The <em>quiet</em> signs.</h3>
+        <p class="mc-desc">Three everyday scenes. Tap what doesn't belong — the unattended bag, the watcher at the cameras — without raising a false alarm. Zero mistakes to clear.</p>
+        <div class="mc-foot">
+          <span class="mc-pts"><b>60</b>PTS</span>
+          <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></span>
+        </div>
+      </article>
+
+      <article class="mission-card has-detail ne-card" data-game="ne-3" data-cid="ne-3" data-pts="80">
+        <div class="mc-head">
+          <span class="mc-id">D-003 · RACIAL HARMONY</span>
+          <span class="mc-status live">Live</span>
+        </div>
+        <h3 class="mc-title">Many cultures, <em>one</em> frame.</h3>
+        <p class="mc-desc">Slide the tiles to restore Singapore's multicultural mosaic. One picture, many hands. Solve it to log the drill.</p>
+        <div class="mc-foot">
+          <span class="mc-pts"><b>80</b>PTS</span>
+          <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- ============ LEADERBOARD ============ -->
 <section class="block" style="padding-top:0">
   <div class="container">
@@ -1036,6 +1224,258 @@
   <img id="photo-lb-img" src="" alt="" />
 </div>
 
+<!-- ============ GAME 1 · FOREIGN INTERFERENCE MCQ ============ -->
+<div class="game-modal" id="g1-modal" aria-hidden="true">
+  <div class="game-card">
+    <button class="game-close" data-close-game aria-label="Close">✕</button>
+    <div class="game-meta">
+      <span>D-001 · FOREIGN INTERFERENCE</span>
+      <span class="o">40 PTS · 100% TO CLEAR</span>
+    </div>
+    <h2 class="game-h">Spot the <em>interference.</em></h2>
+    <p class="game-sub" id="g1-intro">Three categories. <b>Normal activity</b> is open and everyday. <b>Foreign influence</b> is an open, attributable attempt to shape views. <b>Foreign interference</b> is covert, deceptive or coercive. Classify all eight — get every one right to clear.</p>
+    <div class="game-progress" id="g1-progress"></div>
+    <div id="g1-play"></div>
+    <div id="g1-end" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ============ GAME 2 · SGSECURE HOTSPOTS ============ -->
+<div class="game-modal" id="g2-modal" aria-hidden="true">
+  <div class="game-card">
+    <button class="game-close" data-close-game aria-label="Close">✕</button>
+    <div class="game-meta">
+      <span>D-002 · SGSECURE</span>
+      <span class="o">60 PTS · 100% TO CLEAR</span>
+    </div>
+    <h2 class="game-h">The <em>quiet</em> signs.</h2>
+    <p class="game-sub" id="g2-intro">Stay alert. In each scene, tap the things that don't belong. A correct flag turns <b>green</b>; a false alarm turns <b>red</b> and resets the scene. Clear all three scenes with zero false alarms.</p>
+    <div class="game-progress" id="g2-progress"></div>
+    <div id="g2-play">
+      <div class="scene-objective" id="g2-objective"></div>
+
+      <!-- SCENE 1 · MRT PLATFORM -->
+      <div class="scene-wrap g2-scene" data-scene="0" data-sus="2">
+        <svg viewBox="0 0 640 360" class="scene-svg" role="img" aria-label="MRT platform">
+          <rect width="640" height="360" fill="#1a1712"/>
+          <rect y="252" width="640" height="108" fill="#2a2520"/>
+          <rect y="246" width="640" height="7" fill="#FF7300" opacity="0.85"/>
+          <rect x="438" width="202" height="252" fill="#13110d"/>
+          <rect x="452" y="44" width="174" height="86" fill="#3a3329"/>
+          <rect x="452" y="150" width="60" height="96" fill="#241f19"/>
+          <rect x="556" y="150" width="60" height="96" fill="#241f19"/>
+          <text x="22" y="34" fill="#6e6a60" font-family="monospace" font-size="13" letter-spacing="2">PLATFORM B · NORTHBOUND</text>
+
+          <!-- NORMAL: commuter on phone -->
+          <g class="hotspot" data-sus="0" data-note="A commuter checking their phone — everyday behaviour.">
+            <circle cx="92" cy="150" r="15" fill="#d4cdbe"/>
+            <rect x="77" y="167" width="30" height="66" rx="6" fill="#6f5bd6"/>
+            <rect x="99" y="186" width="9" height="15" fill="#0c0a08"/>
+            <rect class="frame" x="68" y="132" width="50" height="104" rx="5"/>
+          </g>
+          <!-- SUSPICIOUS: unattended bag -->
+          <g class="hotspot" data-sus="1" data-note="An unattended bag with no owner in sight. Don't touch it — report it and keep clear.">
+            <rect x="232" y="206" width="44" height="34" rx="5" fill="#4a3f2e"/>
+            <rect x="246" y="196" width="16" height="14" rx="4" fill="#4a3f2e"/>
+            <rect class="frame" x="224" y="188" width="62" height="58" rx="5"/>
+          </g>
+          <!-- NORMAL: bench -->
+          <g class="hotspot" data-sus="0" data-note="A station bench. Nothing unusual here.">
+            <rect x="120" y="232" width="80" height="10" fill="#3a3329"/>
+            <rect x="126" y="242" width="8" height="16" fill="#2a2520"/>
+            <rect x="186" y="242" width="8" height="16" fill="#2a2520"/>
+            <rect class="frame" x="114" y="224" width="92" height="40" rx="5"/>
+          </g>
+          <!-- SUSPICIOUS: person filming cameras/exits -->
+          <g class="hotspot" data-sus="1" data-note="Someone discreetly filming the CCTV and exits — possible hostile reconnaissance of the station.">
+            <circle cx="346" cy="150" r="15" fill="#d4cdbe"/>
+            <rect x="331" y="167" width="30" height="66" rx="6" fill="#2f6f4a"/>
+            <rect x="356" y="172" width="22" height="14" rx="3" fill="#0c0a08"/>
+            <circle cx="376" cy="179" r="4" fill="#1a1712"/>
+            <path d="M331 196 l-22 -10" stroke="#2f6f4a" stroke-width="7" stroke-linecap="round"/>
+            <rect class="frame" x="300" y="132" width="86" height="104" rx="5"/>
+          </g>
+          <!-- NORMAL: rubbish bin -->
+          <g class="hotspot" data-sus="0" data-note="A normal station rubbish bin.">
+            <rect x="404" y="206" width="30" height="40" rx="3" fill="#33536b"/>
+            <rect x="400" y="200" width="38" height="8" rx="2" fill="#3f6584"/>
+            <rect class="frame" x="396" y="194" width="46" height="54" rx="5"/>
+          </g>
+          <!-- NORMAL: ad poster -->
+          <g class="hotspot" data-sus="0" data-note="A backlit advertising poster — part of the station.">
+            <rect x="40" y="70" width="70" height="96" rx="4" fill="#241f19" stroke="#3a3329"/>
+            <rect x="50" y="80" width="50" height="40" fill="#FF7300" opacity="0.5"/>
+            <rect x="50" y="128" width="50" height="8" fill="#3a3329"/>
+            <rect x="50" y="142" width="34" height="8" fill="#3a3329"/>
+            <rect class="frame" x="36" y="66" width="78" height="104" rx="5"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- SCENE 2 · SHOPPING MALL -->
+      <div class="scene-wrap g2-scene" data-scene="1" data-sus="2" style="display:none">
+        <svg viewBox="0 0 640 360" class="scene-svg" role="img" aria-label="Shopping mall atrium">
+          <rect width="640" height="360" fill="#1a1712"/>
+          <rect y="262" width="640" height="98" fill="#2a2520"/>
+          <rect x="40" y="60" width="150" height="150" fill="#211d16" stroke="#3a3329"/>
+          <rect x="450" y="60" width="150" height="150" fill="#211d16" stroke="#3a3329"/>
+          <text x="60" y="96" fill="#6e6a60" font-family="monospace" font-size="12" letter-spacing="2">SHOPS</text>
+          <path d="M250 60 L390 60 L360 210 L280 210 Z" fill="#1d1913"/>
+          <path d="M250 60 L390 60 L360 210 L280 210 Z" fill="none" stroke="#3a3329"/>
+          <line x1="265" y1="92" x2="375" y2="92" stroke="#3a3329"/>
+          <line x1="272" y1="124" x2="368" y2="124" stroke="#3a3329"/>
+          <text x="22" y="32" fill="#6e6a60" font-family="monospace" font-size="13" letter-spacing="2">CENTRAL ATRIUM · L1</text>
+
+          <!-- NORMAL: shopper with bags -->
+          <g class="hotspot" data-sus="0" data-note="A shopper carrying shopping bags — ordinary mall activity.">
+            <circle cx="120" cy="250" r="15" fill="#d4cdbe"/>
+            <rect x="105" y="267" width="30" height="64" rx="6" fill="#a6563f"/>
+            <rect x="92" y="290" width="14" height="20" rx="2" fill="#c9a24a"/>
+            <rect x="134" y="290" width="14" height="20" rx="2" fill="#c9a24a"/>
+            <rect class="frame" x="88" y="232" width="66" height="100" rx="5"/>
+          </g>
+          <!-- SUSPICIOUS: abandoned backpack under stairwell -->
+          <g class="hotspot" data-sus="1" data-note="An abandoned backpack tucked under the stairwell, no owner nearby. Keep back and alert security.">
+            <rect x="206" y="296" width="40" height="44" rx="8" fill="#3a4a2e"/>
+            <rect x="214" y="288" width="24" height="14" rx="6" fill="#3a4a2e"/>
+            <line x1="226" y1="296" x2="226" y2="338" stroke="#26331f" stroke-width="3"/>
+            <rect class="frame" x="198" y="282" width="56" height="60" rx="5"/>
+          </g>
+          <!-- NORMAL: potted plant -->
+          <g class="hotspot" data-sus="0" data-note="A decorative potted plant.">
+            <rect x="408" y="300" width="34" height="34" rx="3" fill="#5a3f28"/>
+            <path d="M425 300 C405 270 420 256 425 250 C430 256 445 270 425 300" fill="#3f6b45"/>
+            <rect class="frame" x="400" y="246" width="52" height="90" rx="5"/>
+          </g>
+          <!-- SUSPICIOUS: person photographing exits / security desk -->
+          <g class="hotspot" data-sus="1" data-note="Someone photographing the fire-exit layout and security desk — mapping the building. Report it.">
+            <circle cx="330" cy="250" r="15" fill="#d4cdbe"/>
+            <rect x="315" y="267" width="30" height="64" rx="6" fill="#2f5d6f"/>
+            <rect x="340" y="252" width="24" height="16" rx="3" fill="#0c0a08"/>
+            <circle cx="362" cy="260" r="4" fill="#1a1712"/>
+            <rect class="frame" x="308" y="232" width="68" height="100" rx="5"/>
+          </g>
+          <!-- NORMAL: directory sign -->
+          <g class="hotspot" data-sus="0" data-note="A store directory sign.">
+            <rect x="486" y="250" width="44" height="84" rx="3" fill="#241f19" stroke="#3a3329"/>
+            <rect x="494" y="260" width="28" height="6" fill="#3a3329"/>
+            <rect x="494" y="272" width="28" height="6" fill="#3a3329"/>
+            <rect x="494" y="284" width="20" height="6" fill="#3a3329"/>
+            <rect class="frame" x="482" y="246" width="52" height="92" rx="5"/>
+          </g>
+          <!-- NORMAL: cleaner with trolley -->
+          <g class="hotspot" data-sus="0" data-note="A cleaner with a service trolley — mall staff at work.">
+            <circle cx="560" cy="252" r="14" fill="#d4cdbe"/>
+            <rect x="546" y="268" width="28" height="60" rx="6" fill="#7a6f3f"/>
+            <rect x="578" y="288" width="26" height="40" rx="3" fill="#3a3329"/>
+            <rect class="frame" x="540" y="236" width="70" height="96" rx="5"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- SCENE 3 · WATERFRONT -->
+      <div class="scene-wrap g2-scene" data-scene="2" data-sus="2" style="display:none">
+        <svg viewBox="0 0 640 360" class="scene-svg" role="img" aria-label="Marina waterfront">
+          <rect width="640" height="360" fill="#16202b"/>
+          <rect y="150" width="640" height="120" fill="#1c2f3e"/>
+          <rect y="270" width="640" height="90" fill="#2a2520"/>
+          <rect x="120" y="70" width="40" height="90" fill="#23323f"/>
+          <rect x="180" y="40" width="34" height="120" fill="#26384a"/>
+          <rect x="240" y="86" width="30" height="74" fill="#23323f"/>
+          <rect x="470" y="56" width="44" height="104" fill="#26384a"/>
+          <rect x="528" y="86" width="30" height="74" fill="#23323f"/>
+          <line x1="0" y1="200" x2="640" y2="200" stroke="#0c0a08" stroke-width="6"/>
+          <line x1="60" y1="200" x2="60" y2="270" stroke="#0c0a08" stroke-width="5"/>
+          <line x1="300" y1="200" x2="300" y2="270" stroke="#0c0a08" stroke-width="5"/>
+          <line x1="560" y1="200" x2="560" y2="270" stroke="#0c0a08" stroke-width="5"/>
+          <text x="22" y="32" fill="#6e6a60" font-family="monospace" font-size="13" letter-spacing="2">MARINA PROMENADE</text>
+
+          <!-- NORMAL: tourist taking selfie -->
+          <g class="hotspot" data-sus="0" data-note="A tourist taking a selfie — typical at the waterfront.">
+            <circle cx="96" cy="262" r="15" fill="#d4cdbe"/>
+            <rect x="81" y="279" width="30" height="62" rx="6" fill="#c4564f"/>
+            <path d="M111 290 l24 -8" stroke="#c4564f" stroke-width="7" stroke-linecap="round"/>
+            <rect x="132" y="276" width="14" height="10" rx="2" fill="#0c0a08"/>
+            <rect class="frame" x="74" y="244" width="78" height="98" rx="5"/>
+          </g>
+          <!-- NORMAL: bench -->
+          <g class="hotspot" data-sus="0" data-note="A promenade bench.">
+            <rect x="172" y="282" width="70" height="9" fill="#3a3329"/>
+            <rect x="178" y="291" width="7" height="14" fill="#2a2520"/>
+            <rect x="229" y="291" width="7" height="14" fill="#2a2520"/>
+            <rect class="frame" x="166" y="274" width="82" height="34" rx="5"/>
+          </g>
+          <!-- SUSPICIOUS: unattended package beside bench -->
+          <g class="hotspot" data-sus="1" data-note="An unattended package left by the bench, no owner around. Don't touch — clear the area and report.">
+            <rect x="288" y="306" width="44" height="34" rx="3" fill="#7a6a4a"/>
+            <line x1="310" y1="306" x2="310" y2="340" stroke="#5a4d36" stroke-width="3"/>
+            <line x1="288" y1="323" x2="332" y2="323" stroke="#5a4d36" stroke-width="3"/>
+            <rect class="frame" x="282" y="298" width="58" height="46" rx="5"/>
+          </g>
+          <!-- SUSPICIOUS: person flying drone near restricted area -->
+          <g class="hotspot" data-sus="1" data-note="Someone flying a drone over a secured, no-fly zone. Unauthorised — note it and inform the authorities.">
+            <circle cx="372" cy="262" r="15" fill="#d4cdbe"/>
+            <rect x="357" y="279" width="30" height="62" rx="6" fill="#3a5566"/>
+            <g>
+              <rect x="408" y="150" width="44" height="9" rx="3" fill="#2a2520"/>
+              <circle cx="408" cy="154" r="9" fill="none" stroke="#6e6a60" stroke-width="2"/>
+              <circle cx="452" cy="154" r="9" fill="none" stroke="#6e6a60" stroke-width="2"/>
+              <rect x="424" y="159" width="12" height="6" fill="#FF7300"/>
+            </g>
+            <rect class="frame" x="350" y="142" width="110" height="200" rx="5"/>
+          </g>
+          <!-- NORMAL: bicycle -->
+          <g class="hotspot" data-sus="0" data-note="A parked bicycle.">
+            <circle cx="496" cy="320" r="16" fill="none" stroke="#6e6a60" stroke-width="3"/>
+            <circle cx="540" cy="320" r="16" fill="none" stroke="#6e6a60" stroke-width="3"/>
+            <path d="M496 320 L518 296 L540 320 M518 296 L512 304" stroke="#8a8576" stroke-width="3" fill="none"/>
+            <rect class="frame" x="476" y="288" width="84" height="50" rx="5"/>
+          </g>
+          <!-- NORMAL: lamppost / bin -->
+          <g class="hotspot" data-sus="0" data-note="A waterfront litter bin.">
+            <rect x="588" y="290" width="28" height="44" rx="3" fill="#33536b"/>
+            <rect x="584" y="284" width="36" height="8" rx="2" fill="#3f6584"/>
+            <rect class="frame" x="580" y="278" width="44" height="58" rx="5"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="scene-log" id="g2-log">Tap an item to inspect it.</div>
+      <div class="scene-foot">
+        <span class="scene-tally" id="g2-tally"></span>
+        <button class="game-btn ghost" id="g2-retry" style="display:none">Retry scene</button>
+      </div>
+    </div>
+    <div id="g2-end" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ============ GAME 3 · RACIAL HARMONY PUZZLE ============ -->
+<div class="game-modal" id="g3-modal" aria-hidden="true">
+  <div class="game-card">
+    <button class="game-close" data-close-game aria-label="Close">✕</button>
+    <div class="game-meta">
+      <span>D-003 · RACIAL HARMONY</span>
+      <span class="o">80 PTS · SOLVE TO CLEAR</span>
+    </div>
+    <h2 class="game-h">Many cultures, <em>one</em> frame.</h2>
+    <p class="game-sub">Slide the tiles into the empty space to restore the picture. Tap a tile next to the gap to move it.</p>
+    <div id="g3-play">
+      <div class="puzzle-top">
+        <span class="stat">Moves · <b id="g3-moves">0</b></span>
+        <img src="assets/harmony.png" alt="Reference" class="puzzle-ref" id="g3-ref" />
+      </div>
+      <div class="puzzle-board" id="g3-board"></div>
+      <div class="puzzle-noimg" id="g3-noimg">Puzzle image not found — add <b>assets/harmony.png</b> to the repo.</div>
+      <div class="puzzle-foot">
+        <button class="game-btn ghost" id="g3-shuffle">Shuffle</button>
+        <span class="scene-tally" id="g3-status"></span>
+      </div>
+    </div>
+    <div id="g3-end" style="display:none"></div>
+  </div>
+</div>
+
 <!-- ============ FOOTER ============ -->
 <footer>
   <div class="foot-inner">
@@ -1127,6 +1567,9 @@ const CHALLENGE_PTS = {
   'exp-2': 70,
   'exp-3': 80,
   'exp-4': 100,
+  'ne-1': 40,
+  'ne-2': 60,
+  'ne-3': 80,
 };
 
 const PHOTO_CHALLENGES = new Set(['exp-1', 'exp-2', 'exp-3', 'exp-4']);
@@ -1394,6 +1837,7 @@ handleForm.addEventListener('submit', async (e) => {
   }
 
   renderChallengeStates(completedIds);
+  renderNEStates(completedIds);
   refreshPointsUI(pointsFromIds(completedIds));
 
   const now = new Date();
@@ -1452,6 +1896,7 @@ document.getElementById('back-btn').addEventListener('click', () => {
   }
 
   renderChallengeStates(completedIds);
+  renderNEStates(completedIds);
   refreshPointsUI(pointsFromIds(completedIds));
 })();
 
@@ -1529,6 +1974,7 @@ function stopPhotoWallPoll() {
 
 document.querySelectorAll('.mission-card').forEach(card => {
   card.addEventListener('click', () => {
+    if (card.dataset.game) { openGame(card.dataset.game); return; }
     if (card.classList.contains('has-detail')) {
       missionModal.classList.add('show');
       missionModal.setAttribute('aria-hidden', 'false');
@@ -1874,6 +2320,416 @@ document.addEventListener('click', e => {
   const card = e.target.closest('.pw-card');
   if (card && card.dataset.src) openLightbox(card.dataset.src); // validated inside openLightbox
 });
+
+// ============================================================
+// NATIONAL EDUCATION DRILLS — shared
+// ============================================================
+function neCard(cid){ return document.querySelector('.ne-card[data-cid="' + cid + '"]'); }
+
+function markNECleared(cid){
+  const card = neCard(cid);
+  if (!card) return;
+  const pill = card.querySelector('.mc-status');
+  if (pill){ pill.classList.remove('live'); pill.classList.add('cleared'); pill.textContent = 'Cleared'; }
+}
+
+function renderNEStates(completedIds){
+  const done = new Set(completedIds || []);
+  document.querySelectorAll('.ne-card').forEach(card => {
+    if (done.has(card.dataset.cid)) markNECleared(card.dataset.cid);
+  });
+}
+
+async function recordNECompletion(cid){
+  const handle = getHandle();
+  if (!handle) return { ok:false, msg:'No handle registered' };
+  const pts  = CHALLENGE_PTS[cid] || 0;
+  const list = getLocalCompletions(handle);
+  const already = list.includes(cid);
+
+  if (sb && !already){
+    await sb.from('handles').upsert({ handle }, { onConflict:'handle', ignoreDuplicates:true });
+    const { error } = await sb.from('completions').insert({ handle, challenge_id: cid, points: pts });
+    if (error && error.code !== '23505') return { ok:false, msg: error.message || 'Save failed' };
+  }
+  if (!already){ list.push(cid); saveLocalCompletions(handle, list); }
+  refreshPointsUI(pointsFromIds(list));
+  markNECleared(cid);
+  loadLeaderboard();
+  return { ok:true, already };
+}
+
+const GAME_MODALS = { 'ne-1':'g1-modal', 'ne-2':'g2-modal', 'ne-3':'g3-modal' };
+
+function openGame(cid){
+  const id = GAME_MODALS[cid];
+  if (!id) return;
+  const m = document.getElementById(id);
+  if (!m) return;
+  m.classList.add('show');
+  m.setAttribute('aria-hidden', 'false');
+  if (cid === 'ne-1') g1Start();
+  if (cid === 'ne-2') g2Start();
+  if (cid === 'ne-3') g3Start();
+}
+
+function closeGame(modal){
+  if (!modal) return;
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+document.querySelectorAll('[data-close-game]').forEach(btn => {
+  btn.addEventListener('click', () => closeGame(btn.closest('.game-modal')));
+});
+document.querySelectorAll('.game-modal').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) closeGame(m); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape'){
+    const open = document.querySelector('.game-modal.show');
+    if (open) closeGame(open);
+  }
+});
+
+// ============================================================
+// GAME 1 · FOREIGN INTERFERENCE MCQ  (ne-1, 40 pts, 100%)
+// ============================================================
+const G1_OPTS = [
+  { b:'Normal activity',      s:'Legitimate, open, everyday.' },
+  { b:'Foreign influence',    s:'Open, attributable attempt to shape views.' },
+  { b:'Foreign interference', s:'Covert, deceptive or coercive conduct.' },
+];
+const G1_Q = [
+  { s:'A foreign embassy hosts a National Day reception and openly invites local officials and business leaders.', a:0, why:'Open, attributable diplomacy. Building ties in plain sight, with nothing hidden, is normal statecraft.' },
+  { s:'Anonymous social-media accounts, later traced to a foreign source, flood local forums with inflammatory posts about a sensitive racial issue just before an election.', a:2, why:'Covert, deceptive and built to divide society and sway a vote — the hallmarks of hostile interference.' },
+  { s:'A foreign government’s spokesperson criticises a Singapore policy in an on-the-record press statement.', a:1, why:'Foreign and meant to shape opinion, but open and attributable — that’s influence, not the covert conduct that defines interference.' },
+  { s:'A foreign newspaper runs a clearly-bylined investigative report critical of a local company.', a:0, why:'Legitimate journalism. A free press scrutinising companies in the open is normal activity.' },
+  { s:'An unbranded website secretly pays local influencers to push a foreign state’s talking points, hiding who funds them.', a:2, why:'Concealed funding and undisclosed sponsorship to manipulate opinion for a foreign principal — covert and deceptive: interference.' },
+  { s:'A foreign university announces a public, transparent scholarship-exchange programme open to local students.', a:0, why:'Open educational exchange with full disclosure. Normal cross-border activity.' },
+  { s:'A foreign principal covertly funnels money to a local political association through middlemen to shift its positions.', a:2, why:'Hidden political funding routed through cut-outs to sway domestic politics — exactly what FICA targets as interference.' },
+  { s:'A foreign think-tank publishes a clearly-branded op-ed urging Singapore to change a trade stance.', a:1, why:'Attributable advocacy from a named body. It seeks to influence, but openly — foreign influence, not interference.' },
+];
+
+let g1i = 0, g1correct = 0, g1answered = false;
+
+function g1Start(){
+  g1i = 0; g1correct = 0;
+  document.getElementById('g1-end').style.display = 'none';
+  document.getElementById('g1-play').style.display = '';
+  g1RenderProgress();
+  g1RenderQuestion();
+}
+
+function g1RenderProgress(){
+  const p = document.getElementById('g1-progress'); p.innerHTML = '';
+  for (let k = 0; k < G1_Q.length; k++){
+    const sp = document.createElement('span');
+    if (k < g1i) sp.classList.add('on');
+    p.appendChild(sp);
+  }
+}
+
+function g1RenderQuestion(){
+  g1answered = false;
+  document.getElementById('g1-intro').style.display = g1i === 0 ? '' : 'none';
+  const play = document.getElementById('g1-play');
+  play.innerHTML = '';
+  const q = G1_Q[g1i];
+
+  const tag = document.createElement('div');
+  tag.className = 'scene-objective';
+  tag.innerHTML = 'Scenario <b>' + (g1i + 1) + ' / ' + G1_Q.length + '</b> — classify it';
+  play.appendChild(tag);
+
+  const sc = document.createElement('p');
+  sc.className = 'mcq-scenario';
+  sc.textContent = q.s;
+  play.appendChild(sc);
+
+  const opts = document.createElement('div');
+  opts.className = 'mcq-options';
+  const explain = document.createElement('div');
+  explain.className = 'mcq-explain';
+  const foot = document.createElement('div');
+  foot.className = 'mcq-foot';
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'game-btn';
+  nextBtn.textContent = g1i < G1_Q.length - 1 ? 'Next →' : 'Finish';
+  nextBtn.style.visibility = 'hidden';
+  nextBtn.addEventListener('click', () => {
+    g1i++;
+    if (g1i >= G1_Q.length) g1Finish();
+    else { g1RenderProgress(); g1RenderQuestion(); }
+  });
+
+  G1_OPTS.forEach((o, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'mcq-opt';
+    const b = document.createElement('b'); b.textContent = o.b;
+    const sm = document.createElement('small'); sm.textContent = o.s;
+    btn.appendChild(b); btn.appendChild(sm);
+    btn.addEventListener('click', () => {
+      if (g1answered) return;
+      g1answered = true;
+      opts.querySelectorAll('.mcq-opt').forEach((bb, k) => {
+        bb.disabled = true;
+        if (k === q.a) bb.classList.add('correct');
+        if (k === idx && idx !== q.a) bb.classList.add('wrong');
+      });
+      if (idx === q.a) g1correct++;
+      explain.textContent = q.why;
+      explain.classList.add('show');
+      nextBtn.style.visibility = 'visible';
+    });
+    opts.appendChild(btn);
+  });
+
+  play.appendChild(opts);
+  play.appendChild(explain);
+  foot.appendChild(nextBtn);
+  play.appendChild(foot);
+}
+
+async function g1Finish(){
+  document.getElementById('g1-intro').style.display = 'none';
+  document.getElementById('g1-play').style.display = 'none';
+  g1i = G1_Q.length; g1RenderProgress();
+
+  const passed = g1correct === G1_Q.length;
+  const end = document.getElementById('g1-end');
+  end.style.display = ''; end.innerHTML = '';
+
+  const wrap = document.createElement('div'); wrap.className = 'game-result';
+  const badge = document.createElement('div');
+  badge.className = 'badge-big ' + (passed ? 'win' : 'fail');
+  badge.textContent = passed ? 'Drill cleared' : 'Not cleared';
+  const h = document.createElement('h3');
+  h.textContent = g1correct + ' / ' + G1_Q.length + ' correct';
+  const p = document.createElement('p');
+  const btn = document.createElement('button'); btn.className = 'game-btn';
+
+  if (passed){
+    p.textContent = 'You can reliably tell normal engagement, open influence and covert interference apart. +40 points logged.';
+    const r = await recordNECompletion('ne-1');
+    if (!r.ok) p.textContent = 'Cleared — but saving failed: ' + r.msg;
+    btn.textContent = 'Done';
+    btn.addEventListener('click', () => closeGame(document.getElementById('g1-modal')));
+  } else {
+    p.textContent = '100% is needed to clear this drill. Review the explanations and run it again.';
+    btn.textContent = 'Try again';
+    btn.addEventListener('click', g1Start);
+  }
+  wrap.appendChild(badge); wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(btn);
+  end.appendChild(wrap);
+}
+
+// ============================================================
+// GAME 2 · SGSECURE HOTSPOTS  (ne-2, 60 pts, 100%)
+// ============================================================
+let g2scene = 0, g2found = 0;
+function g2scenes(){ return document.querySelectorAll('#g2-play .g2-scene'); }
+
+function g2Start(){
+  document.getElementById('g2-end').style.display = 'none';
+  document.getElementById('g2-play').style.display = '';
+  g2ShowScene(0);
+}
+
+function g2RenderProgress(){
+  const p = document.getElementById('g2-progress'); p.innerHTML = '';
+  g2scenes().forEach((_, k) => {
+    const sp = document.createElement('span');
+    if (k < g2scene) sp.classList.add('on');
+    p.appendChild(sp);
+  });
+}
+
+function g2ShowScene(idx){
+  g2scene = idx; g2found = 0;
+  const scenes = g2scenes();
+  scenes.forEach((sc, k) => { sc.style.display = k === idx ? '' : 'none'; });
+  const scene = scenes[idx];
+  scene.querySelectorAll('.hotspot').forEach(h => h.classList.remove('good','bad','locked'));
+  document.getElementById('g2-intro').style.display = idx === 0 ? '' : 'none';
+  document.getElementById('g2-objective').innerHTML =
+    'Scene <b>' + (idx + 1) + ' / ' + scenes.length + '</b> — tap everything that looks out of place';
+  document.getElementById('g2-log').textContent = 'Tap an item to inspect it.';
+  document.getElementById('g2-retry').style.display = 'none';
+  g2UpdateTally(Number(scene.dataset.sus));
+  g2RenderProgress();
+}
+
+function g2UpdateTally(total){
+  document.getElementById('g2-tally').innerHTML = 'Flagged <b>' + g2found + '</b> / ' + total;
+}
+
+function g2Hotspot(h){
+  if (h.classList.contains('locked') || h.classList.contains('good')) return;
+  const scene = g2scenes()[g2scene];
+  const susCount = Number(scene.dataset.sus);
+  const log = document.getElementById('g2-log');
+
+  if (h.dataset.sus === '1'){
+    h.classList.add('good','locked');
+    g2found++;
+    log.innerHTML = '<span class="ok">⚑ Flagged.</span> ' + (h.dataset.note || '');
+    g2UpdateTally(susCount);
+    if (g2found >= susCount){
+      scene.querySelectorAll('.hotspot').forEach(x => x.classList.add('locked'));
+      setTimeout(g2SceneClear, 700);
+    }
+  } else {
+    h.classList.add('bad');
+    log.innerHTML = '<span class="no">✕ False alarm.</span> ' + (h.dataset.note || '') +
+      ' Over-reporting erodes trust — restart the scene.';
+    scene.querySelectorAll('.hotspot').forEach(x => x.classList.add('locked'));
+    document.getElementById('g2-retry').style.display = '';
+  }
+}
+
+function g2SceneClear(){
+  const scenes = g2scenes();
+  if (g2scene < scenes.length - 1) g2ShowScene(g2scene + 1);
+  else g2Finish();
+}
+
+async function g2Finish(){
+  document.getElementById('g2-intro').style.display = 'none';
+  document.getElementById('g2-play').style.display = 'none';
+  g2scene = g2scenes().length; g2RenderProgress();
+
+  const end = document.getElementById('g2-end');
+  end.style.display = ''; end.innerHTML = '';
+  const wrap = document.createElement('div'); wrap.className = 'game-result';
+  const badge = document.createElement('div'); badge.className = 'badge-big win'; badge.textContent = 'Drill cleared';
+  const h = document.createElement('h3'); h.textContent = 'All clear — sharp eyes';
+  const p = document.createElement('p');
+  p.textContent = 'You spotted every threat with no false alarms across all three scenes. That’s the SGSecure mindset — stay alert, report early. +60 points logged.';
+  const btn = document.createElement('button'); btn.className = 'game-btn'; btn.textContent = 'Done';
+  const r = await recordNECompletion('ne-2');
+  if (!r.ok) p.textContent = 'Cleared — but saving failed: ' + r.msg;
+  btn.addEventListener('click', () => closeGame(document.getElementById('g2-modal')));
+  wrap.appendChild(badge); wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(btn);
+  end.appendChild(wrap);
+}
+
+document.getElementById('g2-play').addEventListener('click', e => {
+  const h = e.target.closest('.hotspot');
+  if (h) g2Hotspot(h);
+});
+document.getElementById('g2-retry').addEventListener('click', () => g2ShowScene(g2scene));
+
+// ============================================================
+// GAME 3 · RACIAL HARMONY SLIDING PUZZLE  (ne-3, 80 pts)
+// ============================================================
+const G3_N = 3;
+let g3board = [], g3moves = 0, g3tiles = [], g3solved = false;
+
+function g3Start(){
+  document.getElementById('g3-end').style.display = 'none';
+  document.getElementById('g3-play').style.display = '';
+  document.getElementById('g3-ref').onerror = () => {
+    document.getElementById('g3-noimg').style.display = 'block';
+  };
+  g3Build();
+  g3Shuffle();
+}
+
+function g3Build(){
+  const boardEl = document.getElementById('g3-board');
+  boardEl.classList.remove('solved');
+  boardEl.innerHTML = '';
+  g3tiles = [];
+  const last = G3_N * G3_N - 1;
+  for (let home = 0; home <= last; home++){
+    const tile = document.createElement('div');
+    tile.className = 'puzzle-tile' + (home === last ? ' blank' : '');
+    const col = home % G3_N, row = Math.floor(home / G3_N);
+    tile.style.backgroundPosition = (col * 50) + '% ' + (row * 50) + '%';
+    tile.addEventListener('click', () => g3Click(home));
+    boardEl.appendChild(tile);
+    g3tiles[home] = tile;
+  }
+}
+
+function g3PlaceAll(){
+  const step = 100 / G3_N;
+  g3board.forEach((home, cell) => {
+    const col = cell % G3_N, row = Math.floor(cell / G3_N);
+    g3tiles[home].style.left = (col * step) + '%';
+    g3tiles[home].style.top  = (row * step) + '%';
+  });
+}
+
+function g3Neighbors(cell){
+  const col = cell % G3_N, row = Math.floor(cell / G3_N), out = [];
+  if (col > 0) out.push(cell - 1);
+  if (col < G3_N - 1) out.push(cell + 1);
+  if (row > 0) out.push(cell - G3_N);
+  if (row < G3_N - 1) out.push(cell + G3_N);
+  return out;
+}
+
+function g3BlankCell(){ return g3board.indexOf(G3_N * G3_N - 1); }
+function g3IsSolved(){ for (let i = 0; i < g3board.length; i++) if (g3board[i] !== i) return false; return true; }
+function g3UpdateMoves(){ document.getElementById('g3-moves').textContent = g3moves; }
+
+function g3Shuffle(){
+  g3solved = false; g3moves = 0;
+  document.getElementById('g3-board').classList.remove('solved');
+  document.getElementById('g3-status').textContent = '';
+  g3board = [];
+  for (let i = 0; i < G3_N * G3_N; i++) g3board[i] = i;
+  let prev = -1;
+  for (let n = 0; n < 200; n++){
+    const blank = g3BlankCell();
+    const nb = g3Neighbors(blank).filter(c => c !== prev);
+    const pick = nb[Math.floor(Math.random() * nb.length)];
+    [g3board[blank], g3board[pick]] = [g3board[pick], g3board[blank]];
+    prev = blank;
+  }
+  if (g3IsSolved()){ g3Shuffle(); return; }
+  g3PlaceAll();
+  g3UpdateMoves();
+}
+
+function g3Click(home){
+  if (g3solved) return;
+  const cell  = g3board.indexOf(home);
+  const blank = g3BlankCell();
+  if (!g3Neighbors(cell).includes(blank)) return;
+  [g3board[cell], g3board[blank]] = [g3board[blank], g3board[cell]];
+  g3moves++;
+  g3PlaceAll();
+  g3UpdateMoves();
+  if (g3IsSolved()) g3Win();
+}
+
+async function g3Win(){
+  g3solved = true;
+  document.getElementById('g3-board').classList.add('solved');
+  document.getElementById('g3-status').textContent = 'Solved!';
+  const r = await recordNECompletion('ne-3');
+  setTimeout(() => {
+    document.getElementById('g3-play').style.display = 'none';
+    const end = document.getElementById('g3-end');
+    end.style.display = ''; end.innerHTML = '';
+    const wrap = document.createElement('div'); wrap.className = 'game-result';
+    const badge = document.createElement('div'); badge.className = 'badge-big win'; badge.textContent = 'Drill cleared';
+    const h = document.createElement('h3'); h.textContent = 'Picture restored';
+    const p = document.createElement('p');
+    p.textContent = r.ok
+      ? ('Many cultures, one frame — solved in ' + g3moves + ' moves. Our diversity is our strength. +80 points logged.')
+      : ('Solved — but saving failed: ' + r.msg);
+    const btn = document.createElement('button'); btn.className = 'game-btn'; btn.textContent = 'Done';
+    btn.addEventListener('click', () => closeGame(document.getElementById('g3-modal')));
+    wrap.appendChild(badge); wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(btn);
+    end.appendChild(wrap);
+  }, 900);
+}
+
+document.getElementById('g3-shuffle').addEventListener('click', g3Shuffle);
 
 // ============================================================
 // INIT
