@@ -255,20 +255,37 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- timer start (first game unlocked) / stop (all games done) — idempotent
-CREATE OR REPLACE FUNCTION start_timer(p_handle TEXT)
+-- Per-game timing: one row per (handle, game). Total time = sum of each
+-- game's (finished_at - started_at). Readable by all; written only via the
+-- SECURITY DEFINER functions below.
+CREATE TABLE IF NOT EXISTS game_times (
+  handle      TEXT REFERENCES handles(handle) ON DELETE CASCADE,
+  game_id     TEXT,
+  started_at  TIMESTAMPTZ,
+  finished_at TIMESTAMPTZ,
+  PRIMARY KEY (handle, game_id)
+);
+ALTER TABLE game_times ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "game_times_select" ON game_times;
+CREATE POLICY "game_times_select" ON game_times FOR SELECT USING (true);
+
+-- start a single game's clock (when its password is accepted) — idempotent
+CREATE OR REPLACE FUNCTION start_game(p_handle TEXT, p_game TEXT)
 RETURNS VOID AS $$
 BEGIN
-  UPDATE handles SET started_at = NOW()
-   WHERE handle = p_handle AND started_at IS NULL;
+  INSERT INTO game_times (handle, game_id, started_at)
+  VALUES (p_handle, p_game, NOW())
+  ON CONFLICT (handle, game_id) DO NOTHING;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE OR REPLACE FUNCTION finish_timer(p_handle TEXT)
+-- stop a single game's clock (when it is cleared) — idempotent
+CREATE OR REPLACE FUNCTION finish_game(p_handle TEXT, p_game TEXT)
 RETURNS VOID AS $$
 BEGIN
-  UPDATE handles SET finished_at = NOW()
-   WHERE handle = p_handle AND finished_at IS NULL AND started_at IS NOT NULL;
+  UPDATE game_times SET finished_at = NOW()
+   WHERE handle = p_handle AND game_id = p_game
+     AND started_at IS NOT NULL AND finished_at IS NULL;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -342,7 +359,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 GRANT EXECUTE ON FUNCTION
   register_handle(TEXT), verify_game_password(TEXT,TEXT),
-  start_timer(TEXT), finish_timer(TEXT), admin_ok(TEXT),
+  start_game(TEXT,TEXT), finish_game(TEXT,TEXT), admin_ok(TEXT),
   send_malware(TEXT,TEXT), send_malware_all(TEXT),
   resolve_malware(UUID,TEXT), timeout_malware(UUID)
   TO anon, authenticated;

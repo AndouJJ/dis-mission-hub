@@ -1617,10 +1617,10 @@ async function loadLeaderboard() {
     return;
   }
 
-  // Pull points, timer bounds and malware penalties together.
-  const [compRes, handleRes, mwRes] = await Promise.all([
+  // Pull points, per-game timings and malware penalties together.
+  const [compRes, gtRes, mwRes] = await Promise.all([
     sb.from('completions').select('handle, points'),
-    sb.from('handles').select('handle, started_at, finished_at'),
+    sb.from('game_times').select('handle, game_id, started_at, finished_at'),
     sb.from('malware_events').select('target_handle, created_at, resolved_at, timed_out'),
   ]);
   if (compRes.error || !compRes.data) return;
@@ -1628,8 +1628,11 @@ async function loadLeaderboard() {
   const totals = {};
   compRes.data.forEach(r => { totals[r.handle] = (totals[r.handle] || 0) + Number(r.points); });
 
-  const tinfo = {};
-  (handleRes.data || []).forEach(h => { tinfo[h.handle] = h; });
+  // group game timings by handle -> game_id
+  const gt = {};
+  (gtRes.data || []).forEach(r => {
+    (gt[r.handle] || (gt[r.handle] = {}))[r.game_id] = r;
+  });
 
   // +5 min for every attack that timed out (or is unresolved and already past 5 min)
   const now = Date.now();
@@ -1640,11 +1643,18 @@ async function loadLeaderboard() {
     if (counts) penalty[m.target_handle] = (penalty[m.target_handle] || 0) + 300;
   });
 
+  // Total = sum of each game's (finished - started). Only counts once ALL
+  // three games are finished, otherwise the run is still in progress.
   function totalTimeSec(h) {
-    const t = tinfo[h];
-    if (!t || !t.started_at || !t.finished_at) return null;   // not finished yet
-    const base = (new Date(t.finished_at).getTime() - new Date(t.started_at).getTime()) / 1000;
-    return Math.max(0, Math.floor(base)) + (penalty[h] || 0);
+    const games = gt[h];
+    if (!games) return null;
+    let sum = 0;
+    for (const cid of NE_GAMES) {
+      const r = games[cid];
+      if (!r || !r.started_at || !r.finished_at) return null;
+      sum += (new Date(r.finished_at).getTime() - new Date(r.started_at).getTime()) / 1000;
+    }
+    return Math.max(0, Math.floor(sum)) + (penalty[h] || 0);
   }
 
   const data = Object.keys(totals).map(h => ({
@@ -2309,9 +2319,11 @@ async function recordNECompletion(cid){
   refreshPointsUI(pointsFromIds(list));
   markNECleared(cid);
 
-  // Stop the timer once all three NE games are cleared.
-  if (sb && NE_GAMES.every(g => list.includes(g))) {
-    try { await sb.rpc('finish_timer', { p_handle: handle }); } catch(_) {}
+  // Stop THIS game's clock (each game is timed individually; totals are summed).
+  if (sb && NE_GAMES.includes(cid)) {
+    try { await sb.rpc('finish_game', { p_handle: handle, p_game: cid }); } catch(_) {}
+    if (myGameTimes[cid] && !myGameTimes[cid].finish) myGameTimes[cid].finish = Date.now();
+    refreshTimerState();   // sync authoritative times + repaint the profile timer
   }
 
   loadLeaderboard();
@@ -2807,8 +2819,12 @@ if (gpForm) {
     if (ok) {
       markGameUnlocked(cid);
       const handle = getHandle();
-      if (handle) { try { await sb.rpc('start_timer', { p_handle: handle }); } catch(_) {} }
+      if (handle) {
+        try { await sb.rpc('start_game', { p_handle: handle, p_game: cid }); } catch(_) {}
+        if (myGameTimes[cid] == null) myGameTimes[cid] = { start: Date.now(), finish: null };
+      }
       startTimerTicker();
+      paintTimer();
       closeGamePassword();
       launchGame(cid);
     } else {
@@ -2838,35 +2854,50 @@ function renderGameLocks(){
 }
 
 // ============================================================
-// GAME TIMER — display (server is the source of truth)
+// GAME TIMER — per-game start/end, summed (server is source of truth)
+// myGameTimes[cid] = { start: ms|null, finish: ms|null }
 // ============================================================
 let timerTick = null;
-let myStartMs = null, myFinishMs = null;
+const myGameTimes = {};
 async function refreshTimerState(){
   const handle = getHandle();
   if (!sb || !handle) return;
   try {
-    const { data } = await sb.from('handles').select('started_at, finished_at').eq('handle', handle).maybeSingle();
-    if (data) {
-      myStartMs  = data.started_at  ? new Date(data.started_at).getTime()  : null;
-      myFinishMs = data.finished_at ? new Date(data.finished_at).getTime() : null;
-    }
+    const { data } = await sb.from('game_times')
+      .select('game_id, started_at, finished_at').eq('handle', handle);
+    (data || []).forEach(r => {
+      myGameTimes[r.game_id] = {
+        start:  r.started_at  ? new Date(r.started_at).getTime()  : null,
+        finish: r.finished_at ? new Date(r.finished_at).getTime() : null,
+      };
+    });
   } catch(_) {}
   paintTimer();
+}
+function totalGameMs(){
+  let total = 0, anyStarted = false;
+  NE_GAMES.forEach(cid => {
+    const t = myGameTimes[cid];
+    if (t && t.start) {
+      anyStarted = true;
+      total += (t.finish || Date.now()) - t.start;
+    }
+  });
+  return anyStarted ? total : null;
+}
+function anyGameRunning(){
+  return NE_GAMES.some(cid => { const t = myGameTimes[cid]; return t && t.start && !t.finish; });
 }
 function paintTimer(){
   const el = document.getElementById('profile-time');
   if (!el) return;
-  if (!myStartMs) { el.textContent = '—'; return; }
-  const end = myFinishMs || Date.now();
-  el.textContent = fmtTime(Math.floor((end - myStartMs) / 1000));
+  const ms = totalGameMs();
+  el.textContent = ms == null ? '—' : fmtTime(Math.floor(ms / 1000));
 }
 function startTimerTicker(){
   if (timerTick) return;
   refreshTimerState();
-  timerTick = setInterval(() => {
-    if (myStartMs && !myFinishMs) paintTimer();
-  }, 1000);
+  timerTick = setInterval(() => { if (anyGameRunning()) paintTimer(); }, 1000);
 }
 
 // ============================================================
