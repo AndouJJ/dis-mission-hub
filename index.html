@@ -1499,13 +1499,11 @@ const CHALLENGE_LABELS = {
 
 // ============================================================
 // YEAR IV GAMES — config
-// Flip GAMES_LOCKED to true ONLY after you have (1) run the updated
-// supabase/schema.sql and (2) set your passwords in the app_settings table.
-// While it is false everything behaves exactly as before: games are open,
-// no timer, no malware — so deploying the HTML can never break the live site
-// before the database is ready.
+// The "games locked" switch now lives in Supabase (app_settings.games_locked).
+// Flip it from the admin console or the Supabase Table Editor and clients pick
+// it up live (no redeploy). While unset/false the games are open as before.
 // ============================================================
-const GAMES_LOCKED    = true;
+let gamesLocked       = false;            // live value, refreshed from the DB
 const NE_GAMES        = ['ne-1', 'ne-2', 'ne-3'];
 const GAME_NAMES      = { 'ne-1': 'Foreign Interference', 'ne-2': 'SGSecure', 'ne-3': 'Racial Harmony' };
 const MALWARE_LIMIT_MS = 5 * 60 * 1000;   // 5 minutes before auto-clear + penalty
@@ -2347,7 +2345,7 @@ function launchGame(cid){
 function openGame(cid){
   if (!GAME_MODALS[cid]) return;
   // Locked behind a per-game password (only when GAMES_LOCKED + Supabase ready).
-  if (GAMES_LOCKED && sb && !isGameUnlocked(cid)) { promptGamePassword(cid); return; }
+  if (gamesLocked && sb && !isGameUnlocked(cid)) { promptGamePassword(cid); return; }
   launchGame(cid);
 }
 
@@ -2843,7 +2841,7 @@ function renderGameLocks(){
     const cid  = card.dataset.cid;
     const pill = card.querySelector('.mc-status');
     if (!pill || pill.classList.contains('cleared')) return;
-    if (GAMES_LOCKED && sb && !isGameUnlocked(cid)) {
+    if (gamesLocked && sb && !isGameUnlocked(cid)) {
       pill.classList.remove('live'); pill.classList.add('lockedpw');
       pill.textContent = 'Locked';
     } else {
@@ -2851,6 +2849,16 @@ function renderGameLocks(){
       pill.textContent = 'Live';
     }
   });
+}
+
+// Live games-locked flag from Supabase (admin-toggleable, no redeploy).
+async function refreshGamesLocked(){
+  if (!sb) { gamesLocked = false; renderGameLocks(); return; }
+  try {
+    const { data, error } = await sb.rpc('get_games_locked');
+    if (!error) gamesLocked = data === true;
+  } catch(_) {}
+  renderGameLocks();
 }
 
 // ============================================================
@@ -3015,6 +3023,8 @@ function initGamesSubsystem(handle){
 // INIT
 // ============================================================
 renderGameLocks();
+refreshGamesLocked();
+setInterval(refreshGamesLocked, 20000);   // pick up admin toggles live
 loadLeaderboard();
 subscribeLeaderboard();
 </script>

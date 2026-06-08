@@ -184,7 +184,8 @@ INSERT INTO app_settings (key, value) VALUES
   ('pw_ne-1', 'alpha'),
   ('pw_ne-2', 'bravo'),
   ('pw_ne-3', 'charlie'),
-  ('admin_pw', 'dis-admin')
+  ('admin_pw', 'dis-admin'),
+  ('games_locked', 'false')   -- 'true' to lock all games behind their passwords
 ON CONFLICT DO NOTHING;
 ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;  -- no policies => no anon access
 
@@ -298,6 +299,29 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- live games-locked flag (read by everyone, flipped by the admin)
+CREATE OR REPLACE FUNCTION get_games_locked() RETURNS BOOLEAN AS $$
+DECLARE v TEXT;
+BEGIN
+  SELECT value INTO v FROM app_settings WHERE key = 'games_locked';
+  RETURN lower(coalesce(v, 'false')) IN ('true','1','yes','on');
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION set_games_locked(p_locked BOOLEAN, p_admin_pw TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+  IF NOT admin_ok(p_admin_pw) THEN RAISE EXCEPTION 'unauthorized'; END IF;
+  UPDATE app_settings SET value = CASE WHEN p_locked THEN 'true' ELSE 'false' END
+   WHERE key = 'games_locked';
+  IF NOT FOUND THEN
+    INSERT INTO app_settings(key, value)
+    VALUES ('games_locked', CASE WHEN p_locked THEN 'true' ELSE 'false' END);
+  END IF;
+  RETURN p_locked;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- admin: inject malware on one handle (reuses a live attack if already active)
 CREATE OR REPLACE FUNCTION send_malware(p_target_handle TEXT, p_admin_pw TEXT)
 RETURNS UUID AS $$
@@ -360,6 +384,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 GRANT EXECUTE ON FUNCTION
   register_handle(TEXT), verify_game_password(TEXT,TEXT),
   start_game(TEXT,TEXT), finish_game(TEXT,TEXT), admin_ok(TEXT),
+  get_games_locked(), set_games_locked(BOOLEAN,TEXT),
   send_malware(TEXT,TEXT), send_malware_all(TEXT),
   resolve_malware(UUID,TEXT), timeout_malware(UUID)
   TO anon, authenticated;
