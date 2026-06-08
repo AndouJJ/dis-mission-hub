@@ -2859,18 +2859,28 @@ function renderGameLocks(){
 // ============================================================
 let timerTick = null;
 const myGameTimes = {};
+let myPenaltySec = 0;
 async function refreshTimerState(){
   const handle = getHandle();
   if (!sb || !handle) return;
   try {
-    const { data } = await sb.from('game_times')
-      .select('game_id, started_at, finished_at').eq('handle', handle);
-    (data || []).forEach(r => {
+    const [gtRes, mwRes] = await Promise.all([
+      sb.from('game_times').select('game_id, started_at, finished_at').eq('handle', handle),
+      sb.from('malware_events').select('created_at, resolved_at, timed_out').eq('target_handle', handle),
+    ]);
+    (gtRes.data || []).forEach(r => {
       myGameTimes[r.game_id] = {
         start:  r.started_at  ? new Date(r.started_at).getTime()  : null,
         finish: r.finished_at ? new Date(r.finished_at).getTime() : null,
       };
     });
+    const now = Date.now();
+    let pen = 0;
+    (mwRes.data || []).forEach(m => {
+      const created = new Date(m.created_at).getTime();
+      if (m.timed_out || (!m.resolved_at && (now - created) >= MALWARE_LIMIT_MS)) pen += 300;
+    });
+    myPenaltySec = pen;
   } catch(_) {}
   paintTimer();
 }
@@ -2892,7 +2902,7 @@ function paintTimer(){
   const el = document.getElementById('profile-time');
   if (!el) return;
   const ms = totalGameMs();
-  el.textContent = ms == null ? '—' : fmtTime(Math.floor(ms / 1000));
+  el.textContent = ms == null ? '—' : fmtTime(Math.floor(ms / 1000) + myPenaltySec);
 }
 function startTimerTicker(){
   if (timerTick) return;
@@ -2940,6 +2950,7 @@ async function timeoutMalware(){
   const id = mwEventId;
   hideMalware();
   if (sb && id) { try { await sb.rpc('timeout_malware', { p_event_id: id }); } catch(_) {} }
+  refreshTimerState();   // pull the new +5 penalty into the profile timer
   loadLeaderboard();
 }
 if (mwForm) {
