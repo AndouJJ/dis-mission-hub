@@ -49,7 +49,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 DROP TRIGGER IF EXISTS before_completion_insert ON completions;
 CREATE TRIGGER before_completion_insert
@@ -70,7 +70,7 @@ BEGIN
   WHERE handle = NEW.handle;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 DROP TRIGGER IF EXISTS after_completion_insert ON completions;
 CREATE TRIGGER after_completion_insert
@@ -121,11 +121,13 @@ CREATE POLICY "completions_delete" ON completions FOR DELETE USING (false);  -- 
 
 DO $$
 BEGIN
-  IF NOT EXISTS (
+  -- handles must NOT be in realtime: its change payloads include every column
+  -- (incl. uid), which would leak around the column-level grant in section 6.
+  IF EXISTS (
     SELECT 1 FROM pg_publication_tables
     WHERE pubname = 'supabase_realtime' AND tablename = 'handles'
   ) THEN
-    ALTER PUBLICATION supabase_realtime ADD TABLE handles;
+    ALTER PUBLICATION supabase_realtime DROP TABLE handles;
   END IF;
   IF NOT EXISTS (
     SELECT 1 FROM pg_publication_tables
@@ -171,6 +173,14 @@ ALTER TABLE handles ADD COLUMN IF NOT EXISTS started_at  TIMESTAMPTZ;
 ALTER TABLE handles ADD COLUMN IF NOT EXISTS finished_at TIMESTAMPTZ;
 CREATE UNIQUE INDEX IF NOT EXISTS handles_uid_key ON handles(uid);
 
+-- The uid must never be bulk-readable from the browser, or anyone could dump
+-- every participant's Unique ID and defeat the malware mechanic. Remove the
+-- table-wide SELECT and re-grant only the non-secret columns. The owner-run
+-- SECURITY DEFINER functions (resolve_malware, admin_roster) still see uid.
+REVOKE SELECT ON handles FROM anon, authenticated;
+GRANT  SELECT (handle, created_at, points, started_at, finished_at)
+  ON handles TO anon, authenticated;
+
 -- 6b. settings — the three game passwords + admin password.
 -- RLS is enabled with NO policies, so the anon (public) role can never read
 -- or write this table from the browser. Only the SECURITY DEFINER functions
@@ -180,11 +190,14 @@ CREATE TABLE IF NOT EXISTS app_settings (
   key   TEXT PRIMARY KEY,
   value TEXT
 );
+-- !! CHANGE THESE in the Supabase Table Editor before the event. admin_pw in
+-- particular must be long + random: it is checked via an RPC, so a weak value
+-- can be brute-forced over the API.
 INSERT INTO app_settings (key, value) VALUES
   ('pw_ne-1', 'alpha'),
   ('pw_ne-2', 'bravo'),
   ('pw_ne-3', 'charlie'),
-  ('admin_pw', 'dis-admin'),
+  ('admin_pw', 'CHANGE-ME-7QF2-kx93-Vn5p'),
   ('games_locked', 'false')   -- 'true' to lock all games behind their passwords
 ON CONFLICT DO NOTHING;
 ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;  -- no policies => no anon access
@@ -217,7 +230,7 @@ BEGIN
   END LOOP;
   RETURN out;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SET search_path = public, pg_temp;
 
 -- register a handle and assign a unique uid; returns the handle + uid
 CREATE OR REPLACE FUNCTION register_handle(p_handle TEXT)
@@ -244,7 +257,7 @@ BEGIN
   END LOOP;
   RETURN QUERY SELECT p_handle, v_uid;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- check a game password without ever sending it to the browser
 CREATE OR REPLACE FUNCTION verify_game_password(p_game TEXT, p_password TEXT)
@@ -254,7 +267,7 @@ BEGIN
   SELECT value INTO v FROM app_settings WHERE key = 'pw_' || p_game;
   RETURN v IS NOT NULL AND v = p_password;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- Per-game timing: one row per (handle, game). Total time = sum of each
 -- game's (finished_at - started_at). Readable by all; written only via the
@@ -278,17 +291,23 @@ BEGIN
   VALUES (p_handle, p_game, NOW())
   ON CONFLICT (handle, game_id) DO NOTHING;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
--- stop a single game's clock (when it is cleared) — idempotent
+-- stop a single game's clock (when it is cleared) — idempotent.
+-- Only stops if the game was started AND a matching completion exists, so a
+-- caller cannot record a time without actually finishing the game.
 CREATE OR REPLACE FUNCTION finish_game(p_handle TEXT, p_game TEXT)
 RETURNS VOID AS $$
 BEGIN
   UPDATE game_times SET finished_at = NOW()
    WHERE handle = p_handle AND game_id = p_game
-     AND started_at IS NOT NULL AND finished_at IS NULL;
+     AND started_at IS NOT NULL AND finished_at IS NULL
+     AND EXISTS (
+       SELECT 1 FROM completions c
+       WHERE c.handle = p_handle AND c.challenge_id = p_game
+     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- admin password check
 CREATE OR REPLACE FUNCTION admin_ok(p_pw TEXT) RETURNS BOOLEAN AS $$
@@ -297,7 +316,7 @@ BEGIN
   SELECT value INTO v FROM app_settings WHERE key = 'admin_pw';
   RETURN v IS NOT NULL AND v = p_pw;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- live games-locked flag (read by everyone, flipped by the admin)
 CREATE OR REPLACE FUNCTION get_games_locked() RETURNS BOOLEAN AS $$
@@ -306,7 +325,7 @@ BEGIN
   SELECT value INTO v FROM app_settings WHERE key = 'games_locked';
   RETURN lower(coalesce(v, 'false')) IN ('true','1','yes','on');
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 CREATE OR REPLACE FUNCTION set_games_locked(p_locked BOOLEAN, p_admin_pw TEXT)
 RETURNS BOOLEAN AS $$
@@ -320,7 +339,7 @@ BEGIN
   END IF;
   RETURN p_locked;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- admin: inject malware on one handle (reuses a live attack if already active)
 CREATE OR REPLACE FUNCTION send_malware(p_target_handle TEXT, p_admin_pw TEXT)
@@ -338,7 +357,7 @@ BEGIN
   INSERT INTO malware_events(target_handle) VALUES (p_target_handle) RETURNING id INTO v_id;
   RETURN v_id;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- admin: inject malware on everyone
 CREATE OR REPLACE FUNCTION send_malware_all(p_admin_pw TEXT)
@@ -352,7 +371,7 @@ BEGIN
   END LOOP;
   RETURN n;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- resolve an attack by entering ANY OTHER participant's uid
 CREATE OR REPLACE FUNCTION resolve_malware(p_event_id UUID, p_uid TEXT)
@@ -368,7 +387,7 @@ BEGIN
     WHERE id = p_event_id AND resolved_at IS NULL;
   RETURN TRUE;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- mark an attack as timed-out (only if genuinely >= 5 min old)
 CREATE OR REPLACE FUNCTION timeout_malware(p_event_id UUID)
@@ -379,14 +398,26 @@ BEGIN
      AND NOW() - created_at >= interval '5 minutes';
   RETURN FOUND;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
+
+-- admin: full roster incl. uid (uid is not readable via plain REST). The admin
+-- console calls this instead of selecting handles directly.
+CREATE OR REPLACE FUNCTION admin_roster(p_admin_pw TEXT)
+RETURNS TABLE(handle TEXT, uid TEXT)
+AS $$
+BEGIN
+  IF NOT admin_ok(p_admin_pw) THEN RAISE EXCEPTION 'unauthorized'; END IF;
+  RETURN QUERY SELECT h.handle, h.uid FROM handles h;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 GRANT EXECUTE ON FUNCTION
   register_handle(TEXT), verify_game_password(TEXT,TEXT),
   start_game(TEXT,TEXT), finish_game(TEXT,TEXT), admin_ok(TEXT),
   get_games_locked(), set_games_locked(BOOLEAN,TEXT),
   send_malware(TEXT,TEXT), send_malware_all(TEXT),
-  resolve_malware(UUID,TEXT), timeout_malware(UUID)
+  resolve_malware(UUID,TEXT), timeout_malware(UUID),
+  admin_roster(TEXT)
   TO anon, authenticated;
 
 -- realtime for instant malware delivery

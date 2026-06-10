@@ -1762,13 +1762,9 @@ handleForm.addEventListener('submit', async (e) => {
 
   try { localStorage.setItem('dis_handle', h); } catch(_) {}
 
-  // Make sure we have a Unique ID to show (returning user, or offline fallback).
-  if (sb && !getUid()) {
-    try {
-      const { data: hrow } = await sb.from('handles').select('uid').eq('handle', h).maybeSingle();
-      if (hrow && hrow.uid) setUid(hrow.uid);
-    } catch(_) {}
-  }
+  // Show a Unique ID. register_handle returns the real one for a new handle and
+  // we store it locally; the uid is never bulk-readable from the DB, so we never
+  // fetch it back. Fall back to a local display value if we somehow lack one.
   if (!getUid()) setUid(genLocalUid());
 
   setHandleUI(h);
@@ -1838,13 +1834,6 @@ document.getElementById('back-btn').addEventListener('click', () => {
   let completedIds = getLocalCompletions(saved);
 
   if (sb) {
-    // Pull Unique ID if we don't have it locally (e.g. cleared cache).
-    if (!getUid()) {
-      try {
-        const { data: hrow } = await sb.from('handles').select('uid').eq('handle', saved).maybeSingle();
-        if (hrow && hrow.uid) { setUid(hrow.uid); setUidUI(); }
-      } catch(_) {}
-    }
     const { data } = await sb
       .from('completions')
       .select('challenge_id')
@@ -2163,10 +2152,6 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
     }
 
     if (sb) {
-      // Guarantee the handle row exists — Android devices sometimes miss
-      // the initial registration insert (network hiccup + localStorage fallback).
-      await sb.from('handles').upsert({ handle }, { onConflict: 'handle', ignoreDuplicates: true });
-
       const { error } = await sb
         .from('completions')
         .insert({ handle, challenge_id: cid, points: pts, photo_url: photoUrl });
@@ -2309,7 +2294,6 @@ async function recordNECompletion(cid){
   const already = list.includes(cid);
 
   if (sb && !already){
-    await sb.from('handles').upsert({ handle }, { onConflict:'handle', ignoreDuplicates:true });
     const { error } = await sb.from('completions').insert({ handle, challenge_id: cid, points: pts });
     if (error && error.code !== '23505') return { ok:false, msg: error.message || 'Save failed' };
   }

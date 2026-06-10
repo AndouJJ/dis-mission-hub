@@ -1,0 +1,8 @@
+# GitHub Pages (Jekyll) config.
+# Keep reference / design / backend files out of the *deployed* site — they stay
+# in the repo but are never served at andoujj.github.io/dis-mission-hub.
+exclude:
+  - project        # original design mockups (reference only)
+  - chats          # design-session transcript
+  - supabase       # database schema / SQL (no reason to serve publicly)
+  - README.md
