@@ -271,13 +271,11 @@
   }
   .profile-inner{
     max-width:var(--maxw);margin:0 auto;padding:24px 32px;
-    display:grid;grid-template-columns:auto auto auto 1fr auto;gap:32px;align-items:center;
+    display:grid;grid-template-columns:auto auto 1fr auto;gap:32px;align-items:center;
   }
   .profile-cell .k{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--paper-3);text-transform:uppercase;margin-bottom:6px}
   .profile-cell .v{font-family:var(--serif);font-size:24px;line-height:1;color:var(--paper)}
   .profile-cell .v.handle{font-family:var(--mono);font-weight:600;letter-spacing:0.03em;font-size:18px}
-  .profile-cell .v.pts{color:var(--orange);font-variant-numeric:tabular-nums}
-  .profile-cell .v.pts small{font-family:var(--mono);font-size:11px;color:var(--paper-3);letter-spacing:0.1em;margin-left:6px;text-transform:uppercase}
   .profile-divider{width:1px;height:36px;background:var(--rule-2)}
 
   /* ---------- section ---------- */
@@ -336,8 +334,6 @@
     padding-top:20px;border-top:1px solid var(--rule);
     font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--paper-3);
   }
-  .mc-pts{color:var(--orange);font-weight:600}
-  .mc-pts b{font-family:var(--mono);font-size:20px;letter-spacing:0;font-weight:400;margin-right:2px}
   .mc-tier{display:flex;gap:3px}
   .mc-tier span{width:12px;height:4px;background:var(--rule-2)}
   .mc-tier span.on{background:var(--orange)}
@@ -345,13 +341,12 @@
   /* ---------- leaderboard ---------- */
   .ldr{border:1px solid var(--rule);background:var(--ink-2)}
   .ldr-head{
-    display:grid;grid-template-columns:48px 1fr 96px 90px;gap:20px;padding:10px 28px;
+    display:grid;grid-template-columns:48px 1fr 96px;gap:20px;padding:10px 28px;
     font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--paper-3);
   }
   .ldr-head .ldr-time{text-align:right}
-  .ldr-head .ldr-pts{text-align:right}
   .ldr-row{
-    display:grid;grid-template-columns:48px 1fr 96px 90px;gap:20px;
+    display:grid;grid-template-columns:48px 1fr 96px;gap:20px;
     padding:16px 28px;border-top:1px solid var(--rule);align-items:center;
     transition:background 0.15s;
   }
@@ -369,7 +364,6 @@
   }
   .ldr-name .badge.you{color:var(--orange);border-color:var(--orange)}
   .ldr-time{font-family:var(--mono);font-size:13px;letter-spacing:0.06em;color:var(--paper-2);text-align:right;font-variant-numeric:tabular-nums}
-  .ldr-pts{font-family:var(--mono);font-size:14px;color:var(--orange);text-align:right;font-variant-numeric:tabular-nums;font-weight:600;letter-spacing:0.04em}
 
   /* ---------- footer ---------- */
   footer{
@@ -434,10 +428,6 @@
     font-family:var(--sans);font-size:15px;font-weight:500;line-height:1.45;
     color:var(--paper);margin:0;letter-spacing:-0.005em;transition:color 0.2s;
   }
-  .challenge-pts{
-    font-family:var(--mono);font-size:11px;letter-spacing:0.12em;color:var(--paper-3);
-    text-transform:uppercase;white-space:nowrap;padding-top:2px;transition:color 0.2s;
-  }
   .challenge-check{
     width:34px;height:34px;background:transparent;border:1px solid var(--rule-2);cursor:pointer;
     color:var(--paper-3);display:grid;place-items:center;flex-shrink:0;padding:0;
@@ -449,7 +439,6 @@
     background:var(--orange);border-color:var(--orange);color:var(--ink);cursor:default;
   }
   .challenge.complete .challenge-body h4{color:var(--paper-3)}
-  .challenge.complete .challenge-pts{color:var(--orange)}
 
   .challenge-confirm{
     display:none;grid-column:1/-1;margin-top:14px;padding-top:14px;
@@ -539,7 +528,6 @@
     .mission-sub{font-size:16px}
     .challenge{grid-template-columns:auto 1fr auto;column-gap:12px}
     .challenge-body{flex-direction:column;gap:6px}
-    .challenge-pts{padding-top:0}
     .challenge-check{width:30px;height:30px}
     .challenge-confirm{font-size:10px;flex-direction:column;align-items:stretch;text-align:left}
     .cc-actions{justify-content:flex-end}
@@ -614,14 +602,13 @@
     .mc-title{font-size:28px}
     .mission-card.featured .mc-title{font-size:32px}
 
-    .ldr-head{grid-template-columns:32px 1fr 62px 56px;gap:10px;padding:8px 18px}
-    .ldr-row{grid-template-columns:32px 1fr 62px 56px;gap:10px;padding:14px 18px}
+    .ldr-head{grid-template-columns:32px 1fr 62px;gap:10px;padding:8px 18px}
+    .ldr-row{grid-template-columns:32px 1fr 62px;gap:10px;padding:14px 18px}
     .ldr-row.you{padding-left:16px}
     .ldr-rank{font-size:20px}
     .ldr-name{font-size:14px}
     .ldr-name .badge{display:none}
     .ldr-time{font-size:12px}
-    .ldr-pts{font-size:13px}
 
     footer{padding:24px 0;margin-top:48px}
     .foot-inner{padding:0 20px;flex-direction:column;text-align:center;font-size:9px}
@@ -1028,11 +1015,6 @@
     </div>
     <div class="profile-divider"></div>
     <div class="profile-cell">
-      <div class="k">Points</div>
-      <div class="v pts"><span id="profile-pts">0</span><small>PTS</small></div>
-    </div>
-    <div></div>
-    <div class="profile-cell">
       <div class="k">Time</div>
       <div class="v" style="font-size:20px;font-family:var(--mono);font-variant-numeric:tabular-nums" id="profile-time">—</div>
     </div>
@@ -1048,7 +1030,7 @@
     </div>
 
     <div class="missions-grid">
-      <article class="mission-card has-detail ne-card" data-game="ne-3" data-cid="ne-3" data-pts="80">
+      <article class="mission-card has-detail ne-card" data-game="ne-3" data-cid="ne-3">
         <div class="mc-head">
           <span class="mc-id">M-001 · RACIAL HARMONY</span>
           <span class="mc-status live">Live</span>
@@ -1056,12 +1038,11 @@
         <h3 class="mc-title">Many cultures, <em>one</em> frame.</h3>
         <p class="mc-desc">Slide the tiles to restore Singapore's multicultural mosaic. One picture, many hands — solve it to log the mission.</p>
         <div class="mc-foot">
-          <span class="mc-pts"><b>80</b>PTS</span>
           <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></span>
         </div>
       </article>
 
-      <article class="mission-card locked has-detail" data-mission="expedition" data-pts="260" data-status="locked">
+      <article class="mission-card locked has-detail" data-mission="expedition" data-status="locked">
         <div class="mc-head">
           <span class="mc-id">M-002 · EXPEDITION</span>
           <span class="mc-status locked">Unlocks Oct 28</span>
@@ -1069,12 +1050,11 @@
         <h3 class="mc-title"><em>DIS</em> Expedition.</h3>
         <p class="mc-desc">A field run at Universal Studios. Four challenges. Bring your unit, bring your nerve. Tap for the briefing.</p>
         <div class="mc-foot">
-          <span class="mc-pts"><b>260</b>PTS</span>
           <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></span>
         </div>
       </article>
 
-      <article class="mission-card has-detail ne-card" data-game="ne-1" data-cid="ne-1" data-pts="40">
+      <article class="mission-card has-detail ne-card" data-game="ne-1" data-cid="ne-1">
         <div class="mc-head">
           <span class="mc-id">M-003 · FOREIGN INTERFERENCE</span>
           <span class="mc-status live">Live</span>
@@ -1082,12 +1062,11 @@
         <h3 class="mc-title">Spot the <em>interference.</em></h3>
         <p class="mc-desc">Eight scenarios. Tell ordinary engagement from foreign influence — and influence from interference. Clear all eight to log the mission.</p>
         <div class="mc-foot">
-          <span class="mc-pts"><b>40</b>PTS</span>
           <span class="mc-tier"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></span>
         </div>
       </article>
 
-      <article class="mission-card has-detail ne-card" data-game="ne-2" data-cid="ne-2" data-pts="60">
+      <article class="mission-card has-detail ne-card" data-game="ne-2" data-cid="ne-2">
         <div class="mc-head">
           <span class="mc-id">M-004 · SGSECURE</span>
           <span class="mc-status live">Live</span>
@@ -1095,12 +1074,11 @@
         <h3 class="mc-title">The <em>quiet</em> signs.</h3>
         <p class="mc-desc">Three Singapore scenes. Tap what doesn't belong — the unattended bag, the open panel — without raising a false alarm. Zero mistakes to clear.</p>
         <div class="mc-foot">
-          <span class="mc-pts"><b>60</b>PTS</span>
           <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></span>
         </div>
       </article>
 
-      <article class="mission-card locked" data-mission="riddle" data-pts="80" data-status="locked">
+      <article class="mission-card locked" data-mission="riddle" data-status="locked">
         <div class="mc-head">
           <span class="mc-id">M-005 · RIDDLE</span>
           <span class="mc-status locked">Unlocks Oct 28</span>
@@ -1108,12 +1086,11 @@
         <h3 class="mc-title">A door, <em>two</em> lies.</h3>
         <p class="mc-desc">One sentence. One correct heading. Partial credit for the reasoning trace alone.</p>
         <div class="mc-foot">
-          <span class="mc-pts"><b>80</b>PTS</span>
           <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></span>
         </div>
       </article>
 
-      <article class="mission-card locked" data-mission="observation" data-pts="100" data-status="locked">
+      <article class="mission-card locked" data-mission="observation" data-status="locked">
         <div class="mc-head">
           <span class="mc-id">M-006 · OBSERVATION</span>
           <span class="mc-status locked">Unlocks Oct 28</span>
@@ -1121,7 +1098,6 @@
         <h3 class="mc-title">The slow photo.</h3>
         <p class="mc-desc">Notice five things the rest of the squad missed. Submissions stay open until Sunday.</p>
         <div class="mc-foot">
-          <span class="mc-pts"><b>100</b>PTS</span>
           <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></span>
         </div>
       </article>
@@ -1138,14 +1114,14 @@
     </div>
 
     <div class="ldr-head">
-      <div class="ldr-rank">#</div><div>Personnel</div><div class="ldr-time">Time</div><div class="ldr-pts">Pts</div>
+      <div class="ldr-rank">#</div><div>Guardian</div><div class="ldr-time">Time</div>
     </div>
     <div class="ldr" id="leaderboard">
       <!-- Populated by JS (Supabase when configured, static placeholder otherwise) -->
-      <div class="ldr-row top"><div class="ldr-rank">01</div><div class="ldr-name">—</div><div class="ldr-time">—</div><div class="ldr-pts">—</div></div>
-      <div class="ldr-row top"><div class="ldr-rank">02</div><div class="ldr-name">—</div><div class="ldr-time">—</div><div class="ldr-pts">—</div></div>
-      <div class="ldr-row top"><div class="ldr-rank">03</div><div class="ldr-name">—</div><div class="ldr-time">—</div><div class="ldr-pts">—</div></div>
-      <div class="ldr-row you" id="ldr-you"><div class="ldr-rank">—</div><div class="ldr-name" id="ldr-you-name">@operator <span class="badge you">YOU</span></div><div class="ldr-time">—</div><div class="ldr-pts" id="ldr-you-pts">0</div></div>
+      <div class="ldr-row top"><div class="ldr-rank">01</div><div class="ldr-name">—</div><div class="ldr-time">—</div></div>
+      <div class="ldr-row top"><div class="ldr-rank">02</div><div class="ldr-name">—</div><div class="ldr-time">—</div></div>
+      <div class="ldr-row top"><div class="ldr-rank">03</div><div class="ldr-name">—</div><div class="ldr-time">—</div></div>
+      <div class="ldr-row you" id="ldr-you"><div class="ldr-rank">—</div><div class="ldr-name" id="ldr-you-name">@operator <span class="badge you">YOU</span></div><div class="ldr-time">—</div></div>
     </div>
   </div>
 </section>
@@ -1165,7 +1141,6 @@
         <span class="challenge-no">01</span>
         <div class="challenge-body">
           <h4>Take a photo together with your unit with the USS globe in the background.</h4>
-          <span class="challenge-pts">+10 PTS</span>
         </div>
         <button class="challenge-check" aria-label="Mark complete">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
@@ -1191,7 +1166,6 @@
         <span class="challenge-no">02</span>
         <div class="challenge-body">
           <h4>Take a selfie while on the Transformer ride.</h4>
-          <span class="challenge-pts">+70 PTS</span>
         </div>
         <button class="challenge-check" aria-label="Mark complete">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
@@ -1217,7 +1191,6 @@
         <span class="challenge-no">03</span>
         <div class="challenge-body">
           <h4>Take a photo together with your unit with a scare actor.</h4>
-          <span class="challenge-pts">+80 PTS</span>
         </div>
         <button class="challenge-check" aria-label="Mark complete">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
@@ -1243,7 +1216,6 @@
         <span class="challenge-no">04</span>
         <div class="challenge-body">
           <h4>Scare a scare actor.</h4>
-          <span class="challenge-pts">+100 PTS</span>
         </div>
         <button class="challenge-check" aria-label="Mark complete">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
@@ -1267,7 +1239,6 @@
       </li>
     </ol>
     <div class="mission-foot">
-      <span>Total · <b class="o">260 PTS</b></span>
       <span>Submissions open OCT 28, 1800H GMT+8</span>
     </div>
 
@@ -1477,15 +1448,6 @@ function isSafePhotoUrl(url) {
 // ============================================================
 // CHALLENGE POINT VALUES + PHOTO REQUIREMENTS
 // ============================================================
-const CHALLENGE_PTS = {
-  'exp-1': 10,
-  'exp-2': 70,
-  'exp-3': 80,
-  'exp-4': 100,
-  'ne-1': 40,
-  'ne-2': 60,
-  'ne-3': 80,
-};
 
 const PHOTO_CHALLENGES = new Set(['exp-1', 'exp-2', 'exp-3', 'exp-4']);
 
@@ -1531,9 +1493,6 @@ function saveLocalCompletions(h, list) {
   try { localStorage.setItem(completionsKey(h), JSON.stringify(list)); } catch(_) {}
 }
 
-function pointsFromIds(ids) {
-  return ids.reduce((sum, cid) => sum + (CHALLENGE_PTS[cid] || 0), 0);
-}
 
 function getUid()  { try { return localStorage.getItem('dis_uid') || ''; } catch(_) { return ''; } }
 function setUid(u) { try { if (u) localStorage.setItem('dis_uid', u); } catch(_) {} }
@@ -1577,11 +1536,6 @@ function setHandleUI(h) {
   setUidUI();
 }
 
-function refreshPointsUI(pts) {
-  document.getElementById('profile-pts').textContent = pts.toLocaleString();
-  const yp = document.getElementById('ldr-you-pts');
-  if (yp) yp.textContent = pts.toLocaleString();
-}
 
 function renderChallengeStates(completedIds) {
   const done = new Set(completedIds);
@@ -1610,20 +1564,15 @@ async function loadLeaderboard() {
       yn.appendChild(document.createTextNode(' '));
       yn.appendChild(b);
     }
-    refreshPointsUI(pointsFromIds(getLocalCompletions(handle)));
     return;
   }
 
-  // Pull points, per-game timings and malware penalties together.
-  const [compRes, gtRes, mwRes] = await Promise.all([
-    sb.from('completions').select('handle, points'),
+  // Pull per-game timings and malware penalties.
+  const [gtRes, mwRes] = await Promise.all([
     sb.from('game_times').select('handle, game_id, started_at, finished_at'),
     sb.from('malware_events').select('target_handle, created_at, resolved_at, timed_out'),
   ]);
-  if (compRes.error || !compRes.data) return;
-
-  const totals = {};
-  compRes.data.forEach(r => { totals[r.handle] = (totals[r.handle] || 0) + Number(r.points); });
+  if (gtRes.error) return;
 
   // group game timings by handle -> game_id
   const gt = {};
@@ -1654,11 +1603,11 @@ async function loadLeaderboard() {
     return Math.max(0, Math.floor(sum)) + (penalty[h] || 0);
   }
 
-  const data = Object.keys(totals).map(h => ({
-    handle: h, points: totals[h], time: totalTimeSec(h)
+  // Rank by fastest total time; handles with no completed time rank below finished ones.
+  const data = Object.keys(gt).map(h => ({
+    handle: h, time: totalTimeSec(h)
   })).sort((a, b) => {
-    if (b.points !== a.points) return b.points - a.points;     // points first
-    const ta = a.time == null ? Infinity : a.time;             // then fastest time
+    const ta = a.time == null ? Infinity : a.time;
     const tb = b.time == null ? Infinity : b.time;
     return ta - tb;
   });
@@ -1677,10 +1626,7 @@ async function loadLeaderboard() {
     }
     const tm = document.createElement('div'); tm.className = 'ldr-time';
     tm.textContent = row.time == null ? '—' : fmtTime(row.time);
-    const pt = document.createElement('div'); pt.className = 'ldr-pts';
-    if (isYou) pt.id = 'ldr-you-pts';
-    pt.textContent = Number(row.points).toLocaleString();
-    div.appendChild(rk); div.appendChild(nm); div.appendChild(tm); div.appendChild(pt);
+    div.appendChild(rk); div.appendChild(nm); div.appendChild(tm);
     return div;
   }
 
@@ -1697,9 +1643,9 @@ async function loadLeaderboard() {
     const sep = document.createElement('div');
     sep.className = 'ldr-row';
     sep.style.cssText = 'opacity:0.35;pointer-events:none';
-    sep.innerHTML = `<div class="ldr-rank" style="color:var(--paper-3)">···</div><div class="ldr-name"></div><div class="ldr-time"></div><div class="ldr-pts"></div>`;
+    sep.innerHTML = `<div class="ldr-rank" style="color:var(--paper-3)">···</div><div class="ldr-name"></div><div class="ldr-time"></div>`;
     ldr.appendChild(sep);
-    const youData = userIdx >= 0 ? data[userIdx] : { handle, points: pointsFromIds(getLocalCompletions(handle)), time: null };
+    const youData = userIdx >= 0 ? data[userIdx] : { handle, time: null };
     const rankLabel = userIdx >= 0 ? String(userIdx + 1).padStart(2, '0') : '—';
     ldr.appendChild(buildRow(rankLabel, youData, true, false));
   }
@@ -1784,7 +1730,7 @@ handleForm.addEventListener('submit', async (e) => {
 
   renderChallengeStates(completedIds);
   renderNEStates(completedIds);
-  refreshPointsUI(pointsFromIds(completedIds));
+
 
   const now = new Date();
   welcomeTime.textContent =
@@ -1845,7 +1791,7 @@ document.getElementById('back-btn').addEventListener('click', () => {
 
   renderChallengeStates(completedIds);
   renderNEStates(completedIds);
-  refreshPointsUI(pointsFromIds(completedIds));
+
   initGamesSubsystem(saved);   // timer display + malware watch (no-ops if sb null)
 })();
 
@@ -2120,9 +2066,8 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
     e.stopPropagation();
     const ch     = btn.closest('.challenge');
     const cid    = ch.dataset.cid;
-    const pts    = CHALLENGE_PTS[cid];
     const handle = getHandle();
-    if (!handle || pts === undefined) return;
+    if (!handle) return;
 
     const errEl = ch.querySelector('.photo-err');
     const showErr = msg => { if (errEl) { errEl.textContent = msg; errEl.classList.add('show'); } };
@@ -2153,7 +2098,7 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
     if (sb) {
       const { error } = await sb
         .from('completions')
-        .insert({ handle, challenge_id: cid, points: pts, photo_url: photoUrl });
+        .insert({ handle, challenge_id: cid, points: 0, photo_url: photoUrl });
 
       if (error && error.code !== '23505') {
         showErr('Save failed: ' + (error.message || 'unknown error'));
@@ -2169,7 +2114,7 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
 
     const list = getLocalCompletions(handle);
     if (!list.includes(cid)) { list.push(cid); saveLocalCompletions(handle, list); }
-    refreshPointsUI(pointsFromIds(list));
+  
     loadLeaderboard();
     loadExpeditionPhotos(true);
   });
@@ -2288,16 +2233,15 @@ function renderNEStates(completedIds){
 async function recordNECompletion(cid){
   const handle = getHandle();
   if (!handle) return { ok:false, msg:'No handle registered' };
-  const pts  = CHALLENGE_PTS[cid] || 0;
   const list = getLocalCompletions(handle);
   const already = list.includes(cid);
 
   if (sb && !already){
-    const { error } = await sb.from('completions').insert({ handle, challenge_id: cid, points: pts });
+    const { error } = await sb.from('completions').insert({ handle, challenge_id: cid, points: 0 });
     if (error && error.code !== '23505') return { ok:false, msg: error.message || 'Save failed' };
   }
   if (!already){ list.push(cid); saveLocalCompletions(handle, list); }
-  refreshPointsUI(pointsFromIds(list));
+
   markNECleared(cid);
 
   // Stop THIS game's clock (each game is timed individually; totals are summed).
