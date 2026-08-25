@@ -633,8 +633,8 @@
   .gate-overlay.hidden{display:none}
   .gate-card{width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;gap:28px}
   .gate-logo-img{height:72px;width:auto}
-  .gate-title{font-family:var(--mono);font-size:11px;letter-spacing:0.22em;
-    text-transform:uppercase;color:var(--paper);text-align:center;line-height:1.8}
+  .gate-title{font-family:var(--mono);font-size:18px;letter-spacing:0.14em;
+    text-transform:uppercase;color:var(--paper);text-align:center;line-height:1.5;font-weight:700}
   .gate-form{width:100%;display:flex;flex-direction:column;gap:10px}
   .gate-input{width:100%;background:var(--ink-2);border:1px solid var(--rule);
     color:var(--paper);font-family:var(--mono);font-size:13px;letter-spacing:0.18em;
@@ -894,8 +894,7 @@
 <!-- ============ ACCESS CODE GATE ============ -->
 <div class="gate-overlay" id="gate-overlay">
   <div class="gate-card">
-    <img src="assets/dis-logo.png" alt="DIS — Guardians of the New Frontier" class="gate-logo-img" />
-    <div class="gate-title">YEAR IV · CLASSIFIED<br>ENTER ACCESS CODE TO CONTINUE</div>
+    <div class="gate-title">START YOUR CHALLENGE NOW</div>
     <form class="gate-form" id="gate-form" autocomplete="off">
       <input type="password" id="gate-input" class="gate-input"
              placeholder="ACCESS CODE" maxlength="32"
