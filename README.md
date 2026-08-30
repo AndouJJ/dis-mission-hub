@@ -42,7 +42,7 @@ project/, chats/     — original design files + session history (reference only
 - **Three NE mini-games:** Foreign Interference (MCQ), SGSecure (tap-the-threat on real photos), Racial Harmony (sliding puzzle).
 - **Per-game password lock + per-game timer.** Each game is unlocked by its own password and timed individually; the leaderboard total is the **sum** of all games' durations.
 - **Leaderboard** ranks by **points, then fastest total time**.
-- **"Malware injection"** — the organiser can trigger a full-screen takeover on any participant (or everyone). It's tied to the handle in the database, so refresh/incognito can't clear it; the victim must enter **someone else's Unique ID** to clear it, or eat a **+5 min penalty** when it auto-clears after 5 minutes.
+- **"Malware injection"** — the organiser can trigger a full-screen takeover on any participant (or everyone). It's tied to the handle in the database, so refresh/incognito can't clear it; the victim must enter **someone else's Unique ID** to clear it. Each wrong guess adds a **+1:00 penalty** (and shows "Guessing passwords isn't clever — it's reckless"); leaving it unresolved for 5 minutes auto-clears it with a **+5 min penalty**.
 - **Live `games_locked` switch** stored in Supabase — toggled from the admin console with no redeploy.
 
 ---

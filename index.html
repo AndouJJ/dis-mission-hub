@@ -1357,7 +1357,7 @@
       <button class="mw-btn" type="submit">UNLOCK</button>
     </form>
     <div class="mw-err" id="mw-err"></div>
-    <div class="mw-count">Auto-clears with a <b>+5:00 penalty</b> in <span id="mw-clock">5:00</span></div>
+    <div class="mw-count">Wrong guesses cost <b>+1:00</b> each. Auto-clears with a <b>+5:00 penalty</b> in <span id="mw-clock">5:00</span></div>
   </div>
 </div>
 
@@ -1569,7 +1569,7 @@ async function loadLeaderboard() {
   // Pull per-game timings and malware penalties.
   const [gtRes, mwRes] = await Promise.all([
     sb.from('game_times').select('handle, game_id, started_at, finished_at'),
-    sb.from('malware_events').select('target_handle, created_at, resolved_at, timed_out'),
+    sb.from('malware_events').select('target_handle, created_at, resolved_at, timed_out, wrong_guesses'),
   ]);
   if (gtRes.error) return;
 
@@ -1579,13 +1579,15 @@ async function loadLeaderboard() {
     (gt[r.handle] || (gt[r.handle] = {}))[r.game_id] = r;
   });
 
-  // +5 min for every attack that timed out (or is unresolved and already past 5 min)
+  // +5 min for every attack that timed out (or is unresolved and already past 5 min),
+  // plus +1:00 for every wrong Unique ID guess against a live attack.
   const now = Date.now();
   const penalty = {};
   (mwRes.data || []).forEach(m => {
     const created = new Date(m.created_at).getTime();
     const counts  = m.timed_out || (!m.resolved_at && (now - created) >= MALWARE_LIMIT_MS);
-    if (counts) penalty[m.target_handle] = (penalty[m.target_handle] || 0) + 300;
+    let add = (counts ? 300 : 0) + (m.wrong_guesses || 0) * 60;
+    if (add) penalty[m.target_handle] = (penalty[m.target_handle] || 0) + add;
   });
 
   // Total = sum of each game's (finished - started). Only counts once ALL
@@ -2800,7 +2802,7 @@ async function refreshTimerState(){
   try {
     const [gtRes, mwRes] = await Promise.all([
       sb.from('game_times').select('game_id, started_at, finished_at').eq('handle', handle),
-      sb.from('malware_events').select('created_at, resolved_at, timed_out').eq('target_handle', handle),
+      sb.from('malware_events').select('created_at, resolved_at, timed_out, wrong_guesses').eq('target_handle', handle),
     ]);
     (gtRes.data || []).forEach(r => {
       myGameTimes[r.game_id] = {
@@ -2813,6 +2815,7 @@ async function refreshTimerState(){
     (mwRes.data || []).forEach(m => {
       const created = new Date(m.created_at).getTime();
       if (m.timed_out || (!m.resolved_at && (now - created) >= MALWARE_LIMIT_MS)) pen += 300;
+      pen += (m.wrong_guesses || 0) * 60;
     });
     myPenaltySec = pen;
   } catch(_) {}
@@ -2901,8 +2904,10 @@ if (mwForm) {
     } catch(_) { ok = false; }
     if (ok) { hideMalware(); loadLeaderboard(); }
     else {
-      mwErr.textContent = 'INVALID ID — ASK SOMEONE ELSE FOR THEIRS';
+      mwErr.textContent = "GUESSING PASSWORDS ISN'T CLEVER — IT'S RECKLESS (+1:00)";
       mwInput.value = ''; mwInput.focus();
+      if (sb) { try { await sb.rpc('record_wrong_guess', { p_event_id: mwEventId }); } catch(_) {} }
+      refreshTimerState();
     }
   });
 }
