@@ -208,8 +208,10 @@ CREATE TABLE IF NOT EXISTS malware_events (
   target_handle TEXT REFERENCES handles(handle) ON DELETE CASCADE,
   created_at    TIMESTAMPTZ DEFAULT NOW(),
   resolved_at   TIMESTAMPTZ,
-  timed_out     BOOLEAN DEFAULT FALSE
+  timed_out     BOOLEAN DEFAULT FALSE,
+  wrong_guesses INT DEFAULT 0
 );
+ALTER TABLE malware_events ADD COLUMN IF NOT EXISTS wrong_guesses INT DEFAULT 0;
 ALTER TABLE malware_events ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "malware_select" ON malware_events;
 CREATE POLICY "malware_select" ON malware_events FOR SELECT USING (true);
@@ -389,6 +391,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
+-- record a wrong Unique ID guess against a live attack — adds a 60s penalty
+-- (only counts while the event is still unresolved)
+CREATE OR REPLACE FUNCTION record_wrong_guess(p_event_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  UPDATE malware_events SET wrong_guesses = wrong_guesses + 1
+   WHERE id = p_event_id AND resolved_at IS NULL;
+  RETURN FOUND;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
+
 -- mark an attack as timed-out (only if genuinely >= 5 min old)
 CREATE OR REPLACE FUNCTION timeout_malware(p_event_id UUID)
 RETURNS BOOLEAN AS $$
@@ -417,6 +430,7 @@ GRANT EXECUTE ON FUNCTION
   get_games_locked(), set_games_locked(BOOLEAN,TEXT),
   send_malware(TEXT,TEXT), send_malware_all(TEXT),
   resolve_malware(UUID,TEXT), timeout_malware(UUID),
+  record_wrong_guess(UUID),
   admin_roster(TEXT)
   TO anon, authenticated;
 
