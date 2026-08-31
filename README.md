@@ -4,6 +4,18 @@ A web app for DIS personnel built around the organisation's **4th Anniversary on
 
 ---
 
+## ⚠️ TODO before the event
+
+- [ ] **"Own the Process" game (`pw_ne-4`)** — swap the placeholder person for the
+  real one: the regular's actual **name**, **pronoun**, and **birthdate**.
+  Two places to update:
+  1. `index.html` → `GAME_HINTS['ne-4']` — replace `[NAME]` / `[His/Her]` /
+     `[DD/MM/YYYY]` in the clue text shown on the password modal.
+  2. Supabase `app_settings` table → `pw_ne-4` — set to `P@ssw0rd` + the
+     birthdate as `DDMMYYYY` (no separators), matching the clue.
+
+---
+
 ## What's in this repo
 
 ```

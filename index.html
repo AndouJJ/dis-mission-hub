@@ -1485,6 +1485,8 @@ const GAME_NAMES      = { 'ne-1': 'Foreign Interference', 'ne-2': 'SGSecure', 'n
 const GP_DEFAULT_SUB  = 'Enter the password to unlock this drill. Your timer starts the moment the first drill is unlocked.';
 // Own the Process (ne-4): the password is P@ssw0rd + a real regular's
 // birthdate as DDMMYYYY. Fill in [NAME] and [DD/MM/YYYY] before the event.
+// TODO before the event: replace [NAME] / [His/Her] / [DD/MM/YYYY] below with
+// the real regular's details, and set pw_ne-4 in Supabase to match (see README).
 const GAME_HINTS = {
   'ne-4': '[NAME] is a regular. [His/Her] birthday is [DD/MM/YYYY] — the password is P@ssw0rd followed by that date, no separators (e.g. P@ssw0rd01011990). Stumped? Find [NAME] for a clue.',
 };
