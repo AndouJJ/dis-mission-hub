@@ -1336,7 +1336,7 @@
       <span class="o">3 DRILLS · IN ORDER</span>
     </div>
     <h2 class="game-h">Own the process, <em>or it owns you.</em></h2>
-    <p class="game-sub" id="g4-intro">The password was a regular's signature line: <b>P@ssw0rd</b> + their birthdate, DDMMYYYY. In now — three drills stand between you and the mission log. Clear them <b>in order</b>.</p>
+    <p class="game-sub" id="g4-intro">You're in. Three drills stand between you and the mission log — clear them <b>in order</b>.</p>
     <div class="game-progress" id="g4-progress"></div>
     <div id="g4-play"></div>
     <div id="g4-end" style="display:none"></div>
@@ -1349,7 +1349,7 @@
     <button class="game-close" data-close-gp aria-label="Close">✕</button>
     <div class="gp-eyebrow">// LOCKED DRILL</div>
     <h3 class="gp-h"><span id="gp-title">Game</span></h3>
-    <p class="gp-sub">Enter the password to unlock this drill. Your timer starts the moment the first drill is unlocked.</p>
+    <p class="gp-sub" id="gp-sub">Enter the password to unlock this drill. Your timer starts the moment the first drill is unlocked.</p>
     <form class="gp-form" id="gp-form" autocomplete="off">
       <input id="gp-input" class="gp-input" type="password" placeholder="PASSWORD"
              maxlength="64" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false" />
@@ -1482,6 +1482,12 @@ const CHALLENGE_LABELS = {
 let gamesLocked       = false;            // live value, refreshed from the DB
 const NE_GAMES        = ['ne-1', 'ne-2', 'ne-3', 'ne-4'];
 const GAME_NAMES      = { 'ne-1': 'Foreign Interference', 'ne-2': 'SGSecure', 'ne-3': 'Racial Harmony', 'ne-4': 'Own the Process' };
+const GP_DEFAULT_SUB  = 'Enter the password to unlock this drill. Your timer starts the moment the first drill is unlocked.';
+// Own the Process (ne-4): the password is P@ssw0rd + a real regular's
+// birthdate as DDMMYYYY. Fill in [NAME] and [DD/MM/YYYY] before the event.
+const GAME_HINTS = {
+  'ne-4': '[NAME] is a regular. [His/Her] birthday is [DD/MM/YYYY] — the password is P@ssw0rd followed by that date, no separators (e.g. P@ssw0rd01011990). Stumped? Find [NAME] for a clue.',
+};
 const MALWARE_LIMIT_MS = 5 * 60 * 1000;   // 5 minutes before auto-clear + penalty
 
 // ============================================================
@@ -2988,6 +2994,7 @@ const gpModal = document.getElementById('gp-modal');
 const gpForm  = document.getElementById('gp-form');
 const gpInput = document.getElementById('gp-input');
 const gpTitle = document.getElementById('gp-title');
+const gpSub   = document.getElementById('gp-sub');
 const gpErr   = document.getElementById('gp-err');
 const gpBtn   = document.getElementById('gp-btn');
 let gpCid = null;
@@ -2997,6 +3004,7 @@ function promptGamePassword(cid){
   gpErr.textContent = '';
   gpInput.value = '';
   gpTitle.textContent = GAME_NAMES[cid] || 'Game';
+  if (gpSub) gpSub.textContent = GAME_HINTS[cid] || GP_DEFAULT_SUB;
   gpModal.classList.add('show');
   setTimeout(() => gpInput.focus(), 60);
 }
