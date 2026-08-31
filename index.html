@@ -1025,7 +1025,7 @@
   <div class="container">
     <div class="block-head">
       <h2>Missions for <em>Year IV.</em></h2>
-      <div class="meta">06 operations · 03 live<b id="missions-open">Three unlock OCT 28 · YEAR IV</b></div>
+      <div class="meta">06 operations · 04 live<b id="missions-open">Two unlock OCT 28 · YEAR IV</b></div>
     </div>
 
     <div class="missions-grid">
@@ -1077,13 +1077,13 @@
         </div>
       </article>
 
-      <article class="mission-card locked" data-mission="riddle" data-status="locked">
+      <article class="mission-card has-detail ne-card" data-game="ne-4" data-cid="ne-4">
         <div class="mc-head">
-          <span class="mc-id">M-005 · RIDDLE</span>
-          <span class="mc-status locked">Unlocks Oct 28</span>
+          <span class="mc-id">M-005 · THE PROCESS</span>
+          <span class="mc-status live">Live</span>
         </div>
-        <h3 class="mc-title">A door, <em>two</em> lies.</h3>
-        <p class="mc-desc">One sentence. One correct heading. Partial credit for the reasoning trace alone.</p>
+        <h3 class="mc-title">Own the process, <em>or it owns you.</em></h3>
+        <p class="mc-desc">Guess the password, then clear three drills — crack the signal, place the pin, engineer the prompt. All three, in order, to log the mission.</p>
         <div class="mc-foot">
           <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></span>
         </div>
@@ -1327,6 +1327,22 @@
   </div>
 </div>
 
+<!-- ============ GAME 4 · OWN THE PROCESS ============ -->
+<div class="game-modal" id="g4-modal" aria-hidden="true">
+  <div class="game-card">
+    <button class="game-close" data-close-game aria-label="Close">✕</button>
+    <div class="game-meta">
+      <span>D-004 · THE PROCESS</span>
+      <span class="o">3 DRILLS · IN ORDER</span>
+    </div>
+    <h2 class="game-h">Own the process, <em>or it owns you.</em></h2>
+    <p class="game-sub" id="g4-intro">The password was a regular's signature line: <b>P@ssw0rd</b> + their birthdate, DDMMYYYY. In now — three drills stand between you and the mission log. Clear them <b>in order</b>.</p>
+    <div class="game-progress" id="g4-progress"></div>
+    <div id="g4-play"></div>
+    <div id="g4-end" style="display:none"></div>
+  </div>
+</div>
+
 <!-- ============ GAME PASSWORD MODAL ============ -->
 <div class="gp-modal" id="gp-modal" aria-hidden="true">
   <div class="gp-card">
@@ -1464,8 +1480,8 @@ const CHALLENGE_LABELS = {
 // it up live (no redeploy). While unset/false the games are open as before.
 // ============================================================
 let gamesLocked       = false;            // live value, refreshed from the DB
-const NE_GAMES        = ['ne-1', 'ne-2', 'ne-3'];
-const GAME_NAMES      = { 'ne-1': 'Foreign Interference', 'ne-2': 'SGSecure', 'ne-3': 'Racial Harmony' };
+const NE_GAMES        = ['ne-1', 'ne-2', 'ne-3', 'ne-4'];
+const GAME_NAMES      = { 'ne-1': 'Foreign Interference', 'ne-2': 'SGSecure', 'ne-3': 'Racial Harmony', 'ne-4': 'Own the Process' };
 const MALWARE_LIMIT_MS = 5 * 60 * 1000;   // 5 minutes before auto-clear + penalty
 
 // ============================================================
@@ -2256,7 +2272,7 @@ async function recordNECompletion(cid){
   return { ok:true, already };
 }
 
-const GAME_MODALS = { 'ne-1':'g1-modal', 'ne-2':'g2-modal', 'ne-3':'g3-modal' };
+const GAME_MODALS = { 'ne-1':'g1-modal', 'ne-2':'g2-modal', 'ne-3':'g3-modal', 'ne-4':'g4-modal' };
 
 function launchGame(cid){
   const id = GAME_MODALS[cid];
@@ -2268,6 +2284,7 @@ function launchGame(cid){
   if (cid === 'ne-1') g1Start();
   if (cid === 'ne-2') g2Start();
   if (cid === 'ne-3') g3Start();
+  if (cid === 'ne-4') g4Start();
 }
 
 function openGame(cid){
@@ -2696,6 +2713,266 @@ async function g3Win(){
 }
 
 document.getElementById('g3-shuffle').addEventListener('click', g3Shuffle);
+
+// ============================================================
+// GAME 4 · OWN THE PROCESS  (ne-4, 3 drills, in order)
+// Part A — Morse decode. Part B — coordinate pinpoint. Part C — prompt
+// engineering MCQ. All three must clear, in order, to log the mission.
+// ============================================================
+const G4_MORSE_CIPHER = '--- .-- -.  - .... .  .--. .-. --- -.-. . ... ...';
+const G4_MORSE_PLAIN  = 'OWN THE PROCESS';
+
+const G4_GEO_LAT = 1.291;
+const G4_GEO_LNG = 103.847;
+const G4_GEO_TOL = 0.0005; // matches when rounded to 3dp
+
+const G4_PROMPT_OPTS = [
+  { b:'Reject it',   s:'Dismiss the instruction outright.' },
+  { b:'Accept it',   s:'Adopt the instruction as given.' },
+  { b:'Clarify it',  s:'Ask what is missing before acting.' },
+];
+const G4_PROMPT_Q = [
+  {
+    s:'You want a model to summarise a report in exactly three bullet points — no more, no fewer. Which instruction gets that reliably?',
+    opts: [
+      { b:'"Summarise this report."', s:'No length or format constraint given.' },
+      { b:'"Summarise this report in exactly 3 bullet points, no more and no fewer."', s:'States the exact count and format wanted.' },
+      { b:'"Make this report shorter."', s:'Vague — "shorter" has no defined target.' },
+    ],
+    a: 1,
+    why: 'Naming the exact count and format up front is what makes the output land on three bullets, not two or five.',
+  },
+  {
+    s:'The model should answer only from an attached document, and say "not stated" if the document doesn\'t cover it. Best prompt?',
+    opts: [
+      { b:'"Answer the question."', s:'Leaves the source of truth unspecified.' },
+      { b:'"Answer using only the attached document. If it doesn\'t cover the question, reply exactly \'not stated\'."', s:'Pins the source and defines the fallback.' },
+      { b:'"Use your general knowledge to answer fully."', s:'The opposite of grounding it to the document.' },
+    ],
+    a: 1,
+    why: 'Constraining the source and defining an explicit fallback stops the model from guessing or inventing an answer.',
+  },
+  {
+    s:'Which practice most reliably improves output on a complex, multi-step task?',
+    opts: [
+      { b:'One giant instruction, no structure.', s:'Everything at once, nothing sequenced.' },
+      { b:'Break the task into clear, ordered steps and state the exact output format wanted.', s:'Sequenced steps, explicit target shape.' },
+      { b:'Repeat the request in all caps.', s:'Volume, not clarity.' },
+    ],
+    a: 1,
+    why: 'Ordered steps plus an explicit output format is what turns a vague ask into a task the model can execute reliably — the same discipline this whole drill is named for.',
+  },
+];
+
+let g4step = 0; // 0=morse, 1=geo, 2=prompt
+let g4qi = 0, g4answered = false;
+
+function g4RenderProgress(){
+  const p = document.getElementById('g4-progress'); p.innerHTML = '';
+  for (let k = 0; k < 3; k++){
+    const sp = document.createElement('span');
+    if (k < g4step) sp.classList.add('on');
+    p.appendChild(sp);
+  }
+}
+
+function g4Start(){
+  g4step = 0; g4qi = 0;
+  document.getElementById('g4-end').style.display = 'none';
+  document.getElementById('g4-play').style.display = '';
+  g4RenderProgress();
+  g4RenderMorse();
+}
+
+function g4RenderMorse(){
+  document.getElementById('g4-intro').style.display = '';
+  const play = document.getElementById('g4-play');
+  play.innerHTML = '';
+
+  const tag = document.createElement('div');
+  tag.className = 'scene-objective';
+  tag.innerHTML = 'Drill <b>1 / 3</b> — signal intercept';
+  play.appendChild(tag);
+
+  const log = document.createElement('div');
+  log.className = 'scene-log';
+  log.textContent = 'Decode the transmission below.';
+  play.appendChild(log);
+
+  const cipher = document.createElement('p');
+  cipher.className = 'mcq-scenario';
+  cipher.style.letterSpacing = '0.12em';
+  cipher.textContent = G4_MORSE_CIPHER;
+  play.appendChild(cipher);
+
+  const form = document.createElement('form');
+  form.className = 'gp-form';
+  const input = document.createElement('input');
+  input.className = 'gp-input';
+  input.type = 'text';
+  input.placeholder = 'DECODED MESSAGE';
+  input.autocomplete = 'off';
+  input.autocapitalize = 'off';
+  input.spellcheck = false;
+  const btn = document.createElement('button');
+  btn.type = 'submit';
+  btn.className = 'gp-btn';
+  btn.textContent = 'Submit';
+  form.appendChild(input); form.appendChild(btn);
+  play.appendChild(form);
+
+  const err = document.createElement('div');
+  err.className = 'gp-err';
+  play.appendChild(err);
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const norm = input.value.trim().toUpperCase().replace(/\s+/g, ' ');
+    if (norm === G4_MORSE_PLAIN) {
+      g4step = 1; g4RenderProgress(); g4RenderGeo();
+    } else {
+      err.textContent = 'NOT QUITE — CHECK YOUR MORSE TABLE';
+      input.value = ''; input.focus();
+    }
+  });
+}
+
+function g4RenderGeo(){
+  document.getElementById('g4-intro').style.display = 'none';
+  const play = document.getElementById('g4-play');
+  play.innerHTML = '';
+
+  const tag = document.createElement('div');
+  tag.className = 'scene-objective';
+  tag.innerHTML = 'Drill <b>2 / 3</b> — pinpoint the site';
+  play.appendChild(tag);
+
+  const log = document.createElement('div');
+  log.className = 'scene-log';
+  log.textContent = 'Fort Canning Park has worn many hats — palace hill, colonial command post, park. Find the building that once housed Singapore\'s colonial administration on the hill, and give its coordinates to 3 decimal places.';
+  play.appendChild(log);
+
+  const form = document.createElement('form');
+  form.className = 'gp-form';
+  const row = document.createElement('div');
+  row.style.display = 'flex'; row.style.gap = '8px';
+  const latInput = document.createElement('input');
+  latInput.className = 'gp-input'; latInput.type = 'text';
+  latInput.placeholder = 'LATITUDE (e.g. 1.291)';
+  latInput.autocomplete = 'off';
+  const lngInput = document.createElement('input');
+  lngInput.className = 'gp-input'; lngInput.type = 'text';
+  lngInput.placeholder = 'LONGITUDE (e.g. 103.847)';
+  lngInput.autocomplete = 'off';
+  row.appendChild(latInput); row.appendChild(lngInput);
+  const btn = document.createElement('button');
+  btn.type = 'submit'; btn.className = 'gp-btn'; btn.textContent = 'Drop pin';
+  form.appendChild(row); form.appendChild(btn);
+  play.appendChild(form);
+
+  const err = document.createElement('div');
+  err.className = 'gp-err';
+  play.appendChild(err);
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const lat = parseFloat(latInput.value);
+    const lng = parseFloat(lngInput.value);
+    const ok = Number.isFinite(lat) && Number.isFinite(lng)
+      && Math.abs(lat - G4_GEO_LAT) <= G4_GEO_TOL
+      && Math.abs(lng - G4_GEO_LNG) <= G4_GEO_TOL;
+    if (ok) {
+      g4step = 2; g4RenderProgress(); g4qi = 0; g4RenderPrompt();
+    } else {
+      err.textContent = 'MISSED THE SITE — TRY AGAIN TO 3 DECIMAL PLACES';
+      latInput.focus();
+    }
+  });
+}
+
+function g4RenderPrompt(){
+  document.getElementById('g4-intro').style.display = 'none';
+  g4answered = false;
+  const play = document.getElementById('g4-play');
+  play.innerHTML = '';
+  const q = G4_PROMPT_Q[g4qi];
+
+  const tag = document.createElement('div');
+  tag.className = 'scene-objective';
+  tag.innerHTML = 'Drill <b>3 / 3</b> — engineer the prompt (' + (g4qi + 1) + ' / ' + G4_PROMPT_Q.length + ')';
+  play.appendChild(tag);
+
+  const sc = document.createElement('p');
+  sc.className = 'mcq-scenario';
+  sc.textContent = q.s;
+  play.appendChild(sc);
+
+  const opts = document.createElement('div');
+  opts.className = 'mcq-options';
+  const explain = document.createElement('div');
+  explain.className = 'mcq-explain';
+  const foot = document.createElement('div');
+  foot.className = 'mcq-foot';
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'game-btn';
+  nextBtn.textContent = g4qi < G4_PROMPT_Q.length - 1 ? 'Next →' : 'Finish';
+  nextBtn.style.visibility = 'hidden';
+  nextBtn.addEventListener('click', () => {
+    g4qi++;
+    if (g4qi >= G4_PROMPT_Q.length) g4Finish();
+    else g4RenderPrompt();
+  });
+
+  q.opts.forEach((o, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'mcq-opt';
+    const b = document.createElement('b'); b.textContent = o.b;
+    const sm = document.createElement('small'); sm.textContent = o.s;
+    btn.appendChild(b); btn.appendChild(sm);
+    btn.addEventListener('click', () => {
+      if (g4answered || btn.classList.contains('wrong')) return;
+      if (idx === q.a) {
+        g4answered = true;
+        opts.querySelectorAll('.mcq-opt').forEach(bb => { bb.disabled = true; });
+        btn.classList.add('correct');
+        explain.textContent = q.why;
+        explain.classList.add('show');
+        nextBtn.style.visibility = 'visible';
+      } else {
+        btn.classList.add('wrong');
+        btn.disabled = true;
+        explain.textContent = 'Not the reliable pick. Think about what makes an instruction unambiguous. Try again.';
+        explain.classList.add('show');
+      }
+    });
+    opts.appendChild(btn);
+  });
+
+  play.appendChild(opts);
+  play.appendChild(explain);
+  foot.appendChild(nextBtn);
+  play.appendChild(foot);
+}
+
+async function g4Finish(){
+  document.getElementById('g4-play').style.display = 'none';
+  g4step = 3; g4RenderProgress();
+
+  const end = document.getElementById('g4-end');
+  end.style.display = ''; end.innerHTML = '';
+
+  const wrap = document.createElement('div'); wrap.className = 'game-result';
+  const badge = document.createElement('div'); badge.className = 'badge-big win'; badge.textContent = 'Mission cleared';
+  const h = document.createElement('h3'); h.textContent = 'Process owned';
+  const p = document.createElement('p');
+  p.textContent = 'Signal decoded, site pinpointed, prompt engineered. Mission logged.';
+  const btn = document.createElement('button'); btn.className = 'game-btn'; btn.textContent = 'Done';
+  const r = await recordNECompletion('ne-4');
+  if (!r.ok) p.textContent = 'Cleared — but saving failed: ' + r.msg;
+  btn.addEventListener('click', () => closeGame(document.getElementById('g4-modal')));
+  wrap.appendChild(badge); wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(btn);
+  end.appendChild(wrap);
+}
 
 // ============================================================
 // GAME PASSWORD GATE  (per-game, server-validated)
