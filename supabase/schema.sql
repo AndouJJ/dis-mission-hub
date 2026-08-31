@@ -197,6 +197,10 @@ INSERT INTO app_settings (key, value) VALUES
   ('pw_ne-1', 'alpha'),
   ('pw_ne-2', 'bravo'),
   ('pw_ne-3', 'charlie'),
+  -- 'Own the Process' (ne-4): password is P@ssw0rd + a real regular's birthdate
+  -- (DDMMYYYY). This placeholder MUST be changed to the real value before the
+  -- event — see README's password table.
+  ('pw_ne-4', 'P@ssw0rd01011990'),
   ('admin_pw', 'CHANGE-ME-7QF2-kx93-Vn5p'),
   ('games_locked', 'false')   -- 'true' to lock all games behind their passwords
 ON CONFLICT DO NOTHING;

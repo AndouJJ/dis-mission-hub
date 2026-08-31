@@ -39,7 +39,7 @@ project/, chats/     — original design files + session history (reference only
 
 - **Access-code gate** → **digital-handle registration** → **Unique ID** issued per handle.
 - **Expedition** photo-challenges (Supabase Storage) with a live field-photo wall.
-- **Three NE mini-games:** Foreign Interference (MCQ), SGSecure (tap-the-threat on real photos), Racial Harmony (sliding puzzle).
+- **Four NE mini-games:** Foreign Interference (MCQ), SGSecure (tap-the-threat on real photos), Racial Harmony (sliding puzzle), and **Own the Process** — a password-gated drill (password is `P@ssw0rd` + a real regular's birthdate, DDMMYYYY) unlocking three ordered challenges: a Morse-code decode, a Singapore-coordinates pinpoint, and a prompt-engineering MCQ.
 - **Per-game password lock + per-game timer.** Each game is unlocked by its own password and timed individually; the leaderboard total is the **sum** of all games' durations.
 - **Leaderboard** ranks by **points, then fastest total time**.
 - **"Malware injection"** — the organiser can trigger a full-screen takeover on any participant (or everyone). It's tied to the handle in the database, so refresh/incognito can't clear it; the victim must enter **someone else's Unique ID** to clear it. Each wrong guess adds a **+1:00 penalty** (and shows "Guessing passwords isn't clever — it's reckless"); leaving it unresolved for 5 minutes auto-clears it with a **+5 min penalty**.
@@ -59,6 +59,7 @@ Change every default before the event:
 | key | meaning |
 |---|---|
 | `pw_ne-1` / `pw_ne-2` / `pw_ne-3` | the three game passwords |
+| `pw_ne-4` | **Own the Process** password — set this to `P@ssw0rd` + the real regular's birthdate as `DDMMYYYY` (placeholder ships as `P@ssw0rd01011990`) |
 | `admin_pw` | admin-console password — **use a long random value** (it's checked over the API) |
 | `games_locked` | `true` locks all games behind their passwords |
 
