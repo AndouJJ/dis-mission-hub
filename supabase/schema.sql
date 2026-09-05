@@ -201,6 +201,8 @@ INSERT INTO app_settings (key, value) VALUES
   -- (DDMMYYYY). This placeholder MUST be changed to the real value before the
   -- event — see README's password table.
   ('pw_ne-4', 'P@ssw0rd01011990'),
+  ('pw_ne-5', 'delta'),
+  ('pw_ne-6', 'echo'),
   ('admin_pw', 'CHANGE-ME-7QF2-kx93-Vn5p'),
   ('games_locked', 'false')   -- 'true' to lock all games behind their passwords
 ON CONFLICT DO NOTHING;

@@ -51,7 +51,7 @@ project/, chats/     — original design files + session history (reference only
 
 - **Access-code gate** → **digital-handle registration** → **Unique ID** issued per handle.
 - **Expedition** photo-challenges (Supabase Storage) with a live field-photo wall.
-- **Four NE mini-games:** Foreign Interference (MCQ), SGSecure (tap-the-threat on real photos), Racial Harmony (sliding puzzle), and **Own the Process** — a password-gated drill (password is `P@ssw0rd` + a real regular's birthdate, DDMMYYYY) unlocking three ordered challenges: a Morse-code decode, a Singapore-coordinates pinpoint, and a prompt-engineering MCQ.
+- **Six NE mini-games:** Foreign Interference (MCQ), SGSecure (tap-the-threat on real photos), Racial Harmony (sliding puzzle), **Own the Process** — a password-gated drill (password is `P@ssw0rd` + a real regular's birthdate, DDMMYYYY) unlocking three ordered challenges: a Morse-code decode, a Singapore-coordinates pinpoint, and a prompt-engineering MCQ — **Echoes of Cipher** — a single riddle combining a spoken (text-to-speech) clue, a letter-position cipher, a system-status icon, and a binary-decode block into one answer — and **The Hidden Vow** — three ordered riddles, each unlocking a one-word key.
 - **Per-game password lock + per-game timer.** Each game is unlocked by its own password and timed individually; the leaderboard total is the **sum** of all games' durations.
 - **Leaderboard** ranks by **points, then fastest total time**.
 - **"Malware injection"** — the organiser can trigger a full-screen takeover on any participant (or everyone). It's tied to the handle in the database, so refresh/incognito can't clear it; the victim must enter **someone else's Unique ID** to clear it. Each wrong guess adds a **+1:00 penalty** (and shows "Guessing passwords isn't clever — it's reckless"); leaving it unresolved for 5 minutes auto-clears it with a **+5 min penalty**.
@@ -72,6 +72,7 @@ Change every default before the event:
 |---|---|
 | `pw_ne-1` / `pw_ne-2` / `pw_ne-3` | the three game passwords |
 | `pw_ne-4` | **Own the Process** password — set this to `P@ssw0rd` + the real regular's birthdate as `DDMMYYYY` (placeholder ships as `P@ssw0rd01011990`) |
+| `pw_ne-5` / `pw_ne-6` | **Echoes of Cipher** / **The Hidden Vow** passwords |
 | `admin_pw` | admin-console password — **use a long random value** (it's checked over the API) |
 | `games_locked` | `true` locks all games behind their passwords |
 
