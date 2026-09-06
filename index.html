@@ -3534,14 +3534,22 @@ async function refreshTimerState(){
   paintTimer();
 }
 function totalGameMs(){
-  let total = 0, anyStarted = false;
+  let total = 0, anyStarted = false, liveCid = null;
   NE_GAMES.forEach(cid => {
     const t = myGameTimes[cid];
     if (t && t.start) {
       anyStarted = true;
-      total += (t.finish || Date.now()) - t.start;
+      if (t.finish) {
+        total += t.finish - t.start;
+      } else if (!liveCid || t.start > myGameTimes[liveCid].start) {
+        liveCid = cid;
+      }
     }
   });
+  // Only the most recently opened unfinished game ticks live — leaving other
+  // games "started" without finishing them (easy to do while exploring
+  // mission cards) must not make the total tick up faster than real time.
+  if (liveCid) total += Date.now() - myGameTimes[liveCid].start;
   return anyStarted ? total : null;
 }
 function anyGameRunning(){
