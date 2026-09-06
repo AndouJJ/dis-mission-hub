@@ -1593,7 +1593,10 @@ function setUidUI() {
 // mm:ss from seconds
 function fmtTime(sec) {
   if (sec == null || isNaN(sec) || sec < 0) return '—';
-  const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = Math.floor(sec % 60);
+  if (h > 0) return h + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
   return m + ':' + String(s).padStart(2, '0');
 }
 
