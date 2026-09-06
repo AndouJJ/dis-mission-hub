@@ -54,7 +54,7 @@ project/, chats/     — original design files + session history (reference only
 ## Features
 
 - **Access-code gate** → **digital-handle registration** → **Unique ID** issued per handle.
-- **Expedition** photo-challenges (Supabase Storage) with a live field-photo wall.
+- **United by Action** photo-challenges (Supabase Storage) with a live field-photo wall.
 - **Six NE mini-games:** Foreign Interference (MCQ), SGSecure (tap-the-threat on real photos), Racial Harmony (sliding puzzle), **Own the Process** — a password-gated (password is `P@ssw0rd` + a real regular's birthdate, DDMMYYYY) 4-chapter narrative repelling a simulated cyberattack: a password-guessing puzzle, a Morse-coded attack-type triple, a fill-in-the-missing-line Python snippet, and a Changi Airport coordinates pinpoint — **Echoes of Cipher** — a single riddle combining a spoken (text-to-speech) clue, a letter-position cipher, a system-status icon, and a binary-decode block into one answer — and **The Hidden Vow** — three ordered riddles, each unlocking a one-word key.
 - **Per-game password lock + per-game timer.** Each game is unlocked by its own password and timed individually; the leaderboard total is the **sum** of all games' durations.
 - **Leaderboard** ranks by **points, then fastest total time**.
