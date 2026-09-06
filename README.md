@@ -13,6 +13,13 @@ A web app for DIS personnel built around the organisation's **4th Anniversary on
      `[DD/MM/YYYY]` in the clue text shown on the password modal.
   2. Supabase `app_settings` table → `pw_ne-4` — set to `P@ssw0rd` + the
      birthdate as `DDMMYYYY` (no separators), matching the clue.
+- [ ] **"Own the Process" Chapter 4** — replace the placeholder Changi Airport
+  coordinates and photo with the real ones:
+  1. `index.html` → `G4_C4_LAT` / `G4_C4_LNG` (ships as `1.36` / `103.99`, a
+     public approximation) — set to the exact coordinates you want, to 2
+     decimal places.
+  2. Add the real photo to `assets/changi-airport.jpg` (the game currently
+     shows a "photo not found" fallback until this file exists).
 
 ---
 
@@ -51,7 +58,7 @@ project/, chats/     — original design files + session history (reference only
 
 - **Access-code gate** → **digital-handle registration** → **Unique ID** issued per handle.
 - **Expedition** photo-challenges (Supabase Storage) with a live field-photo wall.
-- **Six NE mini-games:** Foreign Interference (MCQ), SGSecure (tap-the-threat on real photos), Racial Harmony (sliding puzzle), **Own the Process** — a password-gated drill (password is `P@ssw0rd` + a real regular's birthdate, DDMMYYYY) unlocking three ordered challenges: a Morse-code decode, a Singapore-coordinates pinpoint, and a prompt-engineering MCQ — **Echoes of Cipher** — a single riddle combining a spoken (text-to-speech) clue, a letter-position cipher, a system-status icon, and a binary-decode block into one answer — and **The Hidden Vow** — three ordered riddles, each unlocking a one-word key.
+- **Six NE mini-games:** Foreign Interference (MCQ), SGSecure (tap-the-threat on real photos), Racial Harmony (sliding puzzle), **Own the Process** — a password-gated (password is `P@ssw0rd` + a real regular's birthdate, DDMMYYYY) 4-chapter narrative repelling a simulated cyberattack: a password-guessing puzzle, a Morse-coded attack-type triple, a fill-in-the-missing-line Python snippet, and a Changi Airport coordinates pinpoint — **Echoes of Cipher** — a single riddle combining a spoken (text-to-speech) clue, a letter-position cipher, a system-status icon, and a binary-decode block into one answer — and **The Hidden Vow** — three ordered riddles, each unlocking a one-word key.
 - **Per-game password lock + per-game timer.** Each game is unlocked by its own password and timed individually; the leaderboard total is the **sum** of all games' durations.
 - **Leaderboard** ranks by **points, then fastest total time**.
 - **"Malware injection"** — the organiser can trigger a full-screen takeover on any participant (or everyone). It's tied to the handle in the database, so refresh/incognito can't clear it; the victim must enter **someone else's Unique ID** to clear it. Each wrong guess adds a **+1:00 penalty** (and shows "Guessing passwords isn't clever — it's reckless"); leaving it unresolved for 5 minutes auto-clears it with a **+5 min penalty**.

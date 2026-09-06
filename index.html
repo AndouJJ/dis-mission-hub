@@ -1083,7 +1083,7 @@
           <span class="mc-status live">Live</span>
         </div>
         <h3 class="mc-title">Own the process, <em>or it owns you.</em></h3>
-        <p class="mc-desc">Guess the password, then clear three drills — crack the signal, place the pin, engineer the prompt. All three, in order, to log the mission.</p>
+        <p class="mc-desc">You've been targeted. Clear four chapters — vigilance, the first wave, the threat within, the finale — in order, to log the mission.</p>
         <div class="mc-foot">
           <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></span>
         </div>
@@ -1357,10 +1357,10 @@
     <button class="game-close" data-close-game aria-label="Close">✕</button>
     <div class="game-meta">
       <span>D-004 · THE PROCESS</span>
-      <span class="o">3 DRILLS · IN ORDER</span>
+      <span class="o">4 CHAPTERS · IN ORDER</span>
     </div>
     <h2 class="game-h">Own the process, <em>or it owns you.</em></h2>
-    <p class="game-sub" id="g4-intro">You're in. Three drills stand between you and the mission log — clear them <b>in order</b>.</p>
+    <p class="game-sub" id="g4-intro">You have been targeted by malicious actors trying to break into your systems. Complete the following chapters to prevent these actors from being successful.</p>
     <div class="game-progress" id="g4-progress"></div>
     <div id="g4-play"></div>
     <div id="g4-end" style="display:none"></div>
@@ -2780,109 +2780,114 @@ async function g3Win(){
 document.getElementById('g3-shuffle').addEventListener('click', g3Shuffle);
 
 // ============================================================
-// GAME 4 · OWN THE PROCESS  (ne-4, 3 drills, in order)
-// Part A — Morse decode. Part B — coordinate pinpoint. Part C — prompt
-// engineering MCQ. All three must clear, in order, to log the mission.
+// GAME 4 · OWN THE PROCESS  (ne-4, 4 chapters, in order)
+// A narrative playthrough repelling a cyberattack: Ch1 password guess,
+// Ch2 Morse triple, Ch3 fill-in-the-missing-line, Ch4 geo pinpoint.
 // ============================================================
-const G4_MORSE_CIPHER = '--- .-- -.  - .... .  .--. .-. --- -.-. . ... ...';
-const G4_MORSE_PLAIN  = 'OWN THE PROCESS';
+const G4_C1_ANSWER = 'P@ssw0rd12061996';
 
-const G4_GEO_LAT = 1.291;
-const G4_GEO_LNG = 103.847;
-const G4_GEO_TOL = 0.0005; // matches when rounded to 3dp
+const G4_C2_WORDS = ['PH1SH1NG', 'M4LWAR3', 'R4NS0MWAR3'];
+let g4c2i = 0;
 
-const G4_PROMPT_OPTS = [
-  { b:'Reject it',   s:'Dismiss the instruction outright.' },
-  { b:'Accept it',   s:'Adopt the instruction as given.' },
-  { b:'Clarify it',  s:'Ask what is missing before acting.' },
-];
-const G4_PROMPT_Q = [
-  {
-    s:'You want a model to summarise a report in exactly three bullet points — no more, no fewer. Which instruction gets that reliably?',
-    opts: [
-      { b:'"Summarise this report."', s:'No length or format constraint given.' },
-      { b:'"Summarise this report in exactly 3 bullet points, no more and no fewer."', s:'States the exact count and format wanted.' },
-      { b:'"Make this report shorter."', s:'Vague — "shorter" has no defined target.' },
-    ],
-    a: 1,
-    why: 'Naming the exact count and format up front is what makes the output land on three bullets, not two or five.',
-  },
-  {
-    s:'The model should answer only from an attached document, and say "not stated" if the document doesn\'t cover it. Best prompt?',
-    opts: [
-      { b:'"Answer the question."', s:'Leaves the source of truth unspecified.' },
-      { b:'"Answer using only the attached document. If it doesn\'t cover the question, reply exactly \'not stated\'."', s:'Pins the source and defines the fallback.' },
-      { b:'"Use your general knowledge to answer fully."', s:'The opposite of grounding it to the document.' },
-    ],
-    a: 1,
-    why: 'Constraining the source and defining an explicit fallback stops the model from guessing or inventing an answer.',
-  },
-  {
-    s:'Which practice most reliably improves output on a complex, multi-step task?',
-    opts: [
-      { b:'One giant instruction, no structure.', s:'Everything at once, nothing sequenced.' },
-      { b:'Break the task into clear, ordered steps and state the exact output format wanted.', s:'Sequenced steps, explicit target shape.' },
-      { b:'Repeat the request in all caps.', s:'Volume, not clarity.' },
-    ],
-    a: 1,
-    why: 'Ordered steps plus an explicit output format is what turns a vague ask into a task the model can execute reliably — the same discipline this whole drill is named for.',
-  },
-];
+const G4_C3_DISCLAIMER = 'This code is intended for entertainment purposes and simulation. Always ensure you have backups and verify paths before performing deletion operations to avoid accidental data loss. You can trust AI to give you step-by-step instructions and scripts, but you should never trust AI to directly handle malware removal on its own without human verification.';
 
-let g4step = 0; // 0=morse, 1=geo, 2=prompt
-let g4qi = 0, g4answered = false;
+const G4_C3_CODE = `import os
+
+# System Configuration
+TARGET_DIRECTORY = '/tmp/system_runtime/'
+THREAT_NAME = "VIRUS.exe"
+
+def neutralise_threat(directory, threat_filename):
+    print(f"---- SCANNING DIRECTORY: {directory} ----")
+
+    # Create full path to the threat
+    full_path = os.path.join(directory, threat_filename)
+
+    # Check if threat exists
+    if os.path.exists(full_path):
+        print(f"!!! ALERT: {threat_filename} DETECTED !!!")
+        print("Initiating emergency removal protocol")
+
+        try:
+            # >>> YOUR CODE HERE <<<
+
+        except Exception as e:
+            print(f"CRITICAL FAILURE: COULD NOT REMOVE THREAT. Error: {e}.")
+            print("SYSTEM COMPROMISED.")
+
+    else:
+        print(f"Scan Complete: No threat named {threat_filename} found.")
+        print("System Status: Secure")
+
+# Execute Emergency Protocol
+neutralise_threat(TARGET_DIRECTORY, THREAT_NAME)`;
+
+const G4_C3_ANSWER = 'os.remove(full_path)';
+
+// TODO before the event: swap these placeholder coordinates for the real
+// Changi Airport lat/long, and add the real assets/changi-airport.jpg (see
+// README/CLAUDE.md).
+const G4_C4_LAT = 1.36;
+const G4_C4_LNG = 103.99;
+const G4_C4_TOL = 0.005; // matches when rounded to 2dp
+
+let g4step = 0; // 0..4, one per chapter cleared
 
 function g4RenderProgress(){
   const p = document.getElementById('g4-progress'); p.innerHTML = '';
-  for (let k = 0; k < 3; k++){
+  for (let k = 0; k < 4; k++){
     const sp = document.createElement('span');
     if (k < g4step) sp.classList.add('on');
     p.appendChild(sp);
   }
 }
 
-function g4Start(){
-  g4step = 0; g4qi = 0;
-  document.getElementById('g4-end').style.display = 'none';
-  document.getElementById('g4-play').style.display = '';
-  g4RenderProgress();
-  g4RenderMorse();
+function g4ShowInterstitial(message, onContinue, opts){
+  opts = opts || {};
+  document.getElementById('g4-intro').style.display = 'none';
+  const play = document.getElementById('g4-play');
+  play.innerHTML = '';
+  const wrap = document.createElement('div'); wrap.className = 'game-result';
+  const p = document.createElement('p');
+  p.textContent = message;
+  const btn = document.createElement('button');
+  btn.className = 'game-btn'; btn.textContent = opts.btnText || 'Continue';
+  btn.addEventListener('click', onContinue);
+  wrap.appendChild(p); wrap.appendChild(btn);
+  play.appendChild(wrap);
 }
 
-function g4RenderMorse(){
+function g4Start(){
+  g4step = 0; g4c2i = 0;
+  document.getElementById('g4-end').style.display = 'none';
+  document.getElementById('g4-intro').style.display = '';
+  document.getElementById('g4-play').style.display = '';
+  g4RenderProgress();
+  g4RenderChapter1();
+}
+
+function g4RenderChapter1(){
   document.getElementById('g4-intro').style.display = '';
   const play = document.getElementById('g4-play');
   play.innerHTML = '';
 
   const tag = document.createElement('div');
   tag.className = 'scene-objective';
-  tag.innerHTML = 'Drill <b>1 / 3</b> — signal intercept';
+  tag.innerHTML = 'Chapter <b>1 / 4</b> — Raise your Vigilance!';
   play.appendChild(tag);
 
   const log = document.createElement('div');
   log.className = 'scene-log';
-  log.textContent = 'Decode the transmission below.';
+  log.innerHTML = 'Guess the password.<br>Name: <b>Alfred Lee</b> &middot; Birthday: <b>12/06/1996</b> &middot; Hint: <b>Starts with P</b>';
   play.appendChild(log);
-
-  const cipher = document.createElement('p');
-  cipher.className = 'mcq-scenario';
-  cipher.style.letterSpacing = '0.12em';
-  cipher.textContent = G4_MORSE_CIPHER;
-  play.appendChild(cipher);
 
   const form = document.createElement('form');
   form.className = 'gp-form';
   const input = document.createElement('input');
-  input.className = 'gp-input';
-  input.type = 'text';
-  input.placeholder = 'DECODED MESSAGE';
-  input.autocomplete = 'off';
-  input.autocapitalize = 'off';
-  input.spellcheck = false;
+  input.className = 'gp-input'; input.type = 'text'; input.placeholder = 'PASSWORD';
+  input.autocomplete = 'off'; input.autocapitalize = 'off'; input.spellcheck = false;
   const btn = document.createElement('button');
-  btn.type = 'submit';
-  btn.className = 'gp-btn';
-  btn.textContent = 'Submit';
+  btn.type = 'submit'; btn.className = 'gp-btn'; btn.textContent = 'Submit';
   form.appendChild(input); form.appendChild(btn);
   play.appendChild(form);
 
@@ -2892,9 +2897,72 @@ function g4RenderMorse(){
 
   form.addEventListener('submit', e => {
     e.preventDefault();
-    const norm = input.value.trim().toUpperCase().replace(/\s+/g, ' ');
-    if (norm === G4_MORSE_PLAIN) {
-      g4step = 1; g4RenderProgress(); g4RenderGeo();
+    if (input.value.trim() === G4_C1_ANSWER) {
+      g4step = 1; g4RenderProgress();
+      g4ShowInterstitial(
+        "Step 1 of protecting yourself is having a strong security hygiene! Do not be like Alfred Lee, and use strong passwords!",
+        () => g4RenderChapter2()
+      );
+    } else {
+      err.textContent = 'INCORRECT PASSWORD — TRY AGAIN';
+      input.value = ''; input.focus();
+    }
+  });
+}
+
+function g4RenderChapter2(){
+  document.getElementById('g4-intro').style.display = 'none';
+  g4c2i = 0;
+  g4RenderChapter2Word();
+}
+
+function g4RenderChapter2Word(){
+  const play = document.getElementById('g4-play');
+  play.innerHTML = '';
+  const word = G4_C2_WORDS[g4c2i];
+
+  const tag = document.createElement('div');
+  tag.className = 'scene-objective';
+  tag.innerHTML = 'Chapter <b>2 / 4</b> — The first wave of attack comes! (' + (g4c2i + 1) + ' / ' + G4_C2_WORDS.length + ')';
+  play.appendChild(tag);
+
+  const log = document.createElement('div');
+  log.className = 'scene-log';
+  log.textContent = g4c2i === 0
+    ? 'The attackers are trying to infiltrate our systems. Solve the following coded messages to identify the types of attacks!'
+    : 'Next transmission intercepted.';
+  play.appendChild(log);
+
+  const cipher = document.createElement('p');
+  cipher.className = 'mcq-scenario';
+  cipher.style.letterSpacing = '0.12em';
+  cipher.textContent = morseEncode(word);
+  play.appendChild(cipher);
+
+  const form = document.createElement('form');
+  form.className = 'gp-form';
+  const input = document.createElement('input');
+  input.className = 'gp-input'; input.type = 'text'; input.placeholder = 'DECODED ATTACK TYPE';
+  input.autocomplete = 'off'; input.autocapitalize = 'off'; input.spellcheck = false;
+  const btn = document.createElement('button');
+  btn.type = 'submit'; btn.className = 'gp-btn'; btn.textContent = 'Submit';
+  form.appendChild(input); form.appendChild(btn);
+  play.appendChild(form);
+
+  const err = document.createElement('div');
+  err.className = 'gp-err';
+  play.appendChild(err);
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    if (input.value.trim().toUpperCase() === word) {
+      g4c2i++;
+      if (g4c2i >= G4_C2_WORDS.length) {
+        g4step = 2; g4RenderProgress();
+        g4ShowInterstitial('You have successfully repelled the attacks!', () => g4RenderChapter3());
+      } else {
+        g4RenderChapter2Word();
+      }
     } else {
       err.textContent = 'NOT QUITE — CHECK YOUR MORSE TABLE';
       input.value = ''; input.focus();
@@ -2902,20 +2970,108 @@ function g4RenderMorse(){
   });
 }
 
-function g4RenderGeo(){
+function g4RenderChapter3(){
   document.getElementById('g4-intro').style.display = 'none';
   const play = document.getElementById('g4-play');
   play.innerHTML = '';
 
   const tag = document.createElement('div');
   tag.className = 'scene-objective';
-  tag.innerHTML = 'Drill <b>2 / 3</b> — pinpoint the site';
+  tag.innerHTML = 'Chapter <b>3 / 4</b> — Neutralise the Threat!';
   play.appendChild(tag);
 
   const log = document.createElement('div');
   log.className = 'scene-log';
-  log.textContent = 'Fort Canning Park has worn many hats — palace hill, colonial command post, park. Find the building that once housed Singapore\'s colonial administration on the hill, and give its coordinates to 3 decimal places.';
+  log.textContent = "A virus still managed to sneak through your defenses, take action now before it's too late!";
   play.appendChild(log);
+
+  const disclaimer = document.createElement('div');
+  disclaimer.className = 'scene-log';
+  disclaimer.style.border = '1px solid var(--rule-2)';
+  disclaimer.style.padding = '10px 12px';
+  disclaimer.style.margin = '10px 0 14px';
+  disclaimer.innerHTML = '<b style="color:var(--orange)">DISCLAIMER</b> — ' + G4_C3_DISCLAIMER;
+  play.appendChild(disclaimer);
+
+  const code = document.createElement('pre');
+  code.style.whiteSpace = 'pre'; code.style.overflowX = 'auto';
+  code.style.fontFamily = 'var(--mono)'; code.style.fontSize = '12px';
+  code.style.lineHeight = '1.6'; code.style.color = 'var(--paper-2)';
+  code.style.background = 'var(--ink-2)'; code.style.border = '1px solid var(--rule-2)';
+  code.style.padding = '14px'; code.style.margin = '0 0 14px';
+  code.textContent = G4_C3_CODE;
+  play.appendChild(code);
+
+  const form = document.createElement('form');
+  form.className = 'gp-form';
+  const input = document.createElement('input');
+  input.className = 'gp-input'; input.type = 'text'; input.placeholder = 'THE MISSING LINE';
+  input.autocomplete = 'off'; input.autocapitalize = 'off'; input.spellcheck = false;
+  const btn = document.createElement('button');
+  btn.type = 'submit'; btn.className = 'gp-btn'; btn.textContent = 'Execute';
+  form.appendChild(input); form.appendChild(btn);
+  play.appendChild(form);
+
+  const result = document.createElement('div');
+  result.style.display = 'none';
+  result.style.marginTop = '10px'; result.style.padding = '10px 12px';
+  result.style.border = '1px solid'; result.style.fontFamily = 'var(--mono)'; result.style.fontSize = '11px';
+  result.style.letterSpacing = '0.12em'; result.style.textTransform = 'uppercase'; result.style.fontWeight = '700';
+  play.appendChild(result);
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const norm = input.value.replace(/\s+/g, '').toLowerCase();
+    if (norm === G4_C3_ANSWER.replace(/\s+/g, '').toLowerCase()) {
+      result.style.display = '';
+      result.style.color = 'var(--good)'; result.style.borderColor = 'var(--good)';
+      result.style.background = 'rgba(127,194,141,0.12)';
+      result.textContent = '✓ THREAT NEUTRALISED';
+      btn.disabled = true; input.disabled = true;
+      const cont = document.createElement('button');
+      cont.type = 'button'; cont.className = 'game-btn'; cont.style.marginTop = '12px'; cont.textContent = 'Continue';
+      cont.addEventListener('click', () => {
+        g4step = 3; g4RenderProgress();
+        g4RenderChapter4();
+      });
+      play.appendChild(cont);
+    } else {
+      result.style.display = '';
+      result.style.color = '#e05c5c'; result.style.borderColor = '#e05c5c';
+      result.style.background = 'rgba(224,92,92,0.12)';
+      result.textContent = '⚠ CRITICAL FAILURE — THREAT NOT REMOVED';
+      input.value = ''; input.focus();
+    }
+  });
+}
+
+function g4RenderChapter4(){
+  document.getElementById('g4-intro').style.display = 'none';
+  const play = document.getElementById('g4-play');
+  play.innerHTML = '';
+
+  const tag = document.createElement('div');
+  tag.className = 'scene-objective';
+  tag.innerHTML = 'Chapter <b>4 / 4</b> — The Finale';
+  play.appendChild(tag);
+
+  const log = document.createElement('div');
+  log.className = 'scene-log';
+  log.textContent = 'With no other options, you have received information that the attackers are going to conduct a physical attack! Find out the targeted location now!';
+  play.appendChild(log);
+
+  const img = document.createElement('img');
+  img.src = 'assets/changi-airport.jpg';
+  img.alt = 'Targeted location';
+  img.style.display = 'block'; img.style.maxWidth = '100%'; img.style.margin = '10px 0 14px';
+  img.style.border = '1px solid var(--rule-2)';
+  const imgFallback = document.createElement('div');
+  imgFallback.className = 'scene-log';
+  imgFallback.style.display = 'none';
+  imgFallback.textContent = 'Photo not found — add assets/changi-airport.jpg to the repo.';
+  img.addEventListener('error', () => { img.style.display = 'none'; imgFallback.style.display = ''; });
+  play.appendChild(img);
+  play.appendChild(imgFallback);
 
   const form = document.createElement('form');
   form.className = 'gp-form';
@@ -2923,15 +3079,15 @@ function g4RenderGeo(){
   row.style.display = 'flex'; row.style.gap = '8px';
   const latInput = document.createElement('input');
   latInput.className = 'gp-input'; latInput.type = 'text';
-  latInput.placeholder = 'LATITUDE (e.g. 1.291)';
+  latInput.placeholder = 'LATITUDE (2 D.P.)';
   latInput.autocomplete = 'off';
   const lngInput = document.createElement('input');
   lngInput.className = 'gp-input'; lngInput.type = 'text';
-  lngInput.placeholder = 'LONGITUDE (e.g. 103.847)';
+  lngInput.placeholder = 'LONGITUDE (2 D.P.)';
   lngInput.autocomplete = 'off';
   row.appendChild(latInput); row.appendChild(lngInput);
   const btn = document.createElement('button');
-  btn.type = 'submit'; btn.className = 'gp-btn'; btn.textContent = 'Drop pin';
+  btn.type = 'submit'; btn.className = 'gp-btn'; btn.textContent = 'Lock target';
   form.appendChild(row); form.appendChild(btn);
   play.appendChild(form);
 
@@ -2944,93 +3100,29 @@ function g4RenderGeo(){
     const lat = parseFloat(latInput.value);
     const lng = parseFloat(lngInput.value);
     const ok = Number.isFinite(lat) && Number.isFinite(lng)
-      && Math.abs(lat - G4_GEO_LAT) <= G4_GEO_TOL
-      && Math.abs(lng - G4_GEO_LNG) <= G4_GEO_TOL;
+      && Math.abs(lat - G4_C4_LAT) <= G4_C4_TOL
+      && Math.abs(lng - G4_C4_LNG) <= G4_C4_TOL;
     if (ok) {
-      g4step = 2; g4RenderProgress(); g4qi = 0; g4RenderPrompt();
+      g4Finish();
     } else {
-      err.textContent = 'MISSED THE SITE — TRY AGAIN TO 3 DECIMAL PLACES';
+      err.textContent = 'WRONG LOCATION — TRY AGAIN TO 2 DECIMAL PLACES';
       latInput.focus();
     }
   });
 }
 
-function g4RenderPrompt(){
-  document.getElementById('g4-intro').style.display = 'none';
-  g4answered = false;
-  const play = document.getElementById('g4-play');
-  play.innerHTML = '';
-  const q = G4_PROMPT_Q[g4qi];
-
-  const tag = document.createElement('div');
-  tag.className = 'scene-objective';
-  tag.innerHTML = 'Drill <b>3 / 3</b> — engineer the prompt (' + (g4qi + 1) + ' / ' + G4_PROMPT_Q.length + ')';
-  play.appendChild(tag);
-
-  const sc = document.createElement('p');
-  sc.className = 'mcq-scenario';
-  sc.textContent = q.s;
-  play.appendChild(sc);
-
-  const opts = document.createElement('div');
-  opts.className = 'mcq-options';
-  const explain = document.createElement('div');
-  explain.className = 'mcq-explain';
-  const foot = document.createElement('div');
-  foot.className = 'mcq-foot';
-  const nextBtn = document.createElement('button');
-  nextBtn.className = 'game-btn';
-  nextBtn.textContent = g4qi < G4_PROMPT_Q.length - 1 ? 'Next →' : 'Finish';
-  nextBtn.style.visibility = 'hidden';
-  nextBtn.addEventListener('click', () => {
-    g4qi++;
-    if (g4qi >= G4_PROMPT_Q.length) g4Finish();
-    else g4RenderPrompt();
-  });
-
-  q.opts.forEach((o, idx) => {
-    const btn = document.createElement('button');
-    btn.className = 'mcq-opt';
-    const b = document.createElement('b'); b.textContent = o.b;
-    const sm = document.createElement('small'); sm.textContent = o.s;
-    btn.appendChild(b); btn.appendChild(sm);
-    btn.addEventListener('click', () => {
-      if (g4answered || btn.classList.contains('wrong')) return;
-      if (idx === q.a) {
-        g4answered = true;
-        opts.querySelectorAll('.mcq-opt').forEach(bb => { bb.disabled = true; });
-        btn.classList.add('correct');
-        explain.textContent = q.why;
-        explain.classList.add('show');
-        nextBtn.style.visibility = 'visible';
-      } else {
-        btn.classList.add('wrong');
-        btn.disabled = true;
-        explain.textContent = 'Not the reliable pick. Think about what makes an instruction unambiguous. Try again.';
-        explain.classList.add('show');
-      }
-    });
-    opts.appendChild(btn);
-  });
-
-  play.appendChild(opts);
-  play.appendChild(explain);
-  foot.appendChild(nextBtn);
-  play.appendChild(foot);
-}
-
 async function g4Finish(){
   document.getElementById('g4-play').style.display = 'none';
-  g4step = 3; g4RenderProgress();
+  g4step = 4; g4RenderProgress();
 
   const end = document.getElementById('g4-end');
   end.style.display = ''; end.innerHTML = '';
 
   const wrap = document.createElement('div'); wrap.className = 'game-result';
   const badge = document.createElement('div'); badge.className = 'badge-big win'; badge.textContent = 'Mission cleared';
-  const h = document.createElement('h3'); h.textContent = 'Process owned';
+  const h = document.createElement('h3'); h.textContent = 'Attacker eliminated';
   const p = document.createElement('p');
-  p.textContent = 'Signal decoded, site pinpointed, prompt engineered. Mission logged.';
+  p.textContent = 'Congratulations! You have successfully eliminated the malicious attacker! As expected of a true Guardian! Now, please continue the rest of the challenge.';
   const btn = document.createElement('button'); btn.className = 'game-btn'; btn.textContent = 'Done';
   const r = await recordNECompletion('ne-4');
   if (!r.ok) p.textContent = 'Cleared — but saving failed: ' + r.msg;
@@ -3040,13 +3132,23 @@ async function g4Finish(){
 }
 
 // ============================================================
-// Shared helpers for GAME 5 / GAME 6 answer checking
+// Shared helpers for GAME 4 / GAME 5 / GAME 6 answer checking
 // ============================================================
 function normalizeAnswer(s){
   return String(s || '').toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
 }
 function textToBinary(str){
   return str.toUpperCase().split('').map(ch => ch.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+}
+const MORSE_TABLE = {
+  A:'.-', B:'-...', C:'-.-.', D:'-..', E:'.', F:'..-.', G:'--.', H:'....', I:'..',
+  J:'.---', K:'-.-', L:'.-..', M:'--', N:'-.', O:'---', P:'.--.', Q:'--.-', R:'.-.',
+  S:'...', T:'-', U:'..-', V:'...-', W:'.--', X:'-..-', Y:'-.--', Z:'--..',
+  0:'-----', 1:'.----', 2:'..---', 3:'...--', 4:'....-', 5:'.....',
+  6:'-....', 7:'--...', 8:'---..', 9:'----.',
+};
+function morseEncode(str){
+  return str.toUpperCase().split('').map(ch => MORSE_TABLE[ch] || '').filter(Boolean).join('  ');
 }
 
 // ============================================================
