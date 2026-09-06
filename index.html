@@ -1043,10 +1043,10 @@
 
       <article class="mission-card locked has-detail" data-mission="expedition" data-status="locked">
         <div class="mc-head">
-          <span class="mc-id">M-002 · EXPEDITION</span>
+          <span class="mc-id">M-002 · UNITED BY ACTION</span>
           <span class="mc-status locked">Unlocks Oct 28</span>
         </div>
-        <h3 class="mc-title"><em>DIS</em> Expedition.</h3>
+        <h3 class="mc-title">United <em>by Action.</em></h3>
         <p class="mc-desc">A field run at Universal Studios. Four challenges. Bring your unit, bring your nerve. Tap for the briefing.</p>
         <div class="mc-foot">
           <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></span>
@@ -1154,10 +1154,10 @@
   <div class="mission-card-detail">
     <button class="mission-close" id="mission-close" aria-label="Close">✕</button>
     <div class="mission-meta">
-      <span>M-002 · EXPEDITION</span>
+      <span>M-002 · UNITED BY ACTION</span>
       <span class="o">UNLOCKS OCT 28</span>
     </div>
-    <h2 class="mission-h"><em>DIS</em> Expedition.</h2>
+    <h2 class="mission-h">United <em>by Action.</em></h2>
     <p class="mission-sub">A field run at Universal Studios. Complete every challenge with your unit to clear the mission. Tap a challenge to log it on Oct 28.</p>
     <ol class="challenge-list">
       <li class="challenge" data-cid="exp-1">
@@ -1536,14 +1536,13 @@ const CHALLENGE_LABELS = {
 // ============================================================
 let gamesLocked       = false;            // live value, refreshed from the DB
 const NE_GAMES        = ['ne-1', 'ne-2', 'ne-3', 'ne-4', 'ne-5', 'ne-6'];
-const GAME_NAMES      = { 'ne-1': 'Foreign Interference', 'ne-2': 'SGSecure', 'ne-3': 'Racial Harmony', 'ne-4': 'Own the Process', 'ne-5': 'Echoes of Cipher', 'ne-6': 'The Hidden Vow' };
+const GAME_NAMES      = { 'ne-1': 'Foreign Interference', 'ne-2': 'SGSecure', 'ne-3': 'Racial Harmony', 'ne-4': 'Own the Process', 'ne-5': 'Echoes of Cipher', 'ne-6': 'The Hidden Vow', 'expedition': 'United by Action' };
 const GP_DEFAULT_SUB  = 'Enter the password to unlock this drill. Your timer starts the moment the first drill is unlocked.';
-// Own the Process (ne-4): the password is P@ssw0rd + a real regular's
-// birthdate as DDMMYYYY. Fill in [NAME] and [DD/MM/YYYY] before the event.
-// TODO before the event: replace [NAME] / [His/Her] / [DD/MM/YYYY] below with
-// the real regular's details, and set pw_ne-4 in Supabase to match (see README).
+// ne-4 (Own the Process) has no outer password gate — Chapter 1 is itself a
+// password puzzle, so a second gate in front of it would be redundant.
+const NO_PASSWORD_GAMES = ['ne-4'];
 const GAME_HINTS = {
-  'ne-4': '[NAME] is a regular. [His/Her] birthday is [DD/MM/YYYY] — the password is P@ssw0rd followed by that date, no separators (e.g. P@ssw0rd01011990). Stumped? Find [NAME] for a clue.',
+  'expedition': 'Enter the password to unlock this mission.',
 };
 const MALWARE_LIMIT_MS = 5 * 60 * 1000;   // 5 minutes before auto-clear + penalty
 
@@ -1947,9 +1946,21 @@ function stopPhotoWallPoll() {
   if (pwPollTimer) { clearInterval(pwPollTimer); pwPollTimer = null; }
 }
 
+function openExpeditionModal(){
+  missionModal.classList.add('show');
+  missionModal.setAttribute('aria-hidden', 'false');
+  loadExpeditionPhotos(true);
+  startPhotoWallPoll();
+}
+
 document.querySelectorAll('.mission-card').forEach(card => {
   card.addEventListener('click', () => {
     if (card.dataset.game) { openGame(card.dataset.game); return; }
+    if (card.dataset.mission === 'expedition') {
+      if (gamesLocked && sb && !isGameUnlocked('expedition')) { promptGamePassword('expedition'); return; }
+      openExpeditionModal();
+      return;
+    }
     if (card.classList.contains('has-detail')) {
       missionModal.classList.add('show');
       missionModal.setAttribute('aria-hidden', 'false');
@@ -2352,8 +2363,20 @@ function launchGame(cid){
   if (cid === 'ne-6') g6Start();
 }
 
-function openGame(cid){
+async function openGame(cid){
   if (!GAME_MODALS[cid]) return;
+  if (NO_PASSWORD_GAMES.includes(cid)) {
+    markGameUnlocked(cid);
+    const handle = getHandle();
+    if (handle && sb) {
+      try { await sb.rpc('start_game', { p_handle: handle, p_game: cid }); } catch(_) {}
+      if (myGameTimes[cid] == null) myGameTimes[cid] = { start: Date.now(), finish: null };
+    }
+    startTimerTicker();
+    paintTimer();
+    launchGame(cid);
+    return;
+  }
   // Locked behind a per-game password (only when GAMES_LOCKED + Supabase ready).
   if (gamesLocked && sb && !isGameUnlocked(cid)) { promptGamePassword(cid); return; }
   launchGame(cid);
@@ -3422,6 +3445,12 @@ if (gpForm) {
     gpBtn.disabled = false;
     if (ok) {
       markGameUnlocked(cid);
+      if (cid === 'expedition') {
+        // Untimed mission — no game_times/leaderboard wiring, just the gate.
+        closeGamePassword();
+        openExpeditionModal();
+        return;
+      }
       const handle = getHandle();
       if (handle) {
         try { await sb.rpc('start_game', { p_handle: handle, p_game: cid }); } catch(_) {}
@@ -3447,6 +3476,11 @@ function renderGameLocks(){
     const cid  = card.dataset.cid;
     const pill = card.querySelector('.mc-status');
     if (!pill || pill.classList.contains('cleared')) return;
+    if (NO_PASSWORD_GAMES.includes(cid)) {
+      pill.classList.remove('lockedpw'); pill.classList.add('live');
+      pill.textContent = 'Live';
+      return;
+    }
     if (gamesLocked && sb && !isGameUnlocked(cid)) {
       pill.classList.remove('live'); pill.classList.add('lockedpw');
       pill.textContent = 'Locked';
