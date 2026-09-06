@@ -13,13 +13,10 @@ A web app for DIS personnel built around the organisation's **4th Anniversary on
      `[DD/MM/YYYY]` in the clue text shown on the password modal.
   2. Supabase `app_settings` table → `pw_ne-4` — set to `P@ssw0rd` + the
      birthdate as `DDMMYYYY` (no separators), matching the clue.
-- [ ] **"Own the Process" Chapter 4** — replace the placeholder Changi Airport
-  coordinates and photo with the real ones:
-  1. `index.html` → `G4_C4_LAT` / `G4_C4_LNG` (ships as `1.36` / `103.99`, a
-     public approximation) — set to the exact coordinates you want, to 2
-     decimal places.
-  2. Add the real photo to `assets/changi-airport.jpg` (the game currently
-     shows a "photo not found" fallback until this file exists).
+- [ ] **"Own the Process" Chapter 4** — the real photo is in (`assets/changi-airport.jpg`);
+  still need the exact coordinates: `index.html` → `G4_C4_LAT` / `G4_C4_LNG`
+  (ships as `1.36` / `103.99`, a public approximation) — set to the exact
+  coordinates you want, to 2 decimal places.
 
 ---
 
