@@ -6,13 +6,6 @@ A web app for DIS personnel built around the organisation's **4th Anniversary on
 
 ## ⚠️ TODO before the event
 
-- [ ] **"Own the Process" game (`pw_ne-4`)** — swap the placeholder person for the
-  real one: the regular's actual **name**, **pronoun**, and **birthdate**.
-  Two places to update:
-  1. `index.html` → `GAME_HINTS['ne-4']` — replace `[NAME]` / `[His/Her]` /
-     `[DD/MM/YYYY]` in the clue text shown on the password modal.
-  2. Supabase `app_settings` table → `pw_ne-4` — set to `P@ssw0rd` + the
-     birthdate as `DDMMYYYY` (no separators), matching the clue.
 - [ ] **"Own the Process" Chapter 4** — the real photo is in (`assets/changi-airport.jpg`);
   still need the exact coordinates: `index.html` → `G4_C4_LAT` / `G4_C4_LNG`
   (ships as `1.36` / `103.99`, a public approximation) — set to the exact
@@ -54,8 +47,8 @@ project/, chats/     — original design files + session history (reference only
 ## Features
 
 - **Access-code gate** → **digital-handle registration** → **Unique ID** issued per handle.
-- **United by Action** photo-challenges (Supabase Storage) with a live field-photo wall.
-- **Six NE mini-games:** Foreign Interference (MCQ), SGSecure (tap-the-threat on real photos), Racial Harmony (sliding puzzle), **Own the Process** — a password-gated (password is `P@ssw0rd` + a real regular's birthdate, DDMMYYYY) 4-chapter narrative repelling a simulated cyberattack: a password-guessing puzzle, a Morse-coded attack-type triple, a fill-in-the-missing-line Python snippet, and a Changi Airport coordinates pinpoint — **Echoes of Cipher** — a single riddle combining a spoken (text-to-speech) clue, a letter-position cipher, a system-status icon, and a binary-decode block into one answer — and **The Hidden Vow** — three ordered riddles, each unlocking a one-word key.
+- **United by Action** photo-challenges (Supabase Storage) with a live field-photo wall — password-gated (`pw_expedition`).
+- **Six NE mini-games:** Foreign Interference (MCQ), SGSecure (tap-the-threat on real photos), Racial Harmony (sliding puzzle), **Own the Process** — no outer password gate; goes straight into a 4-chapter narrative repelling a simulated cyberattack, opening with its own password-guessing puzzle (Chapter 1), then a Morse-coded attack-type triple, a fill-in-the-missing-line Python snippet, and a Changi Airport coordinates pinpoint — **Echoes of Cipher** — a single riddle combining a spoken (text-to-speech) clue, a letter-position cipher, a system-status icon, and a binary-decode block into one answer — and **The Hidden Vow** — three ordered riddles, each unlocking a one-word key.
 - **Per-game password lock + per-game timer.** Each game is unlocked by its own password and timed individually; the leaderboard total is the **sum** of all games' durations.
 - **Leaderboard** ranks by **points, then fastest total time**.
 - **"Malware injection"** — the organiser can trigger a full-screen takeover on any participant (or everyone). It's tied to the handle in the database, so refresh/incognito can't clear it; the victim must enter **someone else's Unique ID** to clear it. Each wrong guess adds a **+1:00 penalty** (and shows "Guessing passwords isn't clever — it's reckless"); leaving it unresolved for 5 minutes auto-clears it with a **+5 min penalty**.
@@ -75,8 +68,8 @@ Change every default before the event:
 | key | meaning |
 |---|---|
 | `pw_ne-1` / `pw_ne-2` / `pw_ne-3` | the three game passwords |
-| `pw_ne-4` | **Own the Process** password — set this to `P@ssw0rd` + the real regular's birthdate as `DDMMYYYY` (placeholder ships as `P@ssw0rd01011990`) |
 | `pw_ne-5` / `pw_ne-6` | **Echoes of Cipher** / **The Hidden Vow** passwords |
+| `pw_expedition` | **United by Action** password (ne-4 "Own the Process" has no outer gate — Chapter 1 is its own password puzzle) |
 | `admin_pw` | admin-console password — **use a long random value** (it's checked over the API) |
 | `games_locked` | `true` locks all games behind their passwords |
 
