@@ -304,6 +304,8 @@
   .mission-card:hover{border-color:var(--orange);background:var(--ink-3)}
   .mission-card.locked{opacity:0.65;cursor:not-allowed}
   .mission-card.locked:hover{border-color:var(--rule);background:var(--ink-2);transform:none}
+  .mission-card.done{opacity:0.65;cursor:not-allowed}
+  .mission-card.done:hover{border-color:var(--rule);background:var(--ink-2);transform:none}
   .mission-card.featured{
     grid-column:span 2;background:linear-gradient(135deg, var(--ink-3), var(--ink-2));
     border-color:var(--rule-2);
@@ -520,6 +522,8 @@
   .mission-foot .o{color:var(--orange)}
   .mission-card.has-detail{cursor:pointer;opacity:1}
   .mission-card.has-detail:hover{border-color:var(--orange);background:var(--ink-3);transform:none}
+  .mission-card.has-detail.done{opacity:0.65;cursor:not-allowed}
+  .mission-card.has-detail.done:hover{border-color:var(--rule);background:var(--ink-2);transform:none}
 
   @media (max-width:680px){
     .mission-modal{padding:16px}
@@ -1955,6 +1959,7 @@ function openExpeditionModal(){
 
 document.querySelectorAll('.mission-card').forEach(card => {
   card.addEventListener('click', () => {
+    if (card.classList.contains('done')) return;
     if (card.dataset.game) { openGame(card.dataset.game); return; }
     if (card.dataset.mission === 'expedition') {
       if (gamesLocked && sb && !isGameUnlocked('expedition')) { promptGamePassword('expedition'); return; }
@@ -2310,6 +2315,7 @@ function neCard(cid){ return document.querySelector('.ne-card[data-cid="' + cid 
 function markNECleared(cid){
   const card = neCard(cid);
   if (!card) return;
+  card.classList.add('done');
   const pill = card.querySelector('.mc-status');
   if (pill){ pill.classList.remove('live'); pill.classList.add('cleared'); pill.textContent = 'Cleared'; }
 }
@@ -2365,6 +2371,8 @@ function launchGame(cid){
 
 async function openGame(cid){
   if (!GAME_MODALS[cid]) return;
+  const card = neCard(cid);
+  if (card && card.classList.contains('done')) return;
   if (NO_PASSWORD_GAMES.includes(cid)) {
     markGameUnlocked(cid);
     const handle = getHandle();
@@ -3534,14 +3542,22 @@ async function refreshTimerState(){
   paintTimer();
 }
 function totalGameMs(){
-  let total = 0, anyStarted = false;
+  let total = 0, anyStarted = false, liveCid = null;
   NE_GAMES.forEach(cid => {
     const t = myGameTimes[cid];
     if (t && t.start) {
       anyStarted = true;
-      total += (t.finish || Date.now()) - t.start;
+      if (t.finish) {
+        total += t.finish - t.start;
+      } else if (!liveCid || t.start > myGameTimes[liveCid].start) {
+        liveCid = cid;
+      }
     }
   });
+  // Only the most recently opened unfinished game ticks live — leaving other
+  // games "started" without finishing them (easy to do while exploring
+  // mission cards) must not make the total tick up faster than real time.
+  if (liveCid) total += Date.now() - myGameTimes[liveCid].start;
   return anyStarted ? total : null;
 }
 function anyGameRunning(){
