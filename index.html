@@ -1293,7 +1293,7 @@
     <button class="game-close" data-close-game aria-label="Close">✕</button>
     <div class="game-meta">
       <span>D-001 · FOREIGN INTERFERENCE</span>
-      <span class="o">40 PTS · 100% TO CLEAR</span>
+      <span class="o">100% TO CLEAR</span>
     </div>
     <h2 class="game-h">Spot the <em>interference.</em></h2>
     <p class="game-sub" id="g1-intro">Three categories. <b>Normal activity</b> is open and everyday. <b>Foreign influence</b> is an open, attributable attempt to shape views. <b>Foreign interference</b> is covert, deceptive or coercive. Classify all eight — get every one right to clear.</p>
@@ -1309,7 +1309,7 @@
     <button class="game-close" data-close-game aria-label="Close">✕</button>
     <div class="game-meta">
       <span>D-002 · SGSECURE</span>
-      <span class="o">60 PTS · 100% TO CLEAR</span>
+      <span class="o">100% TO CLEAR</span>
     </div>
     <h2 class="game-h">The <em>quiet</em> signs.</h2>
     <p class="game-sub" id="g2-intro">Stay alert. In each scene, tap the things that don't belong. A correct flag turns <b>green</b>; a false alarm turns <b>red</b> and resets the scene. Clear all three scenes with zero false alarms.</p>
@@ -1334,7 +1334,7 @@
     <button class="game-close" data-close-game aria-label="Close">✕</button>
     <div class="game-meta">
       <span>D-003 · RACIAL HARMONY</span>
-      <span class="o">80 PTS · SOLVE TO CLEAR</span>
+      <span class="o">SOLVE TO CLEAR</span>
     </div>
     <h2 class="game-h">Many cultures, <em>one</em> frame.</h2>
     <p class="game-sub">Slide the tiles into the empty space to restore the picture. Tap a tile next to the gap to move it.</p>
@@ -1520,7 +1520,7 @@ function isSafePhotoUrl(url) {
 }
 
 // ============================================================
-// CHALLENGE POINT VALUES + PHOTO REQUIREMENTS
+// CHALLENGE IDS + PHOTO REQUIREMENTS
 // ============================================================
 
 const PHOTO_CHALLENGES = new Set(['exp-1', 'exp-2', 'exp-3', 'exp-4']);
@@ -2194,7 +2194,7 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
     if (sb) {
       const { error } = await sb
         .from('completions')
-        .insert({ handle, challenge_id: cid, points: 0, photo_url: photoUrl });
+        .insert({ handle, challenge_id: cid, photo_url: photoUrl });
 
       if (error && error.code !== '23505') {
         showErr('Save failed: ' + (error.message || 'unknown error'));
@@ -2334,7 +2334,7 @@ async function recordNECompletion(cid){
   const already = list.includes(cid);
 
   if (sb && !already){
-    const { error } = await sb.from('completions').insert({ handle, challenge_id: cid, points: 0 });
+    const { error } = await sb.from('completions').insert({ handle, challenge_id: cid });
     if (error && error.code !== '23505') return { ok:false, msg: error.message || 'Save failed' };
   }
   if (!already){ list.push(cid); saveLocalCompletions(handle, list); }
@@ -2451,7 +2451,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ============================================================
-// GAME 1 · FOREIGN INTERFERENCE MCQ  (ne-1, 40 pts, 100%)
+// GAME 1 · FOREIGN INTERFERENCE MCQ  (ne-1, 100% to clear)
 // ============================================================
 const G1_OPTS = [
   { b:'Normal activity',      s:'Legitimate, open, everyday.' },
@@ -2560,12 +2560,12 @@ async function g1Finish(){
   await showNEResult({
     endId: 'g1-end', modalId: 'g1-modal', cid: 'ne-1',
     title: 'All eight, correct',
-    successMsg: 'You can reliably tell normal engagement, open influence and covert interference apart. +40 points logged.',
+    successMsg: 'You can reliably tell normal engagement, open influence and covert interference apart. Mission logged.',
   });
 }
 
 // ============================================================
-// GAME 2 · SGSECURE HOTSPOTS  (ne-2, 60 pts, 100%)
+// GAME 2 · SGSECURE HOTSPOTS  (ne-2, 100% to clear)
 // Real Singapore photos with tappable hotspot overlays.
 // Each item: {x,y,w,h} as % of the image, sus:true/false, note.
 // To re-position a hotspot, just tweak its x/y/w/h percentages.
@@ -2711,7 +2711,7 @@ async function g2Finish(){
   await showNEResult({
     endId: 'g2-end', modalId: 'g2-modal', cid: 'ne-2',
     title: 'All clear — sharp eyes',
-    successMsg: 'You spotted every threat with no false alarms across all three scenes. That’s the SGSecure mindset — stay alert, report early. +60 points logged.',
+    successMsg: 'You spotted every threat with no false alarms across all three scenes. That’s the SGSecure mindset — stay alert, report early. Mission logged.',
   });
 }
 
@@ -2722,7 +2722,7 @@ document.getElementById('g2-play').addEventListener('click', e => {
 document.getElementById('g2-retry').addEventListener('click', () => g2ShowScene(g2scene));
 
 // ============================================================
-// GAME 3 · RACIAL HARMONY SLIDING PUZZLE  (ne-3, 80 pts)
+// GAME 3 · RACIAL HARMONY SLIDING PUZZLE  (ne-3)
 // ============================================================
 const G3_N = 3;
 let g3board = [], g3moves = 0, g3tiles = [], g3solved = false;
@@ -2817,7 +2817,7 @@ async function g3Win(){
       endId: 'g3-end', modalId: 'g3-modal', cid: 'ne-3',
       clearedBadge: 'Drill cleared',
       title: 'Picture restored',
-      successMsg: 'Many cultures, one frame — solved in ' + g3moves + ' moves. Our diversity is our strength. +80 points logged.',
+      successMsg: 'Many cultures, one frame — solved in ' + g3moves + ' moves. Our diversity is our strength. Mission logged.',
     });
   }, 900);
 }
