@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS challenges (
 );
 INSERT INTO challenges (id, points) VALUES
   ('exp-1', 10), ('exp-2', 70), ('exp-3', 80), ('exp-4', 100),
-  ('ne-1', 40), ('ne-2', 60), ('ne-3', 80)
+  ('ne-1', 40), ('ne-2', 60), ('ne-3', 80),
+  ('ne-4', 0), ('ne-5', 0), ('ne-6', 0)
 ON CONFLICT DO NOTHING;
 
 -- Individual challenge completions
