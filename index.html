@@ -1293,7 +1293,7 @@
     <button class="game-close" data-close-game aria-label="Close">✕</button>
     <div class="game-meta">
       <span>D-001 · FOREIGN INTERFERENCE</span>
-      <span class="o">40 PTS · 100% TO CLEAR</span>
+      <span class="o">100% TO CLEAR</span>
     </div>
     <h2 class="game-h">Spot the <em>interference.</em></h2>
     <p class="game-sub" id="g1-intro">Three categories. <b>Normal activity</b> is open and everyday. <b>Foreign influence</b> is an open, attributable attempt to shape views. <b>Foreign interference</b> is covert, deceptive or coercive. Classify all eight — get every one right to clear.</p>
@@ -1309,7 +1309,7 @@
     <button class="game-close" data-close-game aria-label="Close">✕</button>
     <div class="game-meta">
       <span>D-002 · SGSECURE</span>
-      <span class="o">60 PTS · 100% TO CLEAR</span>
+      <span class="o">100% TO CLEAR</span>
     </div>
     <h2 class="game-h">The <em>quiet</em> signs.</h2>
     <p class="game-sub" id="g2-intro">Stay alert. In each scene, tap the things that don't belong. A correct flag turns <b>green</b>; a false alarm turns <b>red</b> and resets the scene. Clear all three scenes with zero false alarms.</p>
@@ -1334,7 +1334,7 @@
     <button class="game-close" data-close-game aria-label="Close">✕</button>
     <div class="game-meta">
       <span>D-003 · RACIAL HARMONY</span>
-      <span class="o">80 PTS · SOLVE TO CLEAR</span>
+      <span class="o">SOLVE TO CLEAR</span>
     </div>
     <h2 class="game-h">Many cultures, <em>one</em> frame.</h2>
     <p class="game-sub">Slide the tiles into the empty space to restore the picture. Tap a tile next to the gap to move it.</p>
@@ -1520,7 +1520,7 @@ function isSafePhotoUrl(url) {
 }
 
 // ============================================================
-// CHALLENGE POINT VALUES + PHOTO REQUIREMENTS
+// CHALLENGE IDS + PHOTO REQUIREMENTS
 // ============================================================
 
 const PHOTO_CHALLENGES = new Set(['exp-1', 'exp-2', 'exp-3', 'exp-4']);
@@ -2194,7 +2194,7 @@ document.querySelectorAll('.cc-yes').forEach(btn => {
     if (sb) {
       const { error } = await sb
         .from('completions')
-        .insert({ handle, challenge_id: cid, points: 0, photo_url: photoUrl });
+        .insert({ handle, challenge_id: cid, photo_url: photoUrl });
 
       if (error && error.code !== '23505') {
         showErr('Save failed: ' + (error.message || 'unknown error'));
@@ -2334,7 +2334,7 @@ async function recordNECompletion(cid){
   const already = list.includes(cid);
 
   if (sb && !already){
-    const { error } = await sb.from('completions').insert({ handle, challenge_id: cid, points: 0 });
+    const { error } = await sb.from('completions').insert({ handle, challenge_id: cid });
     if (error && error.code !== '23505') return { ok:false, msg: error.message || 'Save failed' };
   }
   if (!already){ list.push(cid); saveLocalCompletions(handle, list); }
@@ -2350,6 +2350,47 @@ async function recordNECompletion(cid){
 
   loadLeaderboard();
   return { ok:true, already };
+}
+
+// Shared win-screen renderer for the six NE games. Never shows a "cleared"
+// badge unless recordNECompletion actually succeeded — on failure it shows
+// a clearly-labeled retry screen instead, so a save failure (network blip,
+// backend issue) is never mistaken for a real completion. Retrying re-runs
+// recordNECompletion, which is safe to call repeatedly (idempotent insert).
+async function showNEResult(opts){
+  const end = document.getElementById(opts.endId);
+  end.style.display = '';
+
+  async function attempt(){
+    end.innerHTML = '';
+    const saving = document.createElement('div'); saving.className = 'game-result';
+    const savingBadge = document.createElement('div'); savingBadge.className = 'badge-big'; savingBadge.textContent = 'Saving…';
+    saving.appendChild(savingBadge);
+    end.appendChild(saving);
+
+    const r = await recordNECompletion(opts.cid);
+
+    end.innerHTML = '';
+    const wrap = document.createElement('div'); wrap.className = 'game-result';
+    if (r.ok) {
+      const badge = document.createElement('div'); badge.className = 'badge-big win'; badge.textContent = opts.clearedBadge || 'Mission cleared';
+      const h = document.createElement('h3'); h.textContent = opts.title;
+      const p = document.createElement('p'); p.textContent = opts.successMsg;
+      const btn = document.createElement('button'); btn.className = 'game-btn'; btn.textContent = 'Done';
+      btn.addEventListener('click', () => closeGame(document.getElementById(opts.modalId)));
+      wrap.appendChild(badge); wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(btn);
+    } else {
+      const badge = document.createElement('div'); badge.className = 'badge-big fail'; badge.textContent = 'Not saved yet';
+      const h = document.createElement('h3'); h.textContent = 'Connection hiccup';
+      const p = document.createElement('p');
+      p.textContent = "You solved it, but it didn't save (" + (r.msg || 'unknown error') + "). Nothing is lost — tap Retry.";
+      const btn = document.createElement('button'); btn.className = 'game-btn'; btn.textContent = 'Retry';
+      btn.addEventListener('click', attempt);
+      wrap.appendChild(badge); wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(btn);
+    }
+    end.appendChild(wrap);
+  }
+  await attempt();
 }
 
 const GAME_MODALS = { 'ne-1':'g1-modal', 'ne-2':'g2-modal', 'ne-3':'g3-modal', 'ne-4':'g4-modal', 'ne-5':'g5-modal', 'ne-6':'g6-modal' };
@@ -2410,7 +2451,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ============================================================
-// GAME 1 · FOREIGN INTERFERENCE MCQ  (ne-1, 40 pts, 100%)
+// GAME 1 · FOREIGN INTERFERENCE MCQ  (ne-1, 100% to clear)
 // ============================================================
 const G1_OPTS = [
   { b:'Normal activity',      s:'Legitimate, open, everyday.' },
@@ -2516,25 +2557,15 @@ async function g1Finish(){
   document.getElementById('g1-intro').style.display = 'none';
   document.getElementById('g1-play').style.display = 'none';
   g1i = G1_Q.length; g1RenderProgress();
-
-  const end = document.getElementById('g1-end');
-  end.style.display = ''; end.innerHTML = '';
-
-  const wrap = document.createElement('div'); wrap.className = 'game-result';
-  const badge = document.createElement('div'); badge.className = 'badge-big win'; badge.textContent = 'Mission cleared';
-  const h = document.createElement('h3'); h.textContent = 'All eight, correct';
-  const p = document.createElement('p');
-  p.textContent = 'You can reliably tell normal engagement, open influence and covert interference apart. +40 points logged.';
-  const btn = document.createElement('button'); btn.className = 'game-btn'; btn.textContent = 'Done';
-  const r = await recordNECompletion('ne-1');
-  if (!r.ok) p.textContent = 'Cleared — but saving failed: ' + r.msg;
-  btn.addEventListener('click', () => closeGame(document.getElementById('g1-modal')));
-  wrap.appendChild(badge); wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(btn);
-  end.appendChild(wrap);
+  await showNEResult({
+    endId: 'g1-end', modalId: 'g1-modal', cid: 'ne-1',
+    title: 'All eight, correct',
+    successMsg: 'You can reliably tell normal engagement, open influence and covert interference apart. Mission logged.',
+  });
 }
 
 // ============================================================
-// GAME 2 · SGSECURE HOTSPOTS  (ne-2, 60 pts, 100%)
+// GAME 2 · SGSECURE HOTSPOTS  (ne-2, 100% to clear)
 // Real Singapore photos with tappable hotspot overlays.
 // Each item: {x,y,w,h} as % of the image, sus:true/false, note.
 // To re-position a hotspot, just tweak its x/y/w/h percentages.
@@ -2677,20 +2708,11 @@ async function g2Finish(){
   document.getElementById('g2-intro').style.display = 'none';
   document.getElementById('g2-play').style.display = 'none';
   g2scene = G2_SCENES.length; g2RenderProgress();
-
-  const end = document.getElementById('g2-end');
-  end.style.display = ''; end.innerHTML = '';
-  const wrap = document.createElement('div'); wrap.className = 'game-result';
-  const badge = document.createElement('div'); badge.className = 'badge-big win'; badge.textContent = 'Mission cleared';
-  const h = document.createElement('h3'); h.textContent = 'All clear — sharp eyes';
-  const p = document.createElement('p');
-  p.textContent = 'You spotted every threat with no false alarms across all three scenes. That’s the SGSecure mindset — stay alert, report early. +60 points logged.';
-  const btn = document.createElement('button'); btn.className = 'game-btn'; btn.textContent = 'Done';
-  const r = await recordNECompletion('ne-2');
-  if (!r.ok) p.textContent = 'Cleared — but saving failed: ' + r.msg;
-  btn.addEventListener('click', () => closeGame(document.getElementById('g2-modal')));
-  wrap.appendChild(badge); wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(btn);
-  end.appendChild(wrap);
+  await showNEResult({
+    endId: 'g2-end', modalId: 'g2-modal', cid: 'ne-2',
+    title: 'All clear — sharp eyes',
+    successMsg: 'You spotted every threat with no false alarms across all three scenes. That’s the SGSecure mindset — stay alert, report early. Mission logged.',
+  });
 }
 
 document.getElementById('g2-play').addEventListener('click', e => {
@@ -2700,7 +2722,7 @@ document.getElementById('g2-play').addEventListener('click', e => {
 document.getElementById('g2-retry').addEventListener('click', () => g2ShowScene(g2scene));
 
 // ============================================================
-// GAME 3 · RACIAL HARMONY SLIDING PUZZLE  (ne-3, 80 pts)
+// GAME 3 · RACIAL HARMONY SLIDING PUZZLE  (ne-3)
 // ============================================================
 const G3_N = 3;
 let g3board = [], g3moves = 0, g3tiles = [], g3solved = false;
@@ -2789,22 +2811,14 @@ async function g3Win(){
   g3solved = true;
   document.getElementById('g3-board').classList.add('solved');
   document.getElementById('g3-status').textContent = 'Solved!';
-  const r = await recordNECompletion('ne-3');
   setTimeout(() => {
     document.getElementById('g3-play').style.display = 'none';
-    const end = document.getElementById('g3-end');
-    end.style.display = ''; end.innerHTML = '';
-    const wrap = document.createElement('div'); wrap.className = 'game-result';
-    const badge = document.createElement('div'); badge.className = 'badge-big win'; badge.textContent = 'Drill cleared';
-    const h = document.createElement('h3'); h.textContent = 'Picture restored';
-    const p = document.createElement('p');
-    p.textContent = r.ok
-      ? ('Many cultures, one frame — solved in ' + g3moves + ' moves. Our diversity is our strength. +80 points logged.')
-      : ('Solved — but saving failed: ' + r.msg);
-    const btn = document.createElement('button'); btn.className = 'game-btn'; btn.textContent = 'Done';
-    btn.addEventListener('click', () => closeGame(document.getElementById('g3-modal')));
-    wrap.appendChild(badge); wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(btn);
-    end.appendChild(wrap);
+    showNEResult({
+      endId: 'g3-end', modalId: 'g3-modal', cid: 'ne-3',
+      clearedBadge: 'Drill cleared',
+      title: 'Picture restored',
+      successMsg: 'Many cultures, one frame — solved in ' + g3moves + ' moves. Our diversity is our strength. Mission logged.',
+    });
   }, 900);
 }
 
@@ -3145,21 +3159,11 @@ function g4RenderChapter4(){
 async function g4Finish(){
   document.getElementById('g4-play').style.display = 'none';
   g4step = 4; g4RenderProgress();
-
-  const end = document.getElementById('g4-end');
-  end.style.display = ''; end.innerHTML = '';
-
-  const wrap = document.createElement('div'); wrap.className = 'game-result';
-  const badge = document.createElement('div'); badge.className = 'badge-big win'; badge.textContent = 'Mission cleared';
-  const h = document.createElement('h3'); h.textContent = 'Attacker eliminated';
-  const p = document.createElement('p');
-  p.textContent = 'Congratulations! You have successfully eliminated the malicious attacker! As expected of a true Guardian! Now, please continue the rest of the challenge.';
-  const btn = document.createElement('button'); btn.className = 'game-btn'; btn.textContent = 'Done';
-  const r = await recordNECompletion('ne-4');
-  if (!r.ok) p.textContent = 'Cleared — but saving failed: ' + r.msg;
-  btn.addEventListener('click', () => closeGame(document.getElementById('g4-modal')));
-  wrap.appendChild(badge); wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(btn);
-  end.appendChild(wrap);
+  await showNEResult({
+    endId: 'g4-end', modalId: 'g4-modal', cid: 'ne-4',
+    title: 'Attacker eliminated',
+    successMsg: 'Congratulations! You have successfully eliminated the malicious attacker! As expected of a true Guardian! Now, please continue the rest of the challenge.',
+  });
 }
 
 // ============================================================
@@ -3296,21 +3300,11 @@ function g5Start(){
 async function g5Finish(){
   document.getElementById('g5-intro').style.display = 'none';
   document.getElementById('g5-play').style.display = 'none';
-
-  const end = document.getElementById('g5-end');
-  end.style.display = ''; end.innerHTML = '';
-
-  const wrap = document.createElement('div'); wrap.className = 'game-result';
-  const badge = document.createElement('div'); badge.className = 'badge-big win'; badge.textContent = 'Mission cleared';
-  const h = document.createElement('h3'); h.textContent = 'Always on, always operational';
-  const p = document.createElement('p');
-  p.textContent = 'Signal decoded. Mission logged.';
-  const btn = document.createElement('button'); btn.className = 'game-btn'; btn.textContent = 'Done';
-  const r = await recordNECompletion('ne-5');
-  if (!r.ok) p.textContent = 'Cleared — but saving failed: ' + r.msg;
-  btn.addEventListener('click', () => closeGame(document.getElementById('g5-modal')));
-  wrap.appendChild(badge); wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(btn);
-  end.appendChild(wrap);
+  await showNEResult({
+    endId: 'g5-end', modalId: 'g5-modal', cid: 'ne-5',
+    title: 'Always on, always operational',
+    successMsg: 'Signal decoded. Mission logged.',
+  });
 }
 
 // ============================================================
@@ -3387,21 +3381,11 @@ function g6RenderRiddle(){
 async function g6Finish(){
   document.getElementById('g6-play').style.display = 'none';
   g6i = G6_RIDDLES.length; g6RenderProgress();
-
-  const end = document.getElementById('g6-end');
-  end.style.display = ''; end.innerHTML = '';
-
-  const wrap = document.createElement('div'); wrap.className = 'game-result';
-  const badge = document.createElement('div'); badge.className = 'badge-big win'; badge.textContent = 'Mission cleared';
-  const h = document.createElement('h3'); h.textContent = 'Unseen, Unheard, Undaunted';
-  const p = document.createElement('p');
-  p.textContent = 'Three keys unlock the path ahead. The vow is kept. Mission logged.';
-  const btn = document.createElement('button'); btn.className = 'game-btn'; btn.textContent = 'Done';
-  const r = await recordNECompletion('ne-6');
-  if (!r.ok) p.textContent = 'Cleared — but saving failed: ' + r.msg;
-  btn.addEventListener('click', () => closeGame(document.getElementById('g6-modal')));
-  wrap.appendChild(badge); wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(btn);
-  end.appendChild(wrap);
+  await showNEResult({
+    endId: 'g6-end', modalId: 'g6-modal', cid: 'ne-6',
+    title: 'Unseen, Unheard, Undaunted',
+    successMsg: 'Three keys unlock the path ahead. The vow is kept. Mission logged.',
+  });
 }
 
 // ============================================================

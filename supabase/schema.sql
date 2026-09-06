@@ -8,19 +8,19 @@
 -- Digital handles: one row per registered handle
 CREATE TABLE IF NOT EXISTS handles (
   handle       TEXT PRIMARY KEY,
-  created_at   TIMESTAMPTZ DEFAULT NOW(),
-  points       INT         DEFAULT 0
+  created_at   TIMESTAMPTZ DEFAULT NOW()
 );
+ALTER TABLE handles DROP COLUMN IF EXISTS points; -- points scoring removed; leaderboard ranks by time only
 
--- Challenge reference table — single source of truth for valid IDs and point values
+-- Challenge reference table — single source of truth for valid challenge IDs
 CREATE TABLE IF NOT EXISTS challenges (
-  id     TEXT PRIMARY KEY,
-  points INT  NOT NULL
+  id TEXT PRIMARY KEY
 );
-INSERT INTO challenges (id, points) VALUES
-  ('exp-1', 10), ('exp-2', 70), ('exp-3', 80), ('exp-4', 100),
-  ('ne-1', 40), ('ne-2', 60), ('ne-3', 80),
-  ('ne-4', 0), ('ne-5', 0), ('ne-6', 0)
+ALTER TABLE challenges DROP COLUMN IF EXISTS points; -- points scoring removed; leaderboard ranks by time only
+INSERT INTO challenges (id) VALUES
+  ('exp-1'), ('exp-2'), ('exp-3'), ('exp-4'),
+  ('ne-1'), ('ne-2'), ('ne-3'),
+  ('ne-4'), ('ne-5'), ('ne-6')
 ON CONFLICT DO NOTHING;
 
 -- Individual challenge completions
@@ -28,24 +28,21 @@ CREATE TABLE IF NOT EXISTS completions (
   id           UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   handle       TEXT REFERENCES handles(handle) ON DELETE CASCADE,
   challenge_id TEXT REFERENCES challenges(id) NOT NULL,
-  points       INT         NOT NULL DEFAULT 0,
   completed_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(handle, challenge_id)   -- prevents double-submission
 );
+ALTER TABLE completions DROP COLUMN IF EXISTS points; -- points scoring removed; leaderboard ranks by time only
 
 -- ============================================================
--- 2. TRIGGER — enforce correct points and keep handles.points in sync
+-- 2. TRIGGER — reject any challenge_id not in the challenges table
 -- ============================================================
 
--- Overwrite client-supplied points with the server-authoritative value
--- and reject any challenge_id not in the challenges table.
 -- SECURITY DEFINER: runs as the function owner (bypasses RLS) so it can
 -- read the challenges table regardless of the caller's role.
-CREATE OR REPLACE FUNCTION enforce_challenge_points()
+CREATE OR REPLACE FUNCTION enforce_valid_challenge()
 RETURNS TRIGGER AS $$
 BEGIN
-  SELECT points INTO NEW.points FROM challenges WHERE id = NEW.challenge_id;
-  IF NOT FOUND THEN
+  IF NOT EXISTS (SELECT 1 FROM challenges WHERE id = NEW.challenge_id) THEN
     RAISE EXCEPTION 'Invalid challenge_id: %', NEW.challenge_id;
   END IF;
   RETURN NEW;
@@ -55,28 +52,13 @@ $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 DROP TRIGGER IF EXISTS before_completion_insert ON completions;
 CREATE TRIGGER before_completion_insert
   BEFORE INSERT ON completions
-  FOR EACH ROW EXECUTE FUNCTION enforce_challenge_points();
+  FOR EACH ROW EXECUTE FUNCTION enforce_valid_challenge();
 
--- SECURITY DEFINER: runs as function owner so it can UPDATE handles even
--- though the anon role has an explicit UPDATE deny policy on that table.
-CREATE OR REPLACE FUNCTION update_handle_points()
-RETURNS TRIGGER AS $$
-BEGIN
-  UPDATE handles
-  SET points = (
-    SELECT COALESCE(SUM(points), 0)
-    FROM completions
-    WHERE handle = NEW.handle
-  )
-  WHERE handle = NEW.handle;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
-
+-- Points scoring has been removed (leaderboard ranks by time only) — drop
+-- the old points-tracking trigger/function from earlier versions, if present.
+DROP FUNCTION IF EXISTS enforce_challenge_points();
 DROP TRIGGER IF EXISTS after_completion_insert ON completions;
-CREATE TRIGGER after_completion_insert
-  AFTER INSERT ON completions
-  FOR EACH ROW EXECUTE FUNCTION update_handle_points();
+DROP FUNCTION IF EXISTS update_handle_points();
 
 -- ============================================================
 -- 3. ROW LEVEL SECURITY
@@ -179,7 +161,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS handles_uid_key ON handles(uid);
 -- table-wide SELECT and re-grant only the non-secret columns. The owner-run
 -- SECURITY DEFINER functions (resolve_malware, admin_roster) still see uid.
 REVOKE SELECT ON handles FROM anon, authenticated;
-GRANT  SELECT (handle, created_at, points, started_at, finished_at)
+GRANT  SELECT (handle, created_at, started_at, finished_at)
   ON handles TO anon, authenticated;
 
 -- 6b. settings — the three game passwords + admin password.

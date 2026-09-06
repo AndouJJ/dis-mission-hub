@@ -50,7 +50,7 @@ project/, chats/     — original design files + session history (reference only
 - **United by Action** photo-challenges (Supabase Storage) with a live field-photo wall — password-gated (`pw_expedition`).
 - **Six NE mini-games:** Foreign Interference (MCQ), SGSecure (tap-the-threat on real photos), Racial Harmony (sliding puzzle), **Own the Process** — no outer password gate; goes straight into a 4-chapter narrative repelling a simulated cyberattack, opening with its own password-guessing puzzle (Chapter 1), then a Morse-coded attack-type triple, a fill-in-the-missing-line Python snippet, and a Changi Airport coordinates pinpoint — **Echoes of Cipher** — a single riddle combining a spoken (text-to-speech) clue, a letter-position cipher, a system-status icon, and a binary-decode block into one answer — and **The Hidden Vow** — three ordered riddles, each unlocking a one-word key.
 - **Per-game password lock + per-game timer.** Each game is unlocked by its own password and timed individually; the leaderboard total is the **sum** of all games' durations.
-- **Leaderboard** ranks by **points, then fastest total time**.
+- **Leaderboard** ranks by **fastest total time**.
 - **"Malware injection"** — the organiser can trigger a full-screen takeover on any participant (or everyone). It's tied to the handle in the database, so refresh/incognito can't clear it; the victim must enter **someone else's Unique ID** to clear it. Each wrong guess adds a **+1:00 penalty** (and shows "Guessing passwords isn't clever — it's reckless"); leaving it unresolved for 5 minutes auto-clears it with a **+5 min penalty**.
 - **Live `games_locked` switch** stored in Supabase — toggled from the admin console with no redeploy.
 
@@ -89,8 +89,8 @@ everyone's ready. Clients pick it up within ~20s — no redeploy needed.
 There is **no login** — identity is a free-text handle in `localStorage`. RLS
 policies and `SECURITY DEFINER` RPCs are the enforcement layer:
 
-- **Points** are server-authoritative (a trigger overwrites client-supplied
-  values from the `challenges` table).
+- **Challenge IDs are server-validated** (a trigger rejects any `challenge_id`
+  not present in the `challenges` table).
 - **Passwords** (`pw_*`, `admin_pw`) live in `app_settings`, which has RLS with
   **no policies** — unreadable from the browser; only the RPCs can see them.
 - **Unique IDs are not bulk-readable.** The `uid` column on `handles` is revoked
@@ -102,9 +102,9 @@ policies and `SECURITY DEFINER` RPCs are the enforcement layer:
   be recorded without finishing the game.
 
 Residual, accepted risk (inherent to having no auth): a determined user could
-POST completions or start/stop timers for a handle via the raw API. Points are
-capped per-challenge and times require completions, so the blast radius is small
-for a casual event — but it is not a hardened competition system.
+POST completions or start/stop timers for a handle via the raw API. Times
+require a matching completion, so the blast radius is small for a casual
+event — but it is not a hardened competition system.
 
 ---
 
