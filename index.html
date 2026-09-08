@@ -413,106 +413,30 @@
     font-family:var(--serif);font-size:17px;line-height:1.45;
     color:var(--paper-2);margin:0 0 24px;
   }
-  .challenge-list{
-    list-style:none;padding:0;margin:0 0 24px;border-top:1px solid var(--rule);
+  .expedition-verify{margin:0 0 20px}
+  .expedition-verify-form{display:flex;gap:10px}
+  .expedition-verify-input{
+    flex:1;background:var(--ink);border:1px solid var(--rule-2);color:var(--paper);
+    font-family:var(--mono);font-size:15px;letter-spacing:0.1em;padding:13px 14px;outline:none;box-sizing:border-box;
   }
-  .challenge{
-    display:grid;grid-template-columns:auto 1fr auto;column-gap:18px;row-gap:0;
-    align-items:flex-start;padding:18px 0;
-    border-bottom:1px solid var(--rule);transition:opacity 0.2s;
+  .expedition-verify-input:focus{border-color:var(--orange)}
+  .expedition-verify-btn{
+    font-family:var(--mono);font-size:12px;letter-spacing:0.15em;text-transform:uppercase;
+    padding:0 22px;border:1px solid var(--orange);cursor:pointer;background:var(--orange);
+    color:var(--ink);font-weight:600;transition:all 0.15s;
   }
-  .challenge-no{
-    font-family:var(--mono);font-size:12px;letter-spacing:0.15em;color:var(--orange);
-    font-weight:600;padding-top:6px;flex-shrink:0;
+  .expedition-verify-btn:hover{background:var(--orange-2);border-color:var(--orange-2)}
+  .expedition-verify-btn:disabled{opacity:0.5;cursor:not-allowed}
+  .expedition-verify-err{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+    color:#ff6b6b;margin-top:10px;display:none;
   }
-  .challenge-body{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;min-width:0}
-  .challenge-body h4{
-    font-family:var(--sans);font-size:15px;font-weight:500;line-height:1.45;
-    color:var(--paper);margin:0;letter-spacing:-0.005em;transition:color 0.2s;
+  .expedition-verify-err.show{display:block}
+  .expedition-verify-done{
+    font-family:var(--mono);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;
+    color:var(--good);margin-top:10px;display:none;
   }
-  .challenge-check{
-    width:34px;height:34px;background:transparent;border:1px solid var(--rule-2);cursor:pointer;
-    color:var(--paper-3);display:grid;place-items:center;flex-shrink:0;padding:0;
-    transition:all 0.15s;
-  }
-  .challenge-check:hover{border-color:var(--orange);color:var(--orange)}
-  .challenge-check svg{width:14px;height:14px;display:block}
-  .challenge.complete .challenge-check{
-    background:var(--orange);border-color:var(--orange);color:var(--ink);cursor:default;
-  }
-  .challenge.complete .challenge-body h4{color:var(--paper-3)}
-
-  .challenge-confirm{
-    display:none;grid-column:1/-1;margin-top:14px;padding-top:14px;
-    border-top:1px dashed var(--rule);justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;
-    font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--paper-2);
-  }
-  .challenge.confirming .challenge-confirm{display:flex}
-  .challenge.confirming{background:rgba(255,115,0,0.04)}
-  .challenge.confirming .challenge-check{border-color:var(--orange);color:var(--orange)}
-  .cc-actions{display:flex;gap:8px}
-  .cc-yes,.cc-no{
-    font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
-    padding:8px 14px;border:1px solid var(--rule-2);cursor:pointer;background:transparent;
-    color:var(--paper);font-weight:600;transition:all 0.15s;
-  }
-  .cc-yes{background:var(--orange);color:var(--ink);border-color:var(--orange)}
-  .cc-yes:hover{background:var(--orange-2);border-color:var(--orange-2)}
-  .cc-no:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
-  .cc-yes:disabled{opacity:0.35;cursor:not-allowed;pointer-events:none}
-
-  /* photo upload inside challenge confirm */
-  .challenge-confirm.needs-photo{flex-direction:column;align-items:flex-start}
-  .challenge-confirm.needs-photo .cc-actions{align-self:flex-end}
-  .photo-upload-row{display:flex;align-items:center;gap:10px;width:100%}
-  .photo-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
-  .photo-btn{
-    font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;
-    padding:8px 14px;border:1px dashed var(--rule-2);color:var(--paper-3);cursor:pointer;
-    white-space:nowrap;transition:all 0.15s;display:inline-block;flex-shrink:0;
-  }
-  .photo-btn:hover{border-color:var(--orange);color:var(--orange)}
-  .photo-btn.ready{border-style:solid;border-color:var(--orange);color:var(--orange);background:rgba(255,115,0,0.06)}
-  .photo-preview{width:auto;height:120px;max-width:200px;object-fit:cover;border:1px solid var(--rule);display:none;flex-shrink:0;cursor:zoom-in}
-  .photo-preview.show{display:block}
-  .ack-row{display:flex;align-items:center;gap:8px;width:100%;cursor:pointer;
-    font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--paper-3);
-  }
-  .ack-input{width:13px;height:13px;accent-color:var(--orange);cursor:pointer;flex-shrink:0}
-  .photo-err{
-    font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
-    color:#ff6b6b;display:none;width:100%;
-  }
-  .photo-err.show{display:block}
-
-  /* photo wall */
-  .photo-wall{margin-top:28px;padding-top:24px;border-top:1px solid var(--rule)}
-  .photo-wall-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;
-    font-family:var(--mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--paper-3);
-  }
-  .photo-wall-head .pw-title{color:var(--paper)}
-  .pw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-  .pw-card{border:1px solid var(--rule);overflow:hidden;cursor:zoom-in;transition:border-color 0.15s}
-  .pw-card:hover{border-color:var(--orange)}
-  .pw-img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
-  .pw-caption{padding:5px 8px;background:var(--ink-2);font-family:var(--mono);font-size:9px;
-    letter-spacing:0.1em;text-transform:uppercase;color:var(--paper-3);line-height:1.5}
-  .pw-caption b{color:var(--paper);display:block;font-weight:600}
-  .pw-empty{grid-column:1/-1;font-family:var(--mono);font-size:11px;letter-spacing:0.15em;
-    text-transform:uppercase;color:var(--paper-3);padding:20px 0;text-align:center}
-  .pw-loading{grid-column:1/-1;font-family:var(--mono);font-size:11px;letter-spacing:0.15em;
-    text-transform:uppercase;color:var(--paper-3);padding:20px 0;text-align:center;opacity:0.5}
-  .pw-more{display:none;width:100%;margin-top:10px;padding:9px 0;background:none;
-    border:1px solid var(--rule);color:var(--paper-3);font-family:var(--mono);font-size:10px;
-    letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;transition:border-color 0.15s,color 0.15s}
-  .pw-more:hover{border-color:var(--orange);color:var(--paper)}
-  @media(max-width:680px){.pw-grid{grid-template-columns:repeat(2,1fr)}}
-
-  /* lightbox */
-  .photo-lb{position:fixed;inset:0;z-index:500;background:rgba(12,10,8,0.95);
-    display:none;align-items:center;justify-content:center;cursor:zoom-out;padding:24px}
-  .photo-lb.show{display:flex}
-  .photo-lb img{max-width:min(92vw,1400px);max-height:90vh;object-fit:contain}
+  .expedition-verify-done.show{display:block}
   .mission-foot{
     display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
     font-family:var(--mono);font-size:11px;letter-spacing:0.15em;color:var(--paper-3);
@@ -530,11 +454,7 @@
     .mission-card-detail{padding:28px 22px 22px}
     .mission-h{font-size:32px}
     .mission-sub{font-size:16px}
-    .challenge{grid-template-columns:auto 1fr auto;column-gap:12px}
-    .challenge-body{flex-direction:column;gap:6px}
-    .challenge-check{width:30px;height:30px}
-    .challenge-confirm{font-size:10px;flex-direction:column;align-items:stretch;text-align:left}
-    .cc-actions{justify-content:flex-end}
+    .expedition-verify-form{flex-direction:column}
   }
 
   /* ---------- color-blind safe palette ---------- */
@@ -1070,7 +990,7 @@
           <span class="mc-status locked">Unlocks Oct 28</span>
         </div>
         <h3 class="mc-title">United <em>by Action.</em></h3>
-        <p class="mc-desc">A field run at Universal Studios. Four challenges. Bring your unit, bring your nerve. Tap for the briefing.</p>
+        <p class="mc-desc">Find someone from another command and take a selfie. Get it verified by a Game Master to log the mission. Tap for the briefing.</p>
         <div class="mc-foot">
           <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></span>
         </div>
@@ -1181,129 +1101,19 @@
       <span class="o">UNLOCKS OCT 28</span>
     </div>
     <h2 class="mission-h">United <em>by Action.</em></h2>
-    <p class="mission-sub">A field run at Universal Studios. Complete every challenge with your unit to clear the mission. Tap a challenge to log it on Oct 28.</p>
-    <ol class="challenge-list">
-      <li class="challenge" data-cid="exp-1">
-        <span class="challenge-no">01</span>
-        <div class="challenge-body">
-          <h4>Take a photo together with your unit with the USS globe in the background.</h4>
-        </div>
-        <button class="challenge-check" aria-label="Mark complete">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
-        </button>
-        <div class="challenge-confirm needs-photo">
-          <span>Attach a photo to confirm this challenge.</span>
-          <div class="photo-upload-row">
-            <label class="photo-upload-label">
-              <input type="file" accept="image/*" class="photo-input" />
-              <span class="photo-btn">+ Attach photo</span>
-            </label>
-            <img class="photo-preview" alt="preview" />
-          </div>
-          <label class="ack-row">
-            <input type="checkbox" class="ack-input" />
-            <span>I confirm this image is appropriate</span>
-          </label>
-          <span class="photo-err"></span>
-          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
-        </div>
-      </li>
-      <li class="challenge" data-cid="exp-2">
-        <span class="challenge-no">02</span>
-        <div class="challenge-body">
-          <h4>Take a selfie while on the Transformer ride.</h4>
-        </div>
-        <button class="challenge-check" aria-label="Mark complete">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
-        </button>
-        <div class="challenge-confirm needs-photo">
-          <span>Attach a photo to confirm this challenge.</span>
-          <div class="photo-upload-row">
-            <label class="photo-upload-label">
-              <input type="file" accept="image/*" class="photo-input" />
-              <span class="photo-btn">+ Attach photo</span>
-            </label>
-            <img class="photo-preview" alt="preview" />
-          </div>
-          <label class="ack-row">
-            <input type="checkbox" class="ack-input" />
-            <span>I confirm this image is appropriate</span>
-          </label>
-          <span class="photo-err"></span>
-          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
-        </div>
-      </li>
-      <li class="challenge" data-cid="exp-3">
-        <span class="challenge-no">03</span>
-        <div class="challenge-body">
-          <h4>Take a photo together with your unit with a scare actor.</h4>
-        </div>
-        <button class="challenge-check" aria-label="Mark complete">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
-        </button>
-        <div class="challenge-confirm needs-photo">
-          <span>Attach a photo to confirm this challenge.</span>
-          <div class="photo-upload-row">
-            <label class="photo-upload-label">
-              <input type="file" accept="image/*" class="photo-input" />
-              <span class="photo-btn">+ Attach photo</span>
-            </label>
-            <img class="photo-preview" alt="preview" />
-          </div>
-          <label class="ack-row">
-            <input type="checkbox" class="ack-input" />
-            <span>I confirm this image is appropriate</span>
-          </label>
-          <span class="photo-err"></span>
-          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
-        </div>
-      </li>
-      <li class="challenge" data-cid="exp-4">
-        <span class="challenge-no">04</span>
-        <div class="challenge-body">
-          <h4>Scare a scare actor.</h4>
-        </div>
-        <button class="challenge-check" aria-label="Mark complete">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
-        </button>
-        <div class="challenge-confirm needs-photo">
-          <span>Attach a photo to confirm this challenge.</span>
-          <div class="photo-upload-row">
-            <label class="photo-upload-label">
-              <input type="file" accept="image/*" class="photo-input" />
-              <span class="photo-btn">+ Attach photo</span>
-            </label>
-            <img class="photo-preview" alt="preview" />
-          </div>
-          <label class="ack-row">
-            <input type="checkbox" class="ack-input" />
-            <span>I confirm this image is appropriate</span>
-          </label>
-          <span class="photo-err"></span>
-          <div class="cc-actions"><button class="cc-no">Cancel</button><button class="cc-yes" disabled>Confirm</button></div>
-        </div>
-      </li>
-    </ol>
-    <div class="mission-foot">
-      <span>Submissions open OCT 28, 1800H GMT+8</span>
+    <p class="mission-sub">Find someone from another command and take a selfie with them. Show it to a Game Master to verify — then enter the code they give you below to log the mission.</p>
+    <div class="expedition-verify">
+      <form class="expedition-verify-form" id="exp-verify-form" autocomplete="off">
+        <input type="text" id="exp-verify-input" class="expedition-verify-input" placeholder="GAME MASTER CODE" autocapitalize="off" autocorrect="off" spellcheck="false" />
+        <button type="submit" class="expedition-verify-btn" id="exp-verify-btn">Verify</button>
+      </form>
+      <div class="expedition-verify-err" id="exp-verify-err"></div>
+      <div class="expedition-verify-done" id="exp-verify-done">✓ Mission logged. Well done, Guardian.</div>
     </div>
-
-    <div class="photo-wall">
-      <div class="photo-wall-head">
-        <span class="pw-title">Field Photos</span>
-        <span id="pw-count"></span>
-      </div>
-      <div class="pw-grid" id="pw-grid">
-        <div class="pw-empty">No photos yet — be the first.</div>
-      </div>
-      <button class="pw-more" id="pw-more">Load more</button>
+    <div class="mission-foot">
+      <span>Verified in person on OCT 28, 1800H GMT+8</span>
     </div>
   </div>
-</div>
-
-<!-- lightbox -->
-<div class="photo-lb" id="photo-lb">
-  <img id="photo-lb-img" src="" alt="" />
 </div>
 
 <!-- ============ GAME 1 · FOREIGN INTERFERENCE MCQ ============ -->
@@ -1520,28 +1330,6 @@ try {
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 } catch(e) { console.warn('Supabase init failed:', e); }
 
-const STORAGE_ORIGIN = SUPABASE_URL + '/storage/v1/object/public/challenge-photos/';
-function isSafePhotoUrl(url) {
-  if (typeof url !== 'string' || !url.startsWith(STORAGE_ORIGIN)) return false;
-  try {
-    const u = new URL(url);
-    return u.search === '' && u.hash === '';
-  } catch(_) { return false; }
-}
-
-// ============================================================
-// CHALLENGE IDS + PHOTO REQUIREMENTS
-// ============================================================
-
-const PHOTO_CHALLENGES = new Set(['exp-1', 'exp-2', 'exp-3', 'exp-4']);
-
-const CHALLENGE_LABELS = {
-  'exp-1': 'USS Globe',
-  'exp-2': 'Transformer Ride',
-  'exp-3': 'Scare Actor',
-  'exp-4': 'Scare the Actor',
-};
-
 // ============================================================
 // YEAR IV GAMES — config
 // The "games locked" switch now lives in Supabase (app_settings.games_locked).
@@ -1555,9 +1343,7 @@ const GP_DEFAULT_SUB  = 'Enter the password to unlock this drill. Your timer sta
 // ne-4 (Own the Process) has no outer password gate — Chapter 1 is itself a
 // password puzzle, so a second gate in front of it would be redundant.
 const NO_PASSWORD_GAMES = ['ne-4'];
-const GAME_HINTS = {
-  'expedition': 'Enter the password to unlock this mission.',
-};
+const GAME_HINTS = {};
 const MALWARE_LIMIT_MS = 5 * 60 * 1000;   // 5 minutes before auto-clear + penalty
 
 // ============================================================
@@ -1631,13 +1417,20 @@ function setHandleUI(h) {
 }
 
 
-function renderChallengeStates(completedIds) {
-  const done = new Set(completedIds);
-  document.querySelectorAll('.challenge').forEach(ch => {
-    const cid = ch.dataset.cid;
-    ch.classList.remove('confirming');
-    ch.classList.toggle('complete', !!(cid && done.has(cid)));
-  });
+function markExpeditionCleared(){
+  const card = document.querySelector('.mission-card[data-mission="expedition"]');
+  if (!card) return;
+  card.classList.add('done');
+  const pill = card.querySelector('.mc-status');
+  if (pill){ pill.classList.remove('live', 'locked'); pill.classList.add('cleared'); pill.textContent = 'Cleared'; }
+  const done = document.getElementById('exp-verify-done');
+  const form = document.getElementById('exp-verify-form');
+  if (done) done.classList.add('show');
+  if (form) form.style.display = 'none';
+}
+
+function renderExpeditionState(completedIds) {
+  if ((completedIds || []).includes('expedition')) markExpeditionCleared();
 }
 
 // ============================================================
@@ -1824,7 +1617,7 @@ handleForm.addEventListener('submit', async (e) => {
     completedIds = getLocalCompletions(h);
   }
 
-  renderChallengeStates(completedIds);
+  renderExpeditionState(completedIds);
   renderNEStates(completedIds);
 
 
@@ -1885,7 +1678,7 @@ document.getElementById('back-btn').addEventListener('click', () => {
     }
   }
 
-  renderChallengeStates(completedIds);
+  renderExpeditionState(completedIds);
   renderNEStates(completedIds);
 
   initGamesSubsystem(saved);   // timer display + malware watch (no-ops if sb null)
@@ -1952,22 +1745,10 @@ try { if (localStorage.getItem('dis_cb') === '1') applyA11y(true); } catch(_) {}
 // MISSION CARDS
 // ============================================================
 const missionModal = document.getElementById('mission-modal');
-let pwPollTimer = null;
-
-function startPhotoWallPoll() {
-  stopPhotoWallPoll();
-  pwPollTimer = setInterval(() => loadExpeditionPhotos(true), 30000);
-}
-
-function stopPhotoWallPoll() {
-  if (pwPollTimer) { clearInterval(pwPollTimer); pwPollTimer = null; }
-}
 
 function openExpeditionModal(){
   missionModal.classList.add('show');
   missionModal.setAttribute('aria-hidden', 'false');
-  loadExpeditionPhotos(true);
-  startPhotoWallPoll();
 }
 
 document.querySelectorAll('.mission-card').forEach(card => {
@@ -1975,15 +1756,7 @@ document.querySelectorAll('.mission-card').forEach(card => {
     if (card.classList.contains('done')) return;
     if (card.dataset.game) { openGame(card.dataset.game); return; }
     if (card.dataset.mission === 'expedition') {
-      if (gamesLocked && sb && !isGameUnlocked('expedition')) { promptGamePassword('expedition'); return; }
       openExpeditionModal();
-      return;
-    }
-    if (card.classList.contains('has-detail')) {
-      missionModal.classList.add('show');
-      missionModal.setAttribute('aria-hidden', 'false');
-      loadExpeditionPhotos(true);
-      startPhotoWallPoll();
       return;
     }
     if (card.classList.contains('locked') || card.dataset.status === 'locked') return;
@@ -1995,7 +1768,6 @@ document.querySelectorAll('.mission-card').forEach(card => {
 function closeMissionModal() {
   missionModal.classList.remove('show');
   missionModal.setAttribute('aria-hidden', 'true');
-  stopPhotoWallPoll();
 }
 document.getElementById('mission-close').addEventListener('click', closeMissionModal);
 missionModal.addEventListener('click', (e) => { if (e.target === missionModal) closeMissionModal(); });
@@ -2004,321 +1776,55 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ============================================================
-// PHOTO UPLOAD HELPERS
+// EXPEDITION COMPLETION — Game Master verification code
 // ============================================================
-async function compressImage(file) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      const MAX = 1600;
-      const MAX_MP = 50 * 1024 * 1024; // 50 megapixels — reject before allocating canvas
-      let w = img.naturalWidth, h = img.naturalHeight;
-      if (w * h > MAX_MP) { reject(new Error('Image is too large to process')); return; }
-      if (Math.max(w, h) > MAX) {
-        if (w >= h) { h = Math.round(h * MAX / w); w = MAX; }
-        else        { w = Math.round(w * MAX / h); h = MAX; }
-      }
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      canvas.toBlob(blob => {
-        if (blob) resolve(blob);
-        else reject(new Error('Image conversion failed'));
-      }, 'image/jpeg', 0.82);
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not read image')); };
-    img.src = url;
-  });
-}
+const expForm  = document.getElementById('exp-verify-form');
+const expInput = document.getElementById('exp-verify-input');
+const expBtn   = document.getElementById('exp-verify-btn');
+const expErr   = document.getElementById('exp-verify-err');
 
-async function uploadPhoto(handle, cid, file) {
-  const blob       = await compressImage(file);
-  const safeHandle = handle.replace(/[^A-Za-z0-9_\-\.]/g, '').slice(0, 64);
-  const safeCid    = cid.replace(/[^A-Za-z0-9_\-]/g, '').slice(0, 32);
-  const path       = `${safeHandle}/${safeCid}/${Date.now()}.jpg`;
-  const { error } = await sb.storage
-    .from('challenge-photos')
-    .upload(path, blob, { contentType: 'image/jpeg', upsert: false });
-  if (error) throw error;
-  return sb.storage.from('challenge-photos').getPublicUrl(path).data.publicUrl;
-}
-
-function updateConfirmBtn(ch) {
-  const yesBtn = ch.querySelector('.cc-yes');
-  if (!yesBtn) return;
-  const input  = ch.querySelector('.photo-input');
-  const ackBox = ch.querySelector('.ack-input');
-  const hasPhoto = input && input.files.length > 0;
-  const hasAck   = !ackBox || ackBox.checked;
-  yesBtn.disabled = !(hasPhoto && hasAck);
-}
-
-function resetPhotoState(ch) {
-  const input   = ch.querySelector('.photo-input');
-  const preview = ch.querySelector('.photo-preview');
-  const photBtn = ch.querySelector('.photo-btn');
-  const ackBox  = ch.querySelector('.ack-input');
-  const errEl   = ch.querySelector('.photo-err');
-  if (input)   input.value = '';
-  if (preview) { preview.src = ''; preview.classList.remove('show'); }
-  if (photBtn) photBtn.classList.remove('ready');
-  if (ackBox)  ackBox.checked = false;
-  if (errEl)   { errEl.textContent = ''; errEl.classList.remove('show'); }
-  updateConfirmBtn(ch);
-}
-
-const PW_PAGE = 12;
-let pwOffset  = 0;
-let pwTotal   = 0;
-let pwBusy    = false;
-
-async function loadExpeditionPhotos(reset = true) {
-  const grid    = document.getElementById('pw-grid');
-  const counter = document.getElementById('pw-count');
-  const moreBtn = document.getElementById('pw-more');
-  if (!grid || !sb || pwBusy) return;
-  pwBusy = true;
-
-  if (reset) {
-    pwOffset = 0;
-    grid.innerHTML = '<div class="pw-loading">Loading…</div>';
-    if (moreBtn) moreBtn.style.display = 'none';
-  }
-
-  const { data, error, count } = await sb
-    .from('completions')
-    .select('handle, challenge_id, photo_url, completed_at', { count: 'exact' })
-    .in('challenge_id', ['exp-1','exp-2','exp-3','exp-4'])
-    .not('photo_url', 'is', null)
-    .order('completed_at', { ascending: false })
-    .range(pwOffset, pwOffset + PW_PAGE - 1);
-
-  pwBusy = false;
-
-  if (error) {
-    if (reset) grid.innerHTML = '<div class="pw-empty">Could not load photos.</div>';
-    return;
-  }
-
-  if (reset) {
-    pwTotal = count || 0;
-    if (counter) counter.textContent = pwTotal ? `${pwTotal} photo${pwTotal === 1 ? '' : 's'}` : '';
-    grid.innerHTML = '';
-    if (pwTotal === 0) {
-      grid.innerHTML = '<div class="pw-empty">No photos yet — be the first.</div>';
-      return;
-    }
-  }
-
-  (data || []).forEach(row => {
-    if (!isSafePhotoUrl(row.photo_url)) return;
-    const card = document.createElement('div');
-    card.className = 'pw-card';
-    card.dataset.src = row.photo_url;
-    const img = document.createElement('img');
-    img.className = 'pw-img';
-    img.alt = 'Field photo';
-    img.loading = 'lazy';
-    img.onerror = () => card.remove();
-    img.src = row.photo_url;
-    card.appendChild(img);
-    const cap = document.createElement('div');
-    cap.className = 'pw-caption';
-    const capB = document.createElement('b');
-    capB.textContent = row.handle;
-    cap.appendChild(capB);
-    cap.appendChild(document.createTextNode(CHALLENGE_LABELS[row.challenge_id] || ''));
-    card.appendChild(cap);
-    grid.appendChild(card);
-  });
-
-  pwOffset += (data || []).length;
-  if (moreBtn) moreBtn.style.display = pwOffset < pwTotal ? 'block' : 'none';
-}
-
-document.getElementById('pw-more').addEventListener('click', () => loadExpeditionPhotos(false));
-
-let pwReloadTimer = null;
-function schedulePwReload() {
-  if (pwReloadTimer) return; // already scheduled — absorb the burst
-  pwReloadTimer = setTimeout(() => {
-    pwReloadTimer = null;
-    if (missionModal.classList.contains('show')) loadExpeditionPhotos(true);
-  }, 3000);
-}
-
-if (sb) {
-  sb.channel('pw-realtime')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'completions' }, schedulePwReload)
-    .subscribe();
-}
-
-// ============================================================
-// CHALLENGE COMPLETION
-// ============================================================
-document.querySelectorAll('.challenge-check').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const ch = btn.closest('.challenge');
-    if (ch.classList.contains('complete')) return;
-    document.querySelectorAll('.challenge.confirming').forEach(o => {
-      if (o !== ch) { o.classList.remove('confirming'); resetPhotoState(o); }
-    });
-    ch.classList.toggle('confirming');
-  });
-});
-
-document.querySelectorAll('.cc-yes').forEach(btn => {
-  btn.addEventListener('click', async (e) => {
-    e.stopPropagation();
-    const ch     = btn.closest('.challenge');
-    const cid    = ch.dataset.cid;
+if (expForm) {
+  expForm.addEventListener('submit', async e => {
+    e.preventDefault();
     const handle = getHandle();
     if (!handle) return;
 
-    const errEl = ch.querySelector('.photo-err');
-    const showErr = msg => { if (errEl) { errEl.textContent = msg; errEl.classList.add('show'); } };
-    const clearErr = ()  => { if (errEl) { errEl.textContent = ''; errEl.classList.remove('show'); } };
+    expErr.classList.remove('show');
+    expBtn.disabled = true;
 
-    let photoUrl = null;
+    let ok = false;
+    try {
+      const { data, error } = await sb.rpc('verify_game_password', {
+        p_game: 'expedition', p_password: expInput.value.trim()
+      });
+      ok = !error && data === true;
+    } catch(_) { ok = false; }
 
-    if (sb && PHOTO_CHALLENGES.has(cid)) {
-      const input = ch.querySelector('.photo-input');
-      const file  = input && input.files[0];
-      if (!file) return;
-
-      clearErr();
-      const orig = btn.textContent;
-      btn.disabled = true;
-      btn.textContent = 'Uploading…';
-      try {
-        photoUrl = await uploadPhoto(handle, cid, file);
-      } catch (err) {
-        showErr('Upload failed: ' + (err.message || 'unknown error'));
-        btn.textContent = orig;
-        btn.disabled = false;
-        return;
-      }
-      btn.textContent = 'Saving…';
+    if (!ok) {
+      expBtn.disabled = false;
+      expErr.textContent = 'WRONG CODE — CHECK WITH YOUR GAME MASTER';
+      expErr.classList.add('show');
+      expInput.value = '';
+      expInput.focus();
+      return;
     }
 
     if (sb) {
-      const { error } = await sb
-        .from('completions')
-        .insert({ handle, challenge_id: cid, photo_url: photoUrl });
-
+      const { error } = await sb.from('completions').insert({ handle, challenge_id: 'expedition' });
       if (error && error.code !== '23505') {
-        showErr('Save failed: ' + (error.message || 'unknown error'));
-        btn.textContent = 'Confirm';
-        btn.disabled = false;
+        expBtn.disabled = false;
+        expErr.textContent = 'Save failed: ' + (error.message || 'unknown error') + ' — try again';
+        expErr.classList.add('show');
         return;
       }
     }
 
-    ch.classList.remove('confirming');
-    resetPhotoState(ch);
-    ch.classList.add('complete');
-
     const list = getLocalCompletions(handle);
-    if (!list.includes(cid)) { list.push(cid); saveLocalCompletions(handle, list); }
-  
-    loadLeaderboard();
-    loadExpeditionPhotos(true);
+    if (!list.includes('expedition')) { list.push('expedition'); saveLocalCompletions(handle, list); }
+
+    markExpeditionCleared();
   });
-});
-
-document.querySelectorAll('.cc-no').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const ch = btn.closest('.challenge');
-    ch.classList.remove('confirming');
-    resetPhotoState(ch);
-  });
-});
-
-const ALLOWED_MIME  = new Set(['image/jpeg','image/jpg','image/png','image/webp','image/heic','image/heif']);
-const MAX_RAW_BYTES = 20 * 1024 * 1024; // 20 MB raw — compression output is always ~200–400 KB
-
-document.querySelectorAll('.photo-input').forEach(input => {
-  input.addEventListener('change', () => {
-    const ch      = input.closest('.challenge');
-    const file    = input.files[0];
-    const preview = ch.querySelector('.photo-preview');
-    const photBtn = ch.querySelector('.photo-btn');
-    const yesBtn  = ch.querySelector('.cc-yes');
-    const errEl   = ch.querySelector('.photo-err');
-
-    const showErr = (msg) => {
-      input.value = '';
-      if (preview) { preview.src = ''; preview.classList.remove('show'); }
-      if (photBtn) photBtn.classList.remove('ready');
-      if (yesBtn)  yesBtn.disabled = true;
-      if (errEl)   { errEl.textContent = msg; errEl.classList.add('show'); }
-    };
-
-    if (errEl) { errEl.textContent = ''; errEl.classList.remove('show'); }
-
-    if (!file) {
-      if (preview) { preview.src = ''; preview.classList.remove('show'); }
-      if (photBtn) photBtn.classList.remove('ready');
-      updateConfirmBtn(ch);
-      return;
-    }
-
-    if (!ALLOWED_MIME.has(file.type.toLowerCase())) {
-      showErr('Images only — JPEG, PNG, WEBP or HEIC');
-      return;
-    }
-
-    if (file.size > MAX_RAW_BYTES) {
-      showErr('File too large — maximum 20 MB');
-      return;
-    }
-
-    const url = URL.createObjectURL(file);
-    if (preview) { preview.src = url; preview.classList.add('show'); }
-    if (photBtn) photBtn.classList.add('ready');
-    updateConfirmBtn(ch);
-  });
-});
-
-document.querySelectorAll('.ack-input').forEach(box => {
-  box.addEventListener('change', () => updateConfirmBtn(box.closest('.challenge')));
-});
-
-// Lightbox — opens on preview thumbnail or photo wall card click
-const photoLb    = document.getElementById('photo-lb');
-const photoLbImg = document.getElementById('photo-lb-img');
-
-function openLightbox(src) {
-  if (!isSafePhotoUrl(src)) return;
-  photoLbImg.src = src;
-  photoLb.classList.add('show');
 }
-photoLb.addEventListener('click', () => {
-  photoLb.classList.remove('show');
-  photoLbImg.src = '';
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && photoLb.classList.contains('show')) {
-    photoLb.classList.remove('show');
-    photoLbImg.src = '';
-  }
-});
-
-document.addEventListener('click', e => {
-  const preview = e.target.closest('.photo-preview');
-  if (preview && preview.classList.contains('show') && preview.src) {
-    // Local blob: URL from file picker — skip origin check, open directly
-    photoLbImg.src = preview.src;
-    photoLb.classList.add('show');
-    return;
-  }
-  const card = e.target.closest('.pw-card');
-  if (card && card.dataset.src) openLightbox(card.dataset.src); // validated inside openLightbox
-});
 
 // ============================================================
 // NATIONAL EDUCATION DRILLS — shared
@@ -3477,12 +2983,6 @@ if (gpForm) {
     gpBtn.disabled = false;
     if (ok) {
       markGameUnlocked(cid);
-      if (cid === 'expedition') {
-        // Untimed mission — no game_times/leaderboard wiring, just the gate.
-        closeGamePassword();
-        openExpeditionModal();
-        return;
-      }
       const handle = getHandle();
       if (handle) {
         try { await sb.rpc('start_game', { p_handle: handle, p_game: cid }); } catch(_) {}
