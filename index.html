@@ -765,35 +765,54 @@
   .scene-tally{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--paper-3)}
   .scene-tally b{color:var(--orange)}
 
-  /* Game 3 — sliding puzzle */
-  .puzzle-top{
-    display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:16px;
+  /* Game 3 — crossword */
+  #g3-modal .game-card{width:min(720px,100%)}
+  .cw-grid{
+    display:grid;grid-auto-rows:24px;gap:2px;margin:0 auto 22px;width:max-content;max-width:100%;overflow-x:auto;
+  }
+  .cw-row{display:grid;grid-template-columns:repeat(12,24px);gap:2px}
+  .cw-cell{
+    width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:13px;font-weight:600;color:var(--paper);
+    background:var(--ink-3);border:1px solid var(--rule-2);
+  }
+  .cw-cell.empty{background:transparent;border:none}
+  .cw-cell.spine{border-color:var(--orange)}
+  .cw-cell.spine.filled{background:rgba(255,115,0,0.18)}
+  .cw-clues{display:flex;flex-direction:column;gap:14px}
+  .cw-clue{border-left:2px solid var(--rule-2);padding:2px 0 2px 14px}
+  .cw-clue.solved{border-color:var(--good)}
+  .cw-clue-head{
+    display:flex;align-items:baseline;gap:8px;margin-bottom:6px;
+    font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--paper-3);
+  }
+  .cw-clue-head b{color:var(--orange);font-size:12px}
+  .cw-clue-text{
+    font-family:var(--serif);font-size:15px;line-height:1.4;color:var(--paper-2);margin:0 0 8px;
+  }
+  .cw-clue-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .cw-clue-row input{
+    flex:1;min-width:140px;background:var(--ink);border:1px solid var(--rule-2);color:var(--paper);
+    font-family:var(--mono);font-size:13px;letter-spacing:0.06em;padding:9px 11px;outline:none;box-sizing:border-box;
+  }
+  .cw-clue-row input:focus{border-color:var(--orange)}
+  .cw-clue-row input:disabled{opacity:0.6;border-color:var(--good);color:var(--good)}
+  .cw-check{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+    background:var(--ink-3);border:1px solid var(--rule-2);color:var(--paper);padding:9px 14px;cursor:pointer;
+  }
+  .cw-check:hover{border-color:var(--orange)}
+  .cw-clue-err{font-family:var(--mono);font-size:11px;color:#e05c5c;margin-top:6px;display:none}
+  .cw-clue-err.show{display:block}
+  .cw-tally{
     font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--paper-3);
+    text-align:right;margin-top:14px;
   }
-  .puzzle-top .stat b{color:var(--orange)}
-  .puzzle-ref-label{font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--paper-3)}
-  .puzzle-ref{
-    width:100%;max-width:300px;aspect-ratio:3/2;object-fit:cover;
-    border:1px solid var(--rule-2);display:block;
-  }
-  .puzzle-board{
-    position:relative;width:100%;max-width:420px;aspect-ratio:3/2;margin:0 auto 16px;
-    --puz-img:url('assets/harmony.png');
-    background:var(--ink-3);border:1px solid var(--rule);overflow:hidden;touch-action:manipulation;
-  }
-  .puzzle-tile{
-    position:absolute;width:33.333%;height:33.333%;
-    background-image:var(--puz-img);background-size:300% 300%;background-repeat:no-repeat;
-    box-shadow:inset 0 0 0 1px rgba(12,10,8,0.4);cursor:pointer;
-    transition:left 0.12s ease, top 0.12s ease;
-  }
-  .puzzle-tile.blank{opacity:0;pointer-events:none}
-  .puzzle-board.solved .puzzle-tile{box-shadow:none;cursor:default}
-  .puzzle-board.solved .puzzle-tile.blank{opacity:1}
-  .puzzle-foot{display:flex;justify-content:space-between;align-items:center;gap:12px}
-  .puzzle-noimg{
-    font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
-    color:var(--paper-3);text-align:center;line-height:1.6;padding:10px;display:none;
+  .cw-tally b{color:var(--orange)}
+  @media (max-width:680px){
+    .cw-grid{grid-auto-rows:20px}
+    .cw-row{grid-template-columns:repeat(12,20px)}
+    .cw-cell{width:20px;height:20px;font-size:11px}
   }
 
   @media (max-width:680px){
@@ -1035,11 +1054,11 @@
     <div class="missions-grid">
       <article class="mission-card has-detail ne-card" data-game="ne-3" data-cid="ne-3">
         <div class="mc-head">
-          <span class="mc-id">M-001 · RACIAL HARMONY</span>
+          <span class="mc-id">M-001 · PRESERVING RACIAL AND RELIGIOUS PEACE</span>
           <span class="mc-status live">Live</span>
         </div>
-        <h3 class="mc-title">Many cultures, <em>one</em> frame.</h3>
-        <p class="mc-desc">Slide the tiles to restore Singapore's multicultural mosaic. One picture, many hands — solve it to log the mission.</p>
+        <h3 class="mc-title">Preserving Racial <em>and Religious Peace.</em></h3>
+        <p class="mc-desc">A crossword of Singapore's shared culture — 13 clues across our communities. Solve them all and watch <em>Racial Harmony</em> form down the spine.</p>
         <div class="mc-foot">
           <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></span>
         </div>
@@ -1328,28 +1347,19 @@
   </div>
 </div>
 
-<!-- ============ GAME 3 · RACIAL HARMONY PUZZLE ============ -->
+<!-- ============ GAME 3 · PRESERVING RACIAL AND RELIGIOUS PEACE (CROSSWORD) ============ -->
 <div class="game-modal" id="g3-modal" aria-hidden="true">
   <div class="game-card">
     <button class="game-close" data-close-game aria-label="Close">✕</button>
     <div class="game-meta">
-      <span>D-003 · RACIAL HARMONY</span>
-      <span class="o">SOLVE TO CLEAR</span>
+      <span>D-003 · PRESERVING RACIAL AND RELIGIOUS PEACE</span>
+      <span class="o">13 CLUES · SOLVE TO CLEAR</span>
     </div>
-    <h2 class="game-h">Many cultures, <em>one</em> frame.</h2>
-    <p class="game-sub">Slide the tiles into the empty space to restore the picture. Tap a tile next to the gap to move it.</p>
+    <h2 class="game-h">Preserving Racial <em>and Religious Peace.</em></h2>
+    <p class="game-sub">Answer every clue from Singapore's shared culture. Get them all right, and one word runs down the middle of them all.</p>
     <div id="g3-play">
-      <div class="puzzle-top">
-        <span class="puzzle-ref-label">Goal · restore this picture</span>
-        <img src="assets/harmony.png" alt="Reference" class="puzzle-ref" id="g3-ref" />
-        <span class="stat">Moves · <b id="g3-moves">0</b></span>
-      </div>
-      <div class="puzzle-board" id="g3-board"></div>
-      <div class="puzzle-noimg" id="g3-noimg">Puzzle image not found — add <b>assets/harmony.png</b> to the repo.</div>
-      <div class="puzzle-foot">
-        <button class="game-btn ghost" id="g3-shuffle">Shuffle</button>
-        <span class="scene-tally" id="g3-status"></span>
-      </div>
+      <div class="cw-grid" id="g3-grid"></div>
+      <div class="cw-clues" id="g3-clues"></div>
     </div>
     <div id="g3-end" style="display:none"></div>
   </div>
@@ -1540,7 +1550,7 @@ const CHALLENGE_LABELS = {
 // ============================================================
 let gamesLocked       = false;            // live value, refreshed from the DB
 const NE_GAMES        = ['ne-1', 'ne-2', 'ne-3', 'ne-4', 'ne-5', 'ne-6'];
-const GAME_NAMES      = { 'ne-1': 'Foreign Interference', 'ne-2': 'SGSecure', 'ne-3': 'Racial Harmony', 'ne-4': 'Own the Process', 'ne-5': 'Echoes of Cipher', 'ne-6': 'The Hidden Vow', 'expedition': 'United by Action' };
+const GAME_NAMES      = { 'ne-1': 'Foreign Interference', 'ne-2': 'SGSecure', 'ne-3': 'Preserving Racial and Religious Peace', 'ne-4': 'Own the Process', 'ne-5': 'Echoes of Cipher', 'ne-6': 'The Hidden Vow', 'expedition': 'United by Action' };
 const GP_DEFAULT_SUB  = 'Enter the password to unlock this drill. Your timer starts the moment the first drill is unlocked.';
 // ne-4 (Own the Process) has no outer password gate — Chapter 1 is itself a
 // password puzzle, so a second gate in front of it would be redundant.
@@ -2725,107 +2735,134 @@ document.getElementById('g2-play').addEventListener('click', e => {
 document.getElementById('g2-retry').addEventListener('click', () => g2ShowScene(g2scene));
 
 // ============================================================
-// GAME 3 · RACIAL HARMONY SLIDING PUZZLE  (ne-3)
+// GAME 3 · PRESERVING RACIAL AND RELIGIOUS PEACE — CROSSWORD  (ne-3)
+// 13 clues laid out so the answers' shared letter spells RACIALHARMONY
+// down a fixed spine column (col index 3 of a 12-col grid).
 // ============================================================
-const G3_N = 3;
-let g3board = [], g3moves = 0, g3tiles = [], g3solved = false;
+const G3_COLS = 12;
+const G3_WORDS = [
+  { pad: 1, answer: 'MURUKKU',   clue: 'A savory, crunchy Indian snack made from rice and urad dal flour, shaped into spirals and deep-fried.' },
+  { pad: 2, answer: 'SAMBAL',    clue: 'A spicy chilli paste or sauce central to Malay and Peranakan cooking, frequently enjoyed by all local ethnicities.' },
+  { pad: 3, answer: 'CHINGAY',   clue: 'The massive annual street parade that originated as a Chinese Lunar New Year procession before evolving into a national multicultural celebration.' },
+  { pad: 2, answer: 'RIOTS',     clue: 'Racial Harmony Day on July 21st commemorates the tragic 1964 race _____ to remind citizens of the vital importance of social cohesion.' },
+  { pad: 0, answer: 'PERANAKAN', clue: 'An ethnic group of mixed Malay and Chinese heritage whose unique clothing style includes the iconic Sarong Kebaya.' },
+  { pad: 3, answer: 'LION DANCE',clue: 'A traditional, high-energy performance featuring acrobats mimicking a majestic animal, accompanied by loud drums and cymbals to bring good luck during Chinese New Year or shop grand openings.' },
+  { pad: 2, answer: 'CHEONGSAM', clue: 'The body-hugging traditional Chinese dress with a high collar, also known in Mandarin as qipao.' },
+  { pad: 2, answer: 'SARI',      clue: 'A traditional South Asian garment consisting of a long piece of fabric draped elegantly over the body.' },
+  { pad: 1, answer: 'SARONG',    clue: 'A large tube or length of fabric worn wrapped around the waist, common in Malay, Indian, and Peranakan traditional wear.' },
+  { pad: 1, answer: 'KAMPONG',   clue: 'The Malay word for village, often used today to describe a nostalgic, tight-knit community spirit of mutual help and cohesion.' },
+  { pad: 2, answer: 'ROTI PRATA',clue: 'A crispy, South Indian flatbread usually served with dhal or curry, a beloved breakfast staple for all Singaporeans.' },
+  { pad: 3, answer: 'NYONYAS',   clue: 'The specific term used to refer to female descendants within the Straits-born Peranakan community.' },
+  { pad: 0, answer: 'BRIYANI',   clue: 'A fragrant mixed rice dish made with spices, rice and meat, deeply popular across all ethnic communities in Singapore.' },
+];
+const G3_SPINE_COL = 3;
+let g3solvedSet = new Set();
+
+function g3AnswerLetters(a){ return a.replace(/[^A-Za-z]/g, '').toUpperCase(); }
+function g3CheckAnswer(input, a){ return normalizeAnswer(input).replace(/\s+/g, '') === normalizeAnswer(a).replace(/\s+/g, ''); }
 
 function g3Start(){
   document.getElementById('g3-end').style.display = 'none';
   document.getElementById('g3-play').style.display = '';
-  document.getElementById('g3-ref').onerror = () => {
-    document.getElementById('g3-noimg').style.display = 'block';
-  };
-  g3Build();
-  g3Shuffle();
+  g3solvedSet = new Set();
+  g3BuildGrid();
+  g3BuildClues();
 }
 
-function g3Build(){
-  const boardEl = document.getElementById('g3-board');
-  boardEl.classList.remove('solved');
-  boardEl.innerHTML = '';
-  g3tiles = [];
-  const last = G3_N * G3_N - 1;
-  for (let home = 0; home <= last; home++){
-    const tile = document.createElement('div');
-    tile.className = 'puzzle-tile' + (home === last ? ' blank' : '');
-    const col = home % G3_N, row = Math.floor(home / G3_N);
-    tile.style.backgroundPosition = (col * 50) + '% ' + (row * 50) + '%';
-    tile.addEventListener('click', () => g3Click(home));
-    boardEl.appendChild(tile);
-    g3tiles[home] = tile;
-  }
-}
-
-function g3PlaceAll(){
-  const step = 100 / G3_N;
-  g3board.forEach((home, cell) => {
-    const col = cell % G3_N, row = Math.floor(cell / G3_N);
-    g3tiles[home].style.left = (col * step) + '%';
-    g3tiles[home].style.top  = (row * step) + '%';
+function g3BuildGrid(){
+  const grid = document.getElementById('g3-grid');
+  grid.innerHTML = '';
+  G3_WORDS.forEach((w, idx) => {
+    const letters = g3AnswerLetters(w.answer);
+    const row = document.createElement('div');
+    row.className = 'cw-row';
+    for (let c = 0; c < G3_COLS; c++){
+      const cell = document.createElement('div');
+      const inWord = c >= w.pad && c < w.pad + letters.length;
+      cell.className = 'cw-cell' + (inWord ? '' : ' empty') + (c === G3_SPINE_COL ? ' spine' : '');
+      if (inWord) cell.id = 'g3-cell-' + idx + '-' + c;
+      row.appendChild(cell);
+    }
+    grid.appendChild(row);
   });
 }
 
-function g3Neighbors(cell){
-  const col = cell % G3_N, row = Math.floor(cell / G3_N), out = [];
-  if (col > 0) out.push(cell - 1);
-  if (col < G3_N - 1) out.push(cell + 1);
-  if (row > 0) out.push(cell - G3_N);
-  if (row < G3_N - 1) out.push(cell + G3_N);
-  return out;
+function g3BuildClues(){
+  const wrap = document.getElementById('g3-clues');
+  wrap.innerHTML = '';
+  G3_WORDS.forEach((w, idx) => {
+    const box = document.createElement('div');
+    box.className = 'cw-clue';
+    box.id = 'g3-clue-' + idx;
+
+    const head = document.createElement('div'); head.className = 'cw-clue-head';
+    const num = document.createElement('b'); num.textContent = (idx + 1) + '.';
+    const len = document.createElement('span'); len.textContent = g3AnswerLetters(w.answer).length + ' letters';
+    head.appendChild(num); head.appendChild(len);
+
+    const text = document.createElement('p'); text.className = 'cw-clue-text'; text.textContent = w.clue;
+
+    const row = document.createElement('div'); row.className = 'cw-clue-row';
+    const input = document.createElement('input');
+    input.type = 'text'; input.placeholder = 'Your answer'; input.id = 'g3-input-' + idx;
+    const btn = document.createElement('button'); btn.className = 'cw-check'; btn.textContent = 'Check';
+    const err = document.createElement('div'); err.className = 'cw-clue-err'; err.textContent = 'Not quite — try again.';
+
+    const submit = () => g3Submit(idx);
+    btn.addEventListener('click', submit);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+    row.appendChild(input); row.appendChild(btn);
+
+    box.appendChild(head); box.appendChild(text); box.appendChild(row); box.appendChild(err);
+    wrap.appendChild(box);
+  });
+  g3RenderTally();
 }
 
-function g3BlankCell(){ return g3board.indexOf(G3_N * G3_N - 1); }
-function g3IsSolved(){ for (let i = 0; i < g3board.length; i++) if (g3board[i] !== i) return false; return true; }
-function g3UpdateMoves(){ document.getElementById('g3-moves').textContent = g3moves; }
-
-function g3Shuffle(){
-  g3solved = false; g3moves = 0;
-  document.getElementById('g3-board').classList.remove('solved');
-  document.getElementById('g3-status').textContent = '';
-  g3board = [];
-  for (let i = 0; i < G3_N * G3_N; i++) g3board[i] = i;
-  let prev = -1;
-  for (let n = 0; n < 200; n++){
-    const blank = g3BlankCell();
-    const nb = g3Neighbors(blank).filter(c => c !== prev);
-    const pick = nb[Math.floor(Math.random() * nb.length)];
-    [g3board[blank], g3board[pick]] = [g3board[pick], g3board[blank]];
-    prev = blank;
+function g3RenderTally(){
+  let tally = document.getElementById('g3-tally');
+  if (!tally){
+    tally = document.createElement('div'); tally.id = 'g3-tally'; tally.className = 'cw-tally';
+    document.getElementById('g3-clues').after(tally);
   }
-  if (g3IsSolved()){ g3Shuffle(); return; }
-  g3PlaceAll();
-  g3UpdateMoves();
+  tally.innerHTML = 'Solved · <b>' + g3solvedSet.size + '</b> / ' + G3_WORDS.length;
 }
 
-function g3Click(home){
-  if (g3solved) return;
-  const cell  = g3board.indexOf(home);
-  const blank = g3BlankCell();
-  if (!g3Neighbors(cell).includes(blank)) return;
-  [g3board[cell], g3board[blank]] = [g3board[blank], g3board[cell]];
-  g3moves++;
-  g3PlaceAll();
-  g3UpdateMoves();
-  if (g3IsSolved()) g3Win();
+function g3Submit(idx){
+  const w = G3_WORDS[idx];
+  const input = document.getElementById('g3-input-' + idx);
+  const err = document.querySelector('#g3-clue-' + idx + ' .cw-clue-err');
+  if (g3CheckAnswer(input.value, w.answer)){
+    err.classList.remove('show');
+    g3solvedSet.add(idx);
+    input.disabled = true;
+    document.getElementById('g3-clue-' + idx).classList.add('solved');
+    const letters = g3AnswerLetters(w.answer);
+    for (let i = 0; i < letters.length; i++){
+      const c = w.pad + i;
+      const cell = document.getElementById('g3-cell-' + idx + '-' + c);
+      if (!cell) continue;
+      cell.textContent = letters[i];
+      if (c === G3_SPINE_COL) cell.classList.add('filled');
+    }
+    g3RenderTally();
+    if (g3solvedSet.size === G3_WORDS.length) g3Win();
+  } else {
+    err.classList.add('show');
+  }
 }
 
 async function g3Win(){
-  g3solved = true;
-  document.getElementById('g3-board').classList.add('solved');
-  document.getElementById('g3-status').textContent = 'Solved!';
   setTimeout(() => {
     document.getElementById('g3-play').style.display = 'none';
     showNEResult({
       endId: 'g3-end', modalId: 'g3-modal', cid: 'ne-3',
       clearedBadge: 'Drill cleared',
-      title: 'Picture restored',
-      successMsg: 'Many cultures, one frame — solved in ' + g3moves + ' moves. Our diversity is our strength. Mission logged.',
+      title: 'Racial Harmony',
+      successMsg: 'Racial harmony is vital to Singapore’s survival, peace, and prosperity. As a compact, multi-ethnic nation, social cohesion prevents conflict and builds a safe, united community. By choosing mutual respect over division, Singapore turns its diversity into a shared national strength.',
     });
-  }, 900);
+  }, 700);
 }
-
-document.getElementById('g3-shuffle').addEventListener('click', g3Shuffle);
 
 // ============================================================
 // GAME 4 · OWN THE PROCESS  (ne-4, 4 chapters, in order)
