@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS challenges (
 );
 ALTER TABLE challenges DROP COLUMN IF EXISTS points; -- points scoring removed; leaderboard ranks by time only
 INSERT INTO challenges (id) VALUES
-  ('exp-1'), ('exp-2'), ('exp-3'), ('exp-4'),
+  ('expedition'),
   ('ne-1'), ('ne-2'), ('ne-3'),
   ('ne-4'), ('ne-5'), ('ne-6')
 ON CONFLICT DO NOTHING;
@@ -121,30 +121,15 @@ BEGIN
 END $$;
 
 -- ============================================================
--- 5. PHOTO UPLOADS
--- Step 1: Create the storage bucket manually in Supabase Dashboard
---   Storage → New bucket → Name: challenge-photos → Public: ON
--- Step 2: Run the statements below in the SQL Editor
+-- 5. PHOTO UPLOADS — removed. "United by Action" is now verified in
+-- person by a Game Master (no in-app photo upload), so drop the
+-- now-unused column and storage policies from earlier versions.
 -- ============================================================
 
-ALTER TABLE completions ADD COLUMN IF NOT EXISTS photo_url TEXT;
+ALTER TABLE completions DROP COLUMN IF EXISTS photo_url;
 
 DROP POLICY IF EXISTS "challenge_photos_insert" ON storage.objects;
 DROP POLICY IF EXISTS "challenge_photos_select" ON storage.objects;
-
--- Restrict uploads to the exact path format the app produces:
---   <handle>/<challenge-id>/<unix-timestamp>.jpg
--- Prevents uploading to arbitrary paths even if someone calls the API directly.
-CREATE POLICY "challenge_photos_insert" ON storage.objects
-  FOR INSERT TO anon
-  WITH CHECK (
-    bucket_id = 'challenge-photos' AND
-    name ~ '^[A-Za-z0-9_\-\.]{1,64}/[A-Za-z0-9_\-]{1,32}/[0-9]{10,16}\.jpg$'
-  );
-
-CREATE POLICY "challenge_photos_select" ON storage.objects
-  FOR SELECT TO anon
-  USING (bucket_id = 'challenge-photos');
 
 -- ============================================================
 -- 6. YEAR IV GAMES — unique IDs, timer, per-game passwords, malware

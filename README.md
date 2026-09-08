@@ -1,6 +1,6 @@
 # DIS Mission Hub — Year IV
 
-A web app for DIS personnel built around the organisation's **4th Anniversary on October 28, 2026 · 1800H GMT+8**. Personnel register a digital handle, get a Unique ID, play National Education mini-games against the clock, complete photo-challenges, and appear on a live, time-ranked leaderboard.
+A web app for DIS personnel built around the organisation's **4th Anniversary on October 28, 2026 · 1800H GMT+8**. Personnel register a digital handle, get a Unique ID, play National Education mini-games against the clock, complete a field challenge, and appear on a live, time-ranked leaderboard.
 
 ---
 
@@ -38,7 +38,7 @@ project/, chats/     — original design files + session history (reference only
 | Layer | What |
 |---|---|
 | Frontend | Plain HTML + CSS + vanilla JS — no build step, no framework |
-| Backend | [Supabase](https://supabase.com) (Postgres + REST + Realtime + Storage) |
+| Backend | [Supabase](https://supabase.com) (Postgres + REST + Realtime) |
 | Hosting | GitHub Pages (`andoujj.github.io/dis-mission-hub`) |
 | Fonts | Google Fonts — Instrument Serif, JetBrains Mono |
 
@@ -47,8 +47,8 @@ project/, chats/     — original design files + session history (reference only
 ## Features
 
 - **Access-code gate** → **digital-handle registration** → **Unique ID** issued per handle.
-- **United by Action** photo-challenges (Supabase Storage) with a live field-photo wall — password-gated (`pw_expedition`).
-- **Six NE mini-games:** Foreign Interference (MCQ), SGSecure (tap-the-threat on real photos), Racial Harmony (sliding puzzle), **Own the Process** — no outer password gate; goes straight into a 4-chapter narrative repelling a simulated cyberattack, opening with its own password-guessing puzzle (Chapter 1), then a Morse-coded attack-type triple, a fill-in-the-missing-line Python snippet, and a Changi Airport coordinates pinpoint — **Echoes of Cipher** — a single riddle combining a spoken (text-to-speech) clue, a letter-position cipher, a system-status icon, and a binary-decode block into one answer — and **The Hidden Vow** — three ordered riddles, each unlocking a one-word key.
+- **United by Action** — no outer gate. Find someone from another command, take a selfie, and get it verified in person by a Game Master, who gives you a code. Entering that code (`pw_expedition`, repurposed as the completion check) logs the mission — untimed, doesn't count toward the leaderboard total.
+- **Six NE mini-games:** Foreign Interference (MCQ), SGSecure (tap-the-threat on real photos), **Preserving Racial and Religious Peace** — a 13-clue crossword whose answers spell RACIAL HARMONY down a shared spine column, **Own the Process** — no outer password gate; goes straight into a 4-chapter narrative repelling a simulated cyberattack, opening with its own password-guessing puzzle (Chapter 1), then a Morse-coded attack-type triple, a fill-in-the-missing-line Python snippet, and a Changi Airport coordinates pinpoint — **Echoes of Cipher** — a single riddle combining a spoken (text-to-speech) clue, a letter-position cipher, a system-status icon, and a binary-decode block into one answer — and **The Hidden Vow** — three ordered riddles, each unlocking a one-word key.
 - **Per-game password lock + per-game timer.** Each game is unlocked by its own password and timed individually; the leaderboard total is the **sum** of all games' durations.
 - **Leaderboard** ranks by **fastest total time**.
 - **"Malware injection"** — the organiser can trigger a full-screen takeover on any participant (or everyone). It's tied to the handle in the database, so refresh/incognito can't clear it; the victim must enter **someone else's Unique ID** to clear it. Each wrong guess adds a **+1:00 penalty** (and shows "Guessing passwords isn't clever — it's reckless"); leaving it unresolved for 5 minutes auto-clears it with a **+5 min penalty**.
@@ -59,8 +59,7 @@ project/, chats/     — original design files + session history (reference only
 ## Setup
 
 ### 1. Database
-In Supabase → **SQL Editor**, paste and run `supabase/schema.sql`. Then in
-**Storage**, create a **public** bucket named `challenge-photos`.
+In Supabase → **SQL Editor**, paste and run `supabase/schema.sql`.
 
 ### 2. Settings (Table Editor → `app_settings`)
 Change every default before the event:
@@ -69,9 +68,9 @@ Change every default before the event:
 |---|---|
 | `pw_ne-1` / `pw_ne-2` / `pw_ne-3` | the three game passwords |
 | `pw_ne-5` / `pw_ne-6` | **Echoes of Cipher** / **The Hidden Vow** passwords |
-| `pw_expedition` | **United by Action** password (ne-4 "Own the Process" has no outer gate — Chapter 1 is its own password puzzle) |
+| `pw_expedition` | **United by Action** completion code — give this to a Game Master to hand out in person after verifying the selfie (there's no entry gate; ne-4 "Own the Process" also has no outer gate — Chapter 1 is its own password puzzle) |
 | `admin_pw` | admin-console password — **use a long random value** (it's checked over the API) |
-| `games_locked` | `true` locks all games behind their passwords |
+| `games_locked` | `true` locks the six NE mini-games behind their passwords (United by Action is never gated) |
 
 ### 3. Credentials
 `index.html` (and the private `admin.html`) embed the Supabase **Project URL**
