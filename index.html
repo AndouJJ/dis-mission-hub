@@ -277,6 +277,22 @@
   .profile-cell .v{font-family:var(--serif);font-size:24px;line-height:1;color:var(--paper)}
   .profile-cell .v.handle{font-family:var(--mono);font-weight:600;letter-spacing:0.03em;font-size:18px}
   .profile-divider{width:1px;height:36px;background:var(--rule-2)}
+  .profile-brief{max-width:var(--maxw);margin:0 auto;padding:0 32px 24px}
+  .profile-brief-label{font-family:var(--mono);font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--orange);margin-bottom:10px}
+  .profile-brief-body{
+    font-family:var(--serif);font-size:15px;line-height:1.55;color:var(--paper-2);
+    border-left:2px solid var(--orange);padding:4px 0 4px 16px;margin:0 0 10px;
+  }
+  .profile-brief-body b{color:var(--paper)}
+  .profile-brief-rule{
+    font-family:var(--mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--paper);
+    border-left:2px solid var(--orange);padding:4px 0 4px 16px;margin:0 0 10px;
+  }
+  .profile-brief-rule b{color:var(--orange)}
+  .profile-brief-note{
+    font-family:var(--serif);font-size:14px;line-height:1.5;color:var(--paper-3);font-style:italic;
+    border-left:2px solid var(--rule-2);padding:4px 0 4px 16px;margin:0;
+  }
 
   /* ---------- section ---------- */
   section.block{padding:96px 0}
@@ -472,6 +488,7 @@
     .mission-card.featured{grid-column:span 2}
     .profile-inner{grid-template-columns:1fr 1fr;gap:20px;padding:20px 24px}
     .profile-divider{display:none}
+    .profile-brief{padding:0 24px 20px}
     .hero-countdown{grid-template-columns:1fr;gap:20px}
   }
   @media (max-width:680px){
@@ -514,6 +531,8 @@
 
     .profile-inner{grid-template-columns:1fr;gap:14px;padding:20px}
     .profile-cell .v{font-size:20px}
+    .profile-brief{padding:0 20px 20px}
+    .profile-brief-body,.profile-brief-rule,.profile-brief-note{font-size:13px}
 
     section.block{padding:64px 0}
     .block-head{grid-template-columns:1fr;gap:12px;margin-bottom:28px}
@@ -960,6 +979,12 @@
       <div class="k">Time</div>
       <div class="v" style="font-size:20px;font-family:var(--mono);font-variant-numeric:tabular-nums" id="profile-time">—</div>
     </div>
+  </div>
+  <div class="profile-brief">
+    <div class="profile-brief-label">// Briefing</div>
+    <p class="profile-brief-body">Below are 7 sets of challenges that you must complete to win the attractive prize of <b>XXX</b>! To unlock these challenges, walk around the park to track down the hackers and obtain the password!</p>
+    <p class="profile-brief-rule"><b>1 Simple Rule:</b> Fastest Completion Wins! God Speed!</p>
+    <p class="profile-brief-note">If the hackers are swarmed already, please feel free to attempt Challenge M-005 first.</p>
   </div>
 </section>
 
