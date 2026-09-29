@@ -652,11 +652,21 @@
   .mcq-opt.correct b{color:var(--good)}
   .mcq-opt.wrong{border-color:#e05c5c;background:rgba(224,92,92,0.12)}
   .mcq-opt.wrong b{color:#e05c5c}
+  .mcq-question{
+    font-family:var(--serif);font-size:16px;font-weight:600;line-height:1.42;color:var(--paper);
+    margin:0 0 16px;padding-top:14px;border-top:1px dashed var(--rule);
+  }
   .mcq-explain{
     font-family:var(--serif);font-size:15px;line-height:1.5;color:var(--paper-2);
     border-left:2px solid var(--orange);padding:6px 0 6px 16px;margin-bottom:20px;display:none;
   }
   .mcq-explain.show{display:block}
+  .mcq-explain p{margin:0 0 8px}
+  .mcq-explain-link{
+    display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--orange);text-decoration:none;border-bottom:1px solid transparent;
+  }
+  .mcq-explain-link:hover{border-bottom-color:var(--orange)}
   .mcq-foot{display:flex;justify-content:flex-end;align-items:center;gap:12px;min-height:48px}
 
   /* Game 2 — photo hotspot scenes */
@@ -1027,7 +1037,7 @@
           <span class="mc-status live">Live</span>
         </div>
         <h3 class="mc-title">Spot the <em>interference.</em></h3>
-        <p class="mc-desc">Eight scenarios. Tell ordinary engagement from foreign influence — and influence from interference. Clear all eight to log the mission.</p>
+        <p class="mc-desc">Ten real cases. Know your FICA powers, HIC tools and the agents of influence Singapore has actually caught. Clear all ten to log the mission.</p>
         <div class="mc-foot">
           <span class="mc-tier"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></span>
         </div>
@@ -1150,7 +1160,7 @@
       <span class="o">100% TO CLEAR</span>
     </div>
     <h2 class="game-h">Spot the <em>interference.</em></h2>
-    <p class="game-sub" id="g1-intro">Three categories. <b>Normal activity</b> is open and everyday. <b>Foreign influence</b> is an open, attributable attempt to shape views. <b>Foreign interference</b> is covert, deceptive or coercive. Classify all eight — get every one right to clear.</p>
+    <p class="game-sub" id="g1-intro">Ten scenarios drawn from real cases and legislation — FICA, the ISA, and the agents of influence Singapore has actually caught. Read each one, then answer. Get every one right to clear.</p>
     <div class="game-progress" id="g1-progress"></div>
     <div id="g1-play"></div>
     <div id="g1-end" style="display:none"></div>
@@ -1997,20 +2007,142 @@ document.addEventListener('keydown', e => {
 // ============================================================
 // GAME 1 · FOREIGN INTERFERENCE MCQ  (ne-1, 100% to clear)
 // ============================================================
-const G1_OPTS = [
-  { b:'Normal activity',      s:'Legitimate, open, everyday.' },
-  { b:'Foreign influence',    s:'Open, attributable attempt to shape views.' },
-  { b:'Foreign interference', s:'Covert, deceptive or coercive conduct.' },
-];
 const G1_Q = [
-  { s:'A foreign embassy hosts a National Day reception and openly invites local officials and business leaders.', a:0, why:'Open, attributable diplomacy. Building ties in plain sight, with nothing hidden, is normal statecraft.' },
-  { s:'Anonymous social-media accounts, later traced to a foreign source, flood local forums with inflammatory posts about a sensitive racial issue just before an election.', a:2, why:'Covert, deceptive and built to divide society and sway a vote — the hallmarks of hostile interference.' },
-  { s:'A foreign government’s spokesperson criticises a Singapore policy in an on-the-record press statement.', a:1, why:'Foreign and meant to shape opinion, but open and attributable — that’s influence, not the covert conduct that defines interference.' },
-  { s:'A foreign newspaper runs a clearly-bylined investigative report critical of a local company.', a:0, why:'Legitimate journalism. A free press scrutinising companies in the open is normal activity.' },
-  { s:'An unbranded website secretly pays local influencers to push a foreign state’s talking points, hiding who funds them.', a:2, why:'Concealed funding and undisclosed sponsorship to manipulate opinion for a foreign principal — covert and deceptive: interference.' },
-  { s:'A foreign university announces a public, transparent scholarship-exchange programme open to local students.', a:0, why:'Open educational exchange with full disclosure. Normal cross-border activity.' },
-  { s:'A foreign principal covertly funnels money to a local political association through middlemen to shift its positions.', a:2, why:'Hidden political funding routed through cut-outs to sway domestic politics — exactly what FICA targets as interference.' },
-  { s:'A foreign think-tank publishes a clearly-branded op-ed urging Singapore to change a trade stance.', a:1, why:'Attributable advocacy from a named body. It seeks to influence, but openly — foreign influence, not interference.' },
+  {
+    title: 'Dormant Accounts',
+    s: `Over two weeks, ISD analysts flag a cluster of about 40 X (Twitter) and Facebook accounts — most created five or more years ago and inactive since — that begin posting near-identical content within minutes of each other, criticising Singapore's position on a live bilateral dispute with a foreign power. The accounts have no prior history of posting political content. This pattern echoes what MHA has publicly described happening during Singapore's bilateral tensions in 2016–2017, and again in 2018.`,
+    q: `Under the Foreign Interference (Countermeasures) Act 2021 (FICA), what is the Minister for Home Affairs' first-line power to identify whether these accounts are in fact part of a foreign-directed hostile information campaign (HIC), before any content is restricted?`,
+    opts: ['Account Restriction Direction', 'Technical Assistance Direction', 'Disabling Direction', 'Access Blocking Direction'],
+    a: 1,
+    why: `FICA's HIC provisions give the MHA a Technical Assistance Direction to compel disclosure of information needed to identify the source of suspected HIC activity — the investigative step that precedes content-restricting powers such as Account Restriction, Disabling or Access Blocking Directions.`,
+    link: 'https://www.mha.gov.sg/media-room/newsroom/hic-provisions-of-the-foreign-interference-countermeasures-act-to-take-effect-from-7-july-2022/',
+  },
+  {
+    title: `The youth wing's windfall`,
+    s: `A registered political party's youth wing receives an online crowdfunding transfer of S$12,000, credited from an account it cannot identify — the "donor" field simply shows a nickname, with no contact details given. The party is a declared Politically Significant Person (PSP) under FICA.`,
+    q: `Why does FICA's local-proxies regime bar a Politically Significant Person (PSP) from accepting an anonymous donation of S$5,000 or more, even when nobody can point to any foreign source for the money?`,
+    opts: [
+      'Anonymity makes it impossible to verify whether the money traces back to a foreign principal, so the rule closes the loophole before foreign origin has to be proven',
+      'Anonymous donations attract a higher tax rate under the Income Tax Act, so the ban is really a revenue-protection measure',
+      'The rule exists to cap the total amount any PSP may raise in a calendar year, regardless of source',
+      'Anonymous donations were already illegal under Singapore\'s general donation rules, so FICA is simply restating existing law',
+    ],
+    a: 0,
+    why: `Anonymity makes it impossible to verify whether the money traces back to a foreign principal, so the rule closes the loophole before foreign origin has to be proven. FICA's local-proxies regime runs on transparency: PSPs must disclose donors and foreign affiliations precisely so that foreign funding can be traced. An anonymous donation defeats that mechanism outright, which is why FICA bars anonymous donations of S$5,000 or more to a PSP regardless of whether foreign origin is ever proven — on top of separately barring donations confirmed to come from foreign donors, and requiring disclosure of donations above S$10,000 from permitted sources — and an anonymous S$12,000 crowdfunded transfer, as in the scenario, would trip this rule immediately, without anyone needing to identify the sender.`,
+    link: 'https://www.mha.gov.sg/media-room/newsroom/provisions-in-the-foreign-interference-countermeasures-act-for-countering-foreign-interference-via-local-proxies/',
+  },
+  {
+    title: 'The visiting professor',
+    s: `A senior professor at a public policy school has, over several years, cultivated close relationships with Singaporean officials and opinion-shapers, consistently steering conversations toward a more accommodating stance on a specific foreign power — while privately reporting back to intelligence contacts from that power. When this is uncovered, the professor insists his views were entirely his own academic opinion.`,
+    q: `Based on the real case MHA and ISD have publicly cited as an example of an "agent of influence," what action did Singapore actually take against this individual?`,
+    opts: [
+      'He was charged and convicted under the Foreign Interference (Countermeasures) Act',
+      'He was detained without trial under the Internal Security Act',
+      'His permanent residency was cancelled and he was permanently barred from re-entering Singapore',
+      'He was fined under the Official Secrets Act and required to leave voluntarily',
+    ],
+    a: 2,
+    why: `This is the real 2017 case of Professor Huang Jing, which MHA and ISD cite as an example of an "agent of influence." He was not detained under the ISA (that happened to Dickson Yeo, a different case) and FICA did not yet exist in 2017.`,
+    link: 'https://www.isd.gov.sg/our-functions/guarding-against-foreign-espionage-interference-and-influence/',
+  },
+  {
+    title: 'The consultancy front',
+    s: `A Singaporean political consultant sets up a small research-and-headhunting firm. Over several years he uses it — and his professional network — to identify and approach people with access to sensitive government and policy information, including US military and government personnel, compiling profiles and reports that he passes to handlers from a foreign intelligence service in exchange for payment. He also tries, unsuccessfully, to secure a job within the Singapore government to further the operation.`,
+    q: `This closely mirrors the real, publicly confirmed case of Dickson Yeo. What legal action did Singapore's Internal Security Department (ISD) take against him after he returned from serving a US federal sentence?`,
+    opts: [
+      'He was charged in a Singapore court under the Foreign Interference (Countermeasures) Act',
+      'An Order of Detention was issued against him under the Internal Security Act',
+      'He was placed under a Restriction Order but not detained',
+      'No action was taken, since his offences occurred entirely outside Singapore',
+    ],
+    a: 1,
+    why: `Dickson Yeo was placed under an ISA Order of Detention on 29 January 2021, for acting as a paid agent of a foreign state — not charged under FICA, which targets HICs and local proxies rather than paid espionage-for-hire.`,
+    link: 'https://www.isd.gov.sg/our-functions/guarding-against-foreign-espionage-interference-and-influence/',
+  },
+  {
+    title: 'The impressive job offer',
+    s: `A LinkedIn message arrives for a mid-career security analyst from a think tank claiming to be Singapore-based, inviting her to become a paid "senior fellow" producing "analytical briefs" on regional security matters. On closer inspection, the think tank's staff photos show telltale signs of AI generation, its listed Singapore office cannot be found, and it has no local business registration — a pattern consistent with fake "Singapore-based" research outfits publicly reported to have approached security analysts and intelligence-community contacts across the region.`,
+    q: `What is the right response to an approach like this — one that can't yet be proven fraudulent, but doesn't add up?`,
+    opts: [
+      'Nothing yet — flagging it would be premature until the think tank is confirmed to be a foreign intelligence front',
+      'Independently verify the entity\'s legitimacy (registration, office, real staff) and report the approach to the authorities, rather than continuing to engage',
+      'Engage cautiously and share only unclassified, publicly available material, since open-source information carries no real risk',
+      'Report it only if she currently holds a public-sector security clearance — the guidance is aimed at serving officers, not analysts generally',
+    ],
+    a: 1,
+    why: `Serving and former public officers must stay vigilant, verify an entity's legitimacy, and report suspicious approaches to the authorities — "nothing yet" and "just share what's public" both leave the analyst exposed to elicitation regardless of whether the front is ever proven fraudulent.\n\nSeparately, MHA has multiple legislative levers: the Online Criminal Harms Act (OCHA) allows authorities to deal more effectively with online activities that are criminal in nature, including offences that affect national security, national harmony, and individual safety. MHA has issued an Access Blocking Direction under OCHA against the Global Asia Think Tank website following an assessment arising from a police report lodged by the Ministry of Foreign Affairs. The Internal Security Act also allows action against activities prejudicial to Singapore's national security and/or interests. In addition, the Official Secrets Act and the Statutory Bodies and Government Companies (Protection of Secrecy) Act criminalise the unauthorised disclosure of official documents and information by former and existing public officers.`,
+    link: 'https://www.mha.gov.sg/media-room/newsroom/safeguards-to-prevent-foreign-actors-from-using-singapore-based-institutions-and-recruiting-former-public-officers-for-covert-intelligence-gathering/',
+  },
+  {
+    title: 'The lookalike news site',
+    s: `A website with a name designed to sound like a legitimate Singapore outlet begins publishing AI-generated articles, including a false claim that Singapore hosts a foreign biological-warfare research facility. It's one of ten similar sites MHA identifies as set up by foreign actors, several linked to global networks of inauthentic news websites previously documented by cybersecurity researchers.`,
+    q: `What action did the Singapore government actually take against these ten websites, and under what authority?`,
+    opts: [
+      `MHA issued Disabling Directions under FICA's hostile information campaign (HIC) provisions`,
+      'The Infocomm Media Development Authority (IMDA) directed Internet Access Service Providers to block them under the Broadcasting Act 1994',
+      'The sites were designated Proscribed Online Locations and de-monetised under FICA',
+      'The Cyber Security Agency issued takedown orders under the Cybersecurity Act',
+    ],
+    a: 1,
+    why: `The Infocomm Media Development Authority (IMDA) directed ISPs to block them under the Broadcasting Act 1994. MHA's press release states IMDA, not the Minister for Home Affairs under FICA, issued the blocking directions — a reminder that not every information-manipulation response runs through FICA's HIC toolkit.`,
+    link: 'https://www.mha.gov.sg/media-room/newsroom/ten-inauthentic-websites-blocked-for-potential-threat-of-being-used-to-mount-hostile-information-campaigns-against-singapore/',
+  },
+  {
+    title: 'The generous diplomat',
+    s: `In the 1980s, a foreign embassy official in Singapore cultivates relationships with several local lawyers active in opposition politics, offering them funding for their causes and, for at least one, a promise of refuge abroad if things go wrong domestically. MHA's own account of Singapore's history with foreign interference cites this episode as an early example of a specific tactic.`,
+    q: `Which tactic does MHA's official account identify this 1980s episode as an early example of?`,
+    opts: [
+      'A hostile information campaign (HIC) using coordinated inauthentic accounts',
+      'A foreign power cultivating and directing local proxies / agents of influence through funding and personal relationships',
+      'Espionage recruitment through purported employment offers',
+      'Foreign funding of a registered political party exceeding disclosure thresholds',
+    ],
+    a: 1,
+    why: `A foreign power cultivating and directing local proxies / agents of influence through funding and personal relationships. This is drawn from the real 1980s case MHA has cited in Parliament: First Secretary of the US Embassy Hank Hendrickson cultivated a group of Singaporean lawyers to join opposition politics and contest the 1988 General Election, offering them funding, with one — Francis Seow — also offered refuge in the US. It's an early, pre-internet example of proxy cultivation, not an HIC or an employment-based recruitment.`,
+    link: 'https://www.mha.gov.sg/media-room/newsroom/second-reading-of-foreign-interference-countermeasures-bill-speech-by-mr-desmond-tan/',
+  },
+  {
+    title: `The 'local' commentary site`,
+    s: `An online publication presenting itself as an independent Singaporean voice is, in fact, substantially funded by foreign foundations and grants, and uses foreign writers to publish articles touching sensitive local social and political fault lines — a pattern the Minister for Home Affairs has publicly cited in explaining why FICA's local-proxies regime was needed, warning that "foreign writers masquerade as local writers."`,
+    q: `Under FICA's local-proxies framework, what mechanism allows the government to impose disclosure and funding-related obligations on an organisation like this, even though it isn't a political party?`,
+    opts: [
+      'It automatically becomes subject to the Newspaper and Printing Presses Act',
+      'The competent authority may designate it a Politically Significant Person (PSP) if its activities target political ends in Singapore',
+      'It is automatically classified as a Declared Online Location under the HIC provisions',
+      'FICA only applies to registered political parties, so no action can be taken',
+    ],
+    a: 1,
+    why: `FICA's local-proxies regime is not limited to political parties: organisations such as Think Centre and MARUAH have been designated PSPs on this basis, subjecting them to donation and disclosure obligations. Minister Shanmugam has separately warned of "foreign writers masquerading as local writers" as the harm this mechanism targets.`,
+    link: 'https://www.mha.gov.sg/media-room/newsroom/provisions-in-the-foreign-interference-countermeasures-act-for-countering-foreign-interference-via-local-proxies/',
+  },
+  {
+    title: `'Only five of fourteen'`,
+    s: `A well-known Singapore-focused commentary site presents itself as an independent local voice. Minister Shanmugam has pointed out that of the site's 14 admins, only five are actually based in Singapore — the rest split between Malaysia and Indonesia — and that it employs foreign writers to produce near-exclusively negative, sometimes inflammatory, articles on Singapore's social and political fault lines. When it was later required, as a registered internet content provider, to declare its funding sources for the year, the site's operators publicly refused.`,
+    q: `What actually happened to this site as a result of refusing to declare its funding — and under which regime, distinct from FICA?`,
+    opts: [
+      'FICA — it was designated a Politically Significant Person and barred from receiving foreign donations',
+      'FICA — its website was designated a Proscribed Online Location and de-monetised',
+      `The Broadcasting Act's Class Licence regime — IMDA suspended, then cancelled, its class licence to operate`,
+      'Nothing — funding declarations are voluntary best practice for local news sites, not a licensing condition',
+    ],
+    a: 2,
+    why: `This draws on the real case of The Online Citizen (TOC), which Minister Shanmugam named directly in his RSIS speech — noting only 5 of its 14 admins were based in Singapore, the rest in Malaysia and Indonesia, and that it employed foreign writers to produce near-exclusively negative articles on Singapore's social and political matters. Registered internet content providers discussing Singapore politics must, under the Broadcasting Act and its Class Licence Notification — a pre-existing regime, separate from FICA — declare their funding sources annually, precisely to guard against foreign control or influence. When TOC repeatedly refused to submit its 2020 declaration, IMDA suspended its class licence on 14 September 2021 and cancelled it on 15 October 2021 after the final deadline passed without compliance.`,
+    link: 'https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2021/cancellation-of-the-online-citizen-pte-ltd-class-licence',
+  },
+  {
+    title: 'Something feels off',
+    s: `An officer is contacted out of the blue by someone claiming to represent an overseas "strategic studies" body, who asks detailed, oddly specific questions about internal processes — nothing classified, but more granular than a stranger should reasonably need. Nothing about the approach is violent or urgent, and there's no obvious crime underway, so the officer isn't sure it's worth reporting.`,
+    q: `How does ISD itself frame the core difference between foreign interference/espionage threats and terrorism, in explaining why such "nothing obviously wrong yet" approaches should still be reported?`,
+    opts: [
+      'Foreign interference and espionage are always financially motivated, whereas terrorism is always ideologically motivated',
+      'Terrorism is a domestic threat while foreign interference is exclusively a threat to overseas Singaporean assets',
+      `Unlike visible terrorist incidents, foreign espionage, interference and influence operations are deliberately covert, aiming to shape a target country's policies and behaviour without detection`,
+      'ISD only investigates foreign interference once a specific criminal offence under FICA has clearly been committed',
+    ],
+    a: 2,
+    why: `Unlike visible terrorist incidents, foreign espionage, interference and influence operations are deliberately covert, aiming to shape a target country's policies and behaviour without detection. ISD explicitly draws this contrast to explain why FI threats demand proactive vigilance and reporting, even absent an obvious, clear-cut offence.`,
+    link: 'https://www.isd.gov.sg/our-functions/guarding-against-foreign-espionage-interference-and-influence/',
+  },
 ];
 
 let g1i = 0, g1correct = 0, g1answered = false;
@@ -2041,13 +2173,18 @@ function g1RenderQuestion(){
 
   const tag = document.createElement('div');
   tag.className = 'scene-objective';
-  tag.innerHTML = 'Scenario <b>' + (g1i + 1) + ' / ' + G1_Q.length + '</b> — classify it';
+  tag.innerHTML = 'Scenario <b>' + (g1i + 1) + ' / ' + G1_Q.length + '</b> — ' + q.title;
   play.appendChild(tag);
 
   const sc = document.createElement('p');
   sc.className = 'mcq-scenario';
   sc.textContent = q.s;
   play.appendChild(sc);
+
+  const qq = document.createElement('p');
+  qq.className = 'mcq-question';
+  qq.textContent = q.q;
+  play.appendChild(qq);
 
   const opts = document.createElement('div');
   opts.className = 'mcq-options';
@@ -2065,26 +2202,24 @@ function g1RenderQuestion(){
     else { g1RenderProgress(); g1RenderQuestion(); }
   });
 
-  G1_OPTS.forEach((o, idx) => {
+  q.opts.forEach((optText, idx) => {
     const btn = document.createElement('button');
     btn.className = 'mcq-opt';
-    const b = document.createElement('b'); b.textContent = o.b;
-    const sm = document.createElement('small'); sm.textContent = o.s;
-    btn.appendChild(b); btn.appendChild(sm);
+    const b = document.createElement('b'); b.textContent = optText;
+    btn.appendChild(b);
     btn.addEventListener('click', () => {
       if (g1answered || btn.classList.contains('wrong')) return;
       if (idx === q.a) {
         g1answered = true;
         opts.querySelectorAll('.mcq-opt').forEach(bb => { bb.disabled = true; });
         btn.classList.add('correct');
-        explain.textContent = q.why;
-        explain.classList.add('show');
+        g1RenderExplain(explain, q);
         nextBtn.style.visibility = 'visible';        // advance only when correct
       } else {
         // wrong — flag it, nudge, and let them try another answer
         btn.classList.add('wrong');
         btn.disabled = true;
-        explain.textContent = 'Not quite. Ask: is it everyday and open (normal), open but foreign-driven (influence), or hidden, deceptive or coercive (interference)? Try again.';
+        explain.textContent = 'Not quite — reconsider the scenario and try another answer.';
         explain.classList.add('show');
       }
     });
@@ -2097,14 +2232,29 @@ function g1RenderQuestion(){
   play.appendChild(foot);
 }
 
+function g1RenderExplain(explain, q){
+  explain.innerHTML = '';
+  const p = document.createElement('p');
+  p.textContent = q.why;
+  explain.appendChild(p);
+  if (q.link) {
+    const a = document.createElement('a');
+    a.href = q.link; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.className = 'mcq-explain-link';
+    a.textContent = 'Read more →';
+    explain.appendChild(a);
+  }
+  explain.classList.add('show');
+}
+
 async function g1Finish(){
   document.getElementById('g1-intro').style.display = 'none';
   document.getElementById('g1-play').style.display = 'none';
   g1i = G1_Q.length; g1RenderProgress();
   await showNEResult({
     endId: 'g1-end', modalId: 'g1-modal', cid: 'ne-1',
-    title: 'All eight, correct',
-    successMsg: 'You can reliably tell normal engagement, open influence and covert interference apart. Mission logged.',
+    title: 'All ten, correct',
+    successMsg: 'You know your FICA powers, HIC tools, and the agents of influence Singapore has actually caught. Mission logged.',
   });
 }
 
