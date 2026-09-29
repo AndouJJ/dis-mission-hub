@@ -2699,11 +2699,13 @@ function g4RenderChapter2Word(){
     : 'Next transmission intercepted.';
   play.appendChild(log);
 
-  const cipher = document.createElement('p');
-  cipher.className = 'mcq-scenario';
-  cipher.style.letterSpacing = '0.12em';
-  cipher.textContent = morseEncode(word);
-  play.appendChild(cipher);
+  const playRow = document.createElement('div');
+  playRow.style.display = 'flex'; playRow.style.gap = '8px'; playRow.style.flexWrap = 'wrap'; playRow.style.margin = '4px 0 18px';
+  const playBtn = document.createElement('button');
+  playBtn.type = 'button'; playBtn.className = 'game-btn ghost'; playBtn.textContent = '▶ Play Morse';
+  playBtn.addEventListener('click', () => playMorseAudio(word, 10));
+  playRow.appendChild(playBtn);
+  play.appendChild(playRow);
 
   const form = document.createElement('form');
   form.className = 'gp-form';
@@ -2905,6 +2907,37 @@ const MORSE_TABLE = {
 };
 function morseEncode(str){
   return str.toUpperCase().split('').map(ch => MORSE_TABLE[ch] || '').filter(Boolean).join('  ');
+}
+
+let g4AudioCtx = null;
+function playMorseAudio(word, wpm){
+  wpm = wpm || 10;
+  const dit = 1.2 / wpm; // seconds — PARIS timing (dit = 1200/WPM ms)
+  try {
+    if (!g4AudioCtx) g4AudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = g4AudioCtx;
+    if (ctx.state === 'suspended') ctx.resume();
+    const letters = word.toUpperCase().split('').map(ch => MORSE_TABLE[ch]).filter(Boolean);
+    let t = ctx.currentTime + 0.05;
+    letters.forEach((letter, li) => {
+      for (let si = 0; si < letter.length; si++){
+        const dur = letter[si] === '.' ? dit : dit * 3;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.value = 700;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.3, t + 0.005);
+        gain.gain.setValueAtTime(0.3, t + dur - 0.005);
+        gain.gain.linearRampToValueAtTime(0, t + dur);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(t); osc.stop(t + dur);
+        t += dur;
+        if (si < letter.length - 1) t += dit;           // intra-character gap
+      }
+      if (li < letters.length - 1) t += dit * 3;         // inter-character gap
+    });
+  } catch(_) {}
 }
 
 // ============================================================
