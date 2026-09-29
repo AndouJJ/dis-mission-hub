@@ -2642,6 +2642,19 @@ function g4RenderChapter1(){
   tag.innerHTML = 'Chapter <b>1 / 4</b> — Raise your Vigilance!';
   play.appendChild(tag);
 
+  const img = document.createElement('img');
+  img.src = 'assets/hacker.jpg';
+  img.alt = 'Attacker at a terminal';
+  img.style.display = 'block'; img.style.width = '100%'; img.style.maxHeight = '220px'; img.style.objectFit = 'cover';
+  img.style.margin = '0 0 14px'; img.style.border = '1px solid var(--rule-2)';
+  const imgFallback = document.createElement('div');
+  imgFallback.className = 'scene-log';
+  imgFallback.style.display = 'none';
+  imgFallback.textContent = 'Photo not found — add assets/hacker.jpg to the repo.';
+  img.addEventListener('error', () => { img.style.display = 'none'; imgFallback.style.display = ''; });
+  play.appendChild(img);
+  play.appendChild(imgFallback);
+
   const log = document.createElement('div');
   log.className = 'scene-log';
   log.innerHTML = 'Guess the password.<br>Name: <b>Alfred Lee</b> &middot; Birthday: <b>12/06/1996</b> &middot; Hint: <b>Starts with P</b>';
