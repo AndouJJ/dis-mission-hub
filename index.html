@@ -1013,7 +1013,7 @@
           <span class="mc-status live">Live</span>
         </div>
         <h3 class="mc-title">Preserving Racial <em>and Religious Peace.</em></h3>
-        <p class="mc-desc">How well do you know all of Singapore's cultures? Crossword puzzle time! Solve the puzzle on the different communities in Singapore and play your part in preserving racial and religious harmony.</p>
+        <p class="mc-desc">Solve the puzzle on the different communities in Singapore and play your part in preserving racial and religious harmony.</p>
         <div class="mc-foot">
           <span class="mc-tier"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></span>
         </div>
@@ -1144,11 +1144,11 @@
   <div class="game-card">
     <button class="game-close" data-close-game aria-label="Close">✕</button>
     <div class="game-meta">
-      <span>D-001 · FOREIGN INTERFERENCE</span>
+      <span>DIS04-002 · FOREIGN INTERFERENCE</span>
       <span class="o">100% TO CLEAR</span>
     </div>
     <h2 class="game-h">Spot the <em>interference.</em></h2>
-    <p class="game-sub" id="g1-intro">Ten scenarios drawn from real cases and legislation — FICA, the ISA, and the agents of influence Singapore has actually caught. Read each one, then answer. Get every one right to clear.</p>
+    <p class="game-sub" id="g1-intro">Eight scenarios drawn from real cases and legislation — FICA, the ISA, and the agents of influence Singapore has actually caught. Read each one, then answer. Get every one right to clear.</p>
     <div class="game-progress" id="g1-progress"></div>
     <div id="g1-play"></div>
     <div id="g1-end" style="display:none"></div>
@@ -1160,7 +1160,7 @@
   <div class="game-card">
     <button class="game-close" data-close-game aria-label="Close">✕</button>
     <div class="game-meta">
-      <span>D-002 · SGSECURE</span>
+      <span>DIS04-003 · CONDEMNATION OF TERRORISM</span>
       <span class="o">100% TO CLEAR</span>
     </div>
     <h2 class="game-h">The <em>quiet</em> signs.</h2>
@@ -1185,11 +1185,10 @@
   <div class="game-card">
     <button class="game-close" data-close-game aria-label="Close">✕</button>
     <div class="game-meta">
-      <span>D-003 · PRESERVING RACIAL AND RELIGIOUS PEACE</span>
+      <span>DIS04-001 · PRESERVING RACIAL AND RELIGIOUS PEACE</span>
       <span class="o">13 CLUES · SOLVE TO CLEAR</span>
     </div>
     <h2 class="game-h">Preserving Racial <em>and Religious Peace.</em></h2>
-    <p class="game-sub">Answer every clue from Singapore's shared culture. Get them all right, and one word runs down the middle of them all.</p>
     <div id="g3-play">
       <div class="cw-grid" id="g3-grid"></div>
       <div class="cw-clues" id="g3-clues"></div>
@@ -1203,7 +1202,7 @@
   <div class="game-card">
     <button class="game-close" data-close-game aria-label="Close">✕</button>
     <div class="game-meta">
-      <span>D-004 · THE PROCESS</span>
+      <span>DIS04-007 · OWN THE PROCESS OR THE PROCESS OWNS YOU</span>
       <span class="o">4 CHAPTERS · IN ORDER</span>
     </div>
     <h2 class="game-h">Own the process, <em>or it owns you.</em></h2>
@@ -1219,7 +1218,7 @@
   <div class="game-card">
     <button class="game-close" data-close-game aria-label="Close">✕</button>
     <div class="game-meta">
-      <span>D-005 · ECHOES OF CIPHER</span>
+      <span>DIS04-004 · ECHOES OF CIPHER</span>
       <span class="o">1 SIGNAL · DECODE IT</span>
     </div>
     <h2 class="game-h">Echoes of <em>Cipher.</em></h2>
@@ -1234,7 +1233,7 @@
   <div class="game-card">
     <button class="game-close" data-close-game aria-label="Close">✕</button>
     <div class="game-meta">
-      <span>D-006 · THE HIDDEN VOW</span>
+      <span>DIS04-005 · THE HIDDEN VOW</span>
       <span class="o">3 KEYS · IN ORDER</span>
     </div>
     <h2 class="game-h">The Hidden <em>Vow.</em></h2>
@@ -1997,15 +1996,6 @@ document.addEventListener('keydown', e => {
 // ============================================================
 const G1_Q = [
   {
-    title: 'Dormant Accounts',
-    s: `Over two weeks, ISD analysts flag a cluster of about 40 X (Twitter) and Facebook accounts — most created five or more years ago and inactive since — that begin posting near-identical content within minutes of each other, criticising Singapore's position on a live bilateral dispute with a foreign power. The accounts have no prior history of posting political content. This pattern echoes what MHA has publicly described happening during Singapore's bilateral tensions in 2016–2017, and again in 2018.`,
-    q: `Under the Foreign Interference (Countermeasures) Act 2021 (FICA), what is the Minister for Home Affairs' first-line power to identify whether these accounts are in fact part of a foreign-directed hostile information campaign (HIC), before any content is restricted?`,
-    opts: ['Account Restriction Direction', 'Technical Assistance Direction', 'Disabling Direction', 'Access Blocking Direction'],
-    a: 1,
-    why: `FICA's HIC provisions give the MHA a Technical Assistance Direction to compel disclosure of information needed to identify the source of suspected HIC activity — the investigative step that precedes content-restricting powers such as Account Restriction, Disabling or Access Blocking Directions.`,
-    link: 'https://www.mha.gov.sg/media-room/newsroom/hic-provisions-of-the-foreign-interference-countermeasures-act-to-take-effect-from-7-july-2022/',
-  },
-  {
     title: `The youth wing's windfall`,
     s: `A registered political party's youth wing receives an online crowdfunding transfer of S$12,000, credited from an account it cannot identify — the "donor" field simply shows a nickname, with no contact details given. The party is a declared Politically Significant Person (PSP) under FICA.`,
     q: `Why does FICA's local-proxies regime bar a Politically Significant Person (PSP) from accepting an anonymous donation of S$5,000 or more, even when nobody can point to any foreign source for the money?`,
@@ -2022,7 +2012,7 @@ const G1_Q = [
   {
     title: 'The visiting professor',
     s: `A senior professor at a public policy school has, over several years, cultivated close relationships with Singaporean officials and opinion-shapers, consistently steering conversations toward a more accommodating stance on a specific foreign power — while privately reporting back to intelligence contacts from that power. When this is uncovered, the professor insists his views were entirely his own academic opinion.`,
-    q: `Based on the real case MHA and ISD have publicly cited as an example of an "agent of influence," what action did Singapore actually take against this individual?`,
+    q: `The above is a real case cited as an example of an "agent of influence". What do you think happened to him?`,
     opts: [
       'He was charged and convicted under the Foreign Interference (Countermeasures) Act',
       'He was detained without trial under the Internal Security Act',
@@ -2035,8 +2025,8 @@ const G1_Q = [
   },
   {
     title: 'The consultancy front',
-    s: `A Singaporean political consultant sets up a small research-and-headhunting firm. Over several years he uses it — and his professional network — to identify and approach people with access to sensitive government and policy information, including US military and government personnel, compiling profiles and reports that he passes to handlers from a foreign intelligence service in exchange for payment. He also tries, unsuccessfully, to secure a job within the Singapore government to further the operation.`,
-    q: `This closely mirrors the real, publicly confirmed case of Dickson Yeo. What legal action did Singapore's Internal Security Department (ISD) take against him after he returned from serving a US federal sentence?`,
+    s: `A Singaporean political consultant uses a small research-and-headhunting firm and his professional network to identify and approach people with access to sensitive government and policy information, including US military and government personnel, compiling profiles and reports that he passes to handlers from a foreign intelligence service in exchange for payment.`,
+    q: `This closely mirrors the real, publicly confirmed case of Dickson Yeo. What do you think happened to him?`,
     opts: [
       'He was charged in a Singapore court under the Foreign Interference (Countermeasures) Act',
       'An Order of Detention was issued against him under the Internal Security Act',
@@ -2049,22 +2039,22 @@ const G1_Q = [
   },
   {
     title: 'The impressive job offer',
-    s: `A LinkedIn message arrives for a mid-career security analyst from a think tank claiming to be Singapore-based, inviting her to become a paid "senior fellow" producing "analytical briefs" on regional security matters. On closer inspection, the think tank's staff photos show telltale signs of AI generation, its listed Singapore office cannot be found, and it has no local business registration — a pattern consistent with fake "Singapore-based" research outfits publicly reported to have approached security analysts and intelligence-community contacts across the region.`,
+    s: `You receive a LinkedIn message claiming to be from a mid-career security analyst at a Singapore-based think tank, inviting you to become a paid "senior fellow" producing "analytical briefs" on regional security matters. The profile shows telltale signs of AI generation, and none of the information can be verified.`,
     q: `What is the right response to an approach like this — one that can't yet be proven fraudulent, but doesn't add up?`,
     opts: [
       'Nothing yet — flagging it would be premature until the think tank is confirmed to be a foreign intelligence front',
       'Independently verify the entity\'s legitimacy (registration, office, real staff) and report the approach to the authorities, rather than continuing to engage',
       'Engage cautiously and share only unclassified, publicly available material, since open-source information carries no real risk',
-      'Report it only if she currently holds a public-sector security clearance — the guidance is aimed at serving officers, not analysts generally',
+      'Report it only if you currently hold a public-sector security clearance — the guidance is aimed at serving officers, not analysts generally',
     ],
     a: 1,
-    why: `Serving and former public officers must stay vigilant, verify an entity's legitimacy, and report suspicious approaches to the authorities — "nothing yet" and "just share what's public" both leave the analyst exposed to elicitation regardless of whether the front is ever proven fraudulent.\n\nSeparately, MHA has multiple legislative levers: the Online Criminal Harms Act (OCHA) allows authorities to deal more effectively with online activities that are criminal in nature, including offences that affect national security, national harmony, and individual safety. MHA has issued an Access Blocking Direction under OCHA against the Global Asia Think Tank website following an assessment arising from a police report lodged by the Ministry of Foreign Affairs. The Internal Security Act also allows action against activities prejudicial to Singapore's national security and/or interests. In addition, the Official Secrets Act and the Statutory Bodies and Government Companies (Protection of Secrecy) Act criminalise the unauthorised disclosure of official documents and information by former and existing public officers.`,
+    why: `Serving and former public officers must stay vigilant, verify an entity's legitimacy, and report suspicious approaches to the authorities — "nothing yet" and "just share what's public" both leave you exposed to elicitation regardless of whether the front is ever proven fraudulent.\n\nSeparately, MHA has multiple legislative levers: the Online Criminal Harms Act (OCHA) allows authorities to deal more effectively with online activities that are criminal in nature, including offences that affect national security, national harmony, and individual safety. MHA has issued an Access Blocking Direction under OCHA against the Global Asia Think Tank website following an assessment arising from a police report lodged by the Ministry of Foreign Affairs. The Internal Security Act also allows action against activities prejudicial to Singapore's national security and/or interests. In addition, the Official Secrets Act and the Statutory Bodies and Government Companies (Protection of Secrecy) Act criminalise the unauthorised disclosure of official documents and information by former and existing public officers.`,
     link: 'https://www.mha.gov.sg/media-room/newsroom/safeguards-to-prevent-foreign-actors-from-using-singapore-based-institutions-and-recruiting-former-public-officers-for-covert-intelligence-gathering/',
   },
   {
     title: 'The lookalike news site',
     s: `A website with a name designed to sound like a legitimate Singapore outlet begins publishing AI-generated articles, including a false claim that Singapore hosts a foreign biological-warfare research facility. It's one of ten similar sites MHA identifies as set up by foreign actors, several linked to global networks of inauthentic news websites previously documented by cybersecurity researchers.`,
-    q: `What action did the Singapore government actually take against these ten websites, and under what authority?`,
+    q: `What action can IMDA take against these types of websites?`,
     opts: [
       `MHA issued Disabling Directions under FICA's hostile information campaign (HIC) provisions`,
       'The Infocomm Media Development Authority (IMDA) directed Internet Access Service Providers to block them under the Broadcasting Act 1994',
@@ -2088,20 +2078,6 @@ const G1_Q = [
     a: 1,
     why: `A foreign power cultivating and directing local proxies / agents of influence through funding and personal relationships. This is drawn from the real 1980s case MHA has cited in Parliament: First Secretary of the US Embassy Hank Hendrickson cultivated a group of Singaporean lawyers to join opposition politics and contest the 1988 General Election, offering them funding, with one — Francis Seow — also offered refuge in the US. It's an early, pre-internet example of proxy cultivation, not an HIC or an employment-based recruitment.`,
     link: 'https://www.mha.gov.sg/media-room/newsroom/second-reading-of-foreign-interference-countermeasures-bill-speech-by-mr-desmond-tan/',
-  },
-  {
-    title: `The 'local' commentary site`,
-    s: `An online publication presenting itself as an independent Singaporean voice is, in fact, substantially funded by foreign foundations and grants, and uses foreign writers to publish articles touching sensitive local social and political fault lines — a pattern the Minister for Home Affairs has publicly cited in explaining why FICA's local-proxies regime was needed, warning that "foreign writers masquerade as local writers."`,
-    q: `Under FICA's local-proxies framework, what mechanism allows the government to impose disclosure and funding-related obligations on an organisation like this, even though it isn't a political party?`,
-    opts: [
-      'It automatically becomes subject to the Newspaper and Printing Presses Act',
-      'The competent authority may designate it a Politically Significant Person (PSP) if its activities target political ends in Singapore',
-      'It is automatically classified as a Declared Online Location under the HIC provisions',
-      'FICA only applies to registered political parties, so no action can be taken',
-    ],
-    a: 1,
-    why: `FICA's local-proxies regime is not limited to political parties: organisations such as Think Centre and MARUAH have been designated PSPs on this basis, subjecting them to donation and disclosure obligations. Minister Shanmugam has separately warned of "foreign writers masquerading as local writers" as the harm this mechanism targets.`,
-    link: 'https://www.mha.gov.sg/media-room/newsroom/provisions-in-the-foreign-interference-countermeasures-act-for-countering-foreign-interference-via-local-proxies/',
   },
   {
     title: `'Only five of fourteen'`,
@@ -2241,7 +2217,7 @@ async function g1Finish(){
   g1i = G1_Q.length; g1RenderProgress();
   await showNEResult({
     endId: 'g1-end', modalId: 'g1-modal', cid: 'ne-1',
-    title: 'All ten, correct',
+    title: 'All eight, correct',
     successMsg: 'You know your FICA powers, HIC tools, and the agents of influence Singapore has actually caught. Mission logged.',
   });
 }
@@ -2410,10 +2386,10 @@ document.getElementById('g2-retry').addEventListener('click', () => g2ShowScene(
 // ============================================================
 const G3_COLS = 12;
 const G3_WORDS = [
-  { pad: 1, answer: 'MURUKKU',   clue: 'A savory, crunchy Indian snack made from rice and urad dal flour, shaped into spirals and deep-fried.' },
+  { pad: 1, answer: 'MURUKKU',   clue: 'A savoury, crunchy Indian snack made from rice and urad dal flour, shaped into spirals and deep-fried.' },
   { pad: 2, answer: 'SAMBAL',    clue: 'A spicy chilli paste or sauce central to Malay and Peranakan cooking, frequently enjoyed by all local ethnicities.' },
   { pad: 3, answer: 'CHINGAY',   clue: 'The massive annual street parade that originated as a Chinese Lunar New Year procession before evolving into a national multicultural celebration.' },
-  { pad: 2, answer: 'RIOTS',     clue: 'Racial Harmony Day on July 21st commemorates the tragic 1964 race _____ to remind citizens of the vital importance of social cohesion.' },
+  { pad: 2, answer: 'RIOTS',     clue: 'Racial Harmony Day on July 21st commemorates the tragic 1964 communal _____ to remind citizens of the vital importance of social cohesion.' },
   { pad: 0, answer: 'PERANAKAN', clue: 'An ethnic group of mixed Malay and Chinese heritage whose unique clothing style includes the iconic Sarong Kebaya.' },
   { pad: 3, answer: 'LION DANCE',clue: 'A traditional, high-energy performance featuring acrobats mimicking a majestic animal, accompanied by loud drums and cymbals to bring good luck during Chinese New Year or shop grand openings.' },
   { pad: 2, answer: 'CHEONGSAM', clue: 'The body-hugging traditional Chinese dress with a high collar, also known in Mandarin as qipao.' },
@@ -2421,8 +2397,8 @@ const G3_WORDS = [
   { pad: 1, answer: 'SARONG',    clue: 'A large tube or length of fabric worn wrapped around the waist, common in Malay, Indian, and Peranakan traditional wear.' },
   { pad: 1, answer: 'KAMPONG',   clue: 'The Malay word for village, often used today to describe a nostalgic, tight-knit community spirit of mutual help and cohesion.' },
   { pad: 2, answer: 'ROTI PRATA',clue: 'A crispy, South Indian flatbread usually served with dhal or curry, a beloved breakfast staple for all Singaporeans.' },
-  { pad: 3, answer: 'NYONYAS',   clue: 'The specific term used to refer to female descendants within the Straits-born Peranakan community.' },
-  { pad: 0, answer: 'BRIYANI',   clue: 'A fragrant mixed rice dish made with spices, rice and meat, deeply popular across all ethnic communities in Singapore.' },
+  { pad: 3, answer: 'NYONYA',    clue: 'The specific term used to refer to female descendants within the Straits-born Peranakan community.' },
+  { pad: 0, answer: 'BRIYANI',   clue: 'A fragrant Indian mixed rice dish made with spices, rice and meat, deeply popular across all ethnic communities in Singapore.' },
 ];
 const G3_SPINE_COL = 3;
 let g3solvedSet = new Set();
@@ -2540,7 +2516,7 @@ async function g3Win(){
 // ============================================================
 const G4_C1_ANSWER = 'P@ssw0rd12061996';
 
-const G4_C2_WORDS = ['PH1SH1NG', 'M4LWAR3', 'R4NS0MWAR3'];
+const G4_C2_WORDS = ['PHISHING', 'MALWARE', 'RANSOMWARE'];
 let g4c2i = 0;
 
 const G4_C3_DISCLAIMER = 'This code is intended for entertainment purposes and simulation. Always ensure you have backups and verify paths before performing deletion operations to avoid accidental data loss. You can trust AI to give you step-by-step instructions and scripts, but you should never trust AI to directly handle malware removal on its own without human verification.';
@@ -2701,12 +2677,33 @@ function g4RenderChapter2Word(){
   play.appendChild(log);
 
   const playRow = document.createElement('div');
-  playRow.style.display = 'flex'; playRow.style.gap = '8px'; playRow.style.flexWrap = 'wrap'; playRow.style.margin = '4px 0 18px';
+  playRow.style.display = 'flex'; playRow.style.gap = '8px'; playRow.style.flexWrap = 'wrap'; playRow.style.margin = '4px 0 12px';
   const playBtn = document.createElement('button');
   playBtn.type = 'button'; playBtn.className = 'game-btn ghost'; playBtn.textContent = '▶ Play Morse';
   playBtn.addEventListener('click', () => playMorseAudio(word, 10));
-  playRow.appendChild(playBtn);
+  const refBtn = document.createElement('button');
+  refBtn.type = 'button'; refBtn.className = 'game-btn ghost'; refBtn.textContent = 'Show Morse reference';
+  playRow.appendChild(playBtn); playRow.appendChild(refBtn);
   play.appendChild(playRow);
+
+  const refBox = document.createElement('div');
+  refBox.style.display = 'none';
+  refBox.style.gridTemplateColumns = 'repeat(auto-fill, minmax(54px, 1fr))';
+  refBox.style.gap = '6px 10px';
+  refBox.style.margin = '0 0 16px'; refBox.style.padding = '12px';
+  refBox.style.border = '1px solid var(--rule-2)'; refBox.style.background = 'var(--ink-2)';
+  refBox.style.fontFamily = 'var(--mono)'; refBox.style.fontSize = '11px'; refBox.style.color = 'var(--paper-2)';
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(ch => {
+    const cell = document.createElement('div');
+    cell.textContent = ch + ' ' + MORSE_TABLE[ch];
+    refBox.appendChild(cell);
+  });
+  refBtn.addEventListener('click', () => {
+    const show = refBox.style.display === 'none';
+    refBox.style.display = show ? 'grid' : 'none';
+    refBtn.textContent = show ? 'Hide Morse reference' : 'Show Morse reference';
+  });
+  play.appendChild(refBox);
 
   const form = document.createElement('form');
   form.className = 'gp-form';
