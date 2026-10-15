@@ -4,15 +4,6 @@ A web app for DIS personnel built around the organisation's **4th Anniversary on
 
 ---
 
-## ⚠️ TODO before the event
-
-- [ ] **"Own the Process" Chapter 4** — the real photo is in (`assets/changi-airport.jpg`);
-  still need the exact coordinates: `index.html` → `G4_C4_LAT` / `G4_C4_LNG`
-  (ships as `1.36` / `103.99`, a public approximation) — set to the exact
-  coordinates you want, to 2 decimal places.
-
----
-
 ## What's in this repo
 
 ```
