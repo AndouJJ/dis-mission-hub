@@ -686,11 +686,10 @@
     color:var(--paper-3);text-align:center;line-height:1.6;padding:24px 10px;
   }
   .hotspot{
-    position:absolute;cursor:pointer;border:2px dashed rgba(244,237,224,0.55);
-    border-radius:5px;background:rgba(12,10,8,0.04);transition:border-color 0.15s,background 0.15s;
+    position:absolute;cursor:pointer;border:2px solid transparent;
+    border-radius:5px;background:transparent;transition:border-color 0.15s,background 0.15s;
     -webkit-tap-highlight-color:transparent;
   }
-  .hotspot:hover{border-color:rgba(244,237,224,0.95);background:rgba(244,237,224,0.10)}
   .hotspot.good{border-color:var(--good);border-style:solid;background:rgba(127,194,141,0.22)}
   .hotspot.bad{border-color:#e05c5c;border-style:solid;background:rgba(224,92,92,0.22)}
   .hotspot.locked{pointer-events:none}
@@ -846,6 +845,8 @@
   .mw-count{font-family:var(--mono);font-size:12px;letter-spacing:0.1em;color:#ffb3b3}
   .mw-count b{color:#ff2a2a}
   .mw-count #mw-clock{color:#fff;font-variant-numeric:tabular-nums}
+  .mw-id{font-family:var(--mono);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#ff8a8a}
+  .mw-tagline{font-family:var(--serif);font-style:italic;font-size:16px;line-height:1.4;color:#ffd6d6;margin:0;max-width:460px}
 </style>
 </head>
 <body>
@@ -1131,7 +1132,7 @@
         <button type="submit" class="expedition-verify-btn" id="exp-verify-btn">Verify</button>
       </form>
       <div class="expedition-verify-err" id="exp-verify-err"></div>
-      <div class="expedition-verify-done" id="exp-verify-done">✓ Mission logged. Well done, Guardian.</div>
+      <div class="expedition-verify-done" id="exp-verify-done">✓ The whole is greater than the sum of its parts. Remember, we are one service, and hope you have made a new friend!</div>
     </div>
     <div class="mission-foot">
       <span>Verified in person on OCT 28, 1800H GMT+8</span>
@@ -1169,8 +1170,8 @@
     <div id="g2-play">
       <div class="scene-objective" id="g2-objective"></div>
       <div class="scene-wrap" id="g2-scene"></div>
-      <div class="scene-hint">Tap the dashed outlines. Some are threats, some are harmless.</div>
-      <div class="scene-log" id="g2-log">Tap an outline to inspect it.</div>
+      <div class="scene-hint">Tap anything that looks out of place in the scene. Some are threats, some are harmless.</div>
+      <div class="scene-log" id="g2-log">Tap a suspicious spot to inspect it.</div>
       <div class="scene-foot">
         <span class="scene-tally" id="g2-tally"></span>
         <button class="game-btn ghost" id="g2-retry" style="display:none">Retry scene</button>
@@ -1265,7 +1266,9 @@
   <div class="mw-inner">
     <img src="assets/pwned.png" alt="" class="mw-img" id="mw-img"
          onerror="this.style.display='none'" />
+    <div class="mw-id">DIS04-008 · DISRUPT OR BE DISRUPTED!</div>
     <div class="mw-glitch">YOU'VE BEEN PWNED</div>
+    <p class="mw-tagline">Take the initiative as the future belongs to those that shape it.</p>
     <p class="mw-text">Your system is compromised. To regain access, ask <b>anyone nearby</b> for their
       <b>Unique ID</b> and enter it below.</p>
     <form class="mw-form" id="mw-form" autocomplete="off">
@@ -2218,7 +2221,7 @@ async function g1Finish(){
   await showNEResult({
     endId: 'g1-end', modalId: 'g1-modal', cid: 'ne-1',
     title: 'All eight, correct',
-    successMsg: 'You know your FICA powers, HIC tools, and the agents of influence Singapore has actually caught. Mission logged.',
+    successMsg: 'Be aware of the invisible threats that lurk!',
   });
 }
 
@@ -2321,7 +2324,7 @@ function g2ShowScene(idx){
   document.getElementById('g2-objective').innerHTML =
     'Scene <b>' + (idx + 1) + ' / ' + G2_SCENES.length + '</b> · ' + scene.label +
     ' — tap everything that looks out of place';
-  document.getElementById('g2-log').textContent = 'Tap an outline to inspect it.';
+  document.getElementById('g2-log').textContent = 'Tap a suspicious spot to inspect it.';
   document.getElementById('g2-retry').style.display = 'none';
   g2UpdateTally();
   g2RenderProgress();
@@ -2369,7 +2372,7 @@ async function g2Finish(){
   await showNEResult({
     endId: 'g2-end', modalId: 'g2-modal', cid: 'ne-2',
     title: 'All clear — sharp eyes',
-    successMsg: 'You spotted every threat with no false alarms across all three scenes. That’s the SGSecure mindset — stay alert, report early. Mission logged.',
+    successMsg: 'Not a matter of yes or no, but when. The threat of terrorism is never zero! Be the one that spots the threats, and remain ever vigilant!',
   });
 }
 
@@ -2504,7 +2507,7 @@ async function g3Win(){
       endId: 'g3-end', modalId: 'g3-modal', cid: 'ne-3',
       clearedBadge: 'Drill cleared',
       title: 'Racial Harmony',
-      successMsg: 'Racial harmony is vital to Singapore’s survival, peace, and prosperity. As a compact, multi-ethnic nation, social cohesion prevents conflict and builds a safe, united community. By choosing mutual respect over division, Singapore turns its diversity into a shared national strength.',
+      successMsg: 'How well do you know all of Singapore\'s Cultures?',
     });
   }, 700);
 }
@@ -2554,11 +2557,9 @@ neutralise_threat(TARGET_DIRECTORY, THREAT_NAME)`;
 
 const G4_C3_ANSWER = 'os.remove(full_path)';
 
-// TODO before the event: swap these placeholder coordinates for the real
-// Changi Airport lat/long, and add the real assets/changi-airport.jpg (see
-// README/CLAUDE.md).
+// Changi Airport target coordinates for Chapter 4's geo-guess.
 const G4_C4_LAT = 1.36;
-const G4_C4_LNG = 103.99;
+const G4_C4_LNG = 103.98;
 const G4_C4_TOL = 0.005; // matches when rounded to 2dp
 
 let g4step = 0; // 0..4, one per chapter cleared
@@ -2883,7 +2884,7 @@ async function g4Finish(){
   await showNEResult({
     endId: 'g4-end', modalId: 'g4-modal', cid: 'ne-4',
     title: 'Attacker eliminated',
-    successMsg: 'Congratulations! You have successfully eliminated the malicious attacker! As expected of a true Guardian! Now, please continue the rest of the challenge.',
+    successMsg: 'The Guardian\'s Vigil.',
   });
 }
 
@@ -3055,7 +3056,7 @@ async function g5Finish(){
   await showNEResult({
     endId: 'g5-end', modalId: 'g5-modal', cid: 'ne-5',
     title: 'Always on, always operational',
-    successMsg: 'Signal decoded. Mission logged.',
+    successMsg: 'Relentless tempo, real stakes 24/7.',
   });
 }
 
@@ -3136,7 +3137,7 @@ async function g6Finish(){
   await showNEResult({
     endId: 'g6-end', modalId: 'g6-modal', cid: 'ne-6',
     title: 'Unseen, Unheard, Undaunted',
-    successMsg: 'Three keys unlock the path ahead. The vow is kept. Mission logged.',
+    successMsg: 'Serving in the shadows so those we love can enjoy the light.',
   });
 }
 
