@@ -171,7 +171,9 @@ INSERT INTO app_settings (key, value) VALUES
   ('pw_ne-6', 'echo'),
   ('pw_expedition', 'foxtrot'),
   ('admin_pw', 'CHANGE-ME-7QF2-kx93-Vn5p'),
-  ('games_locked', 'false')   -- 'true' to lock all games behind their passwords
+  ('games_locked', 'false'),  -- 'true' to lock all games behind their passwords
+  ('event_end_time', '')      -- ISO 8601 timestamp (e.g. '2026-10-28T22:00:00+08:00')
+                              -- to hard-stop all games at that instant; '' = no cutoff
 ON CONFLICT DO NOTHING;
 ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;  -- no policies => no anon access
 
@@ -316,6 +318,33 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
+-- live event-end cutoff (read by everyone, set by the admin). An empty
+-- string means "no cutoff" — games stay open regardless of time.
+CREATE OR REPLACE FUNCTION get_event_end_time() RETURNS TEXT AS $$
+DECLARE v TEXT;
+BEGIN
+  SELECT value INTO v FROM app_settings WHERE key = 'event_end_time';
+  RETURN coalesce(v, '');
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
+
+-- p_time must be an ISO 8601 timestamp (e.g. '2026-10-28T22:00:00+08:00'),
+-- or '' to clear the cutoff. Validated as a real timestamp before saving.
+CREATE OR REPLACE FUNCTION set_event_end_time(p_time TEXT, p_admin_pw TEXT)
+RETURNS TEXT AS $$
+BEGIN
+  IF NOT admin_ok(p_admin_pw) THEN RAISE EXCEPTION 'unauthorized'; END IF;
+  IF p_time IS NOT NULL AND p_time <> '' THEN
+    PERFORM p_time::TIMESTAMPTZ;  -- raises if not a valid timestamp
+  END IF;
+  UPDATE app_settings SET value = coalesce(p_time, '') WHERE key = 'event_end_time';
+  IF NOT FOUND THEN
+    INSERT INTO app_settings(key, value) VALUES ('event_end_time', coalesce(p_time, ''));
+  END IF;
+  RETURN coalesce(p_time, '');
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
+
 -- admin: inject malware on one handle (reuses a live attack if already active)
 CREATE OR REPLACE FUNCTION send_malware(p_target_handle TEXT, p_admin_pw TEXT)
 RETURNS UUID AS $$
@@ -401,6 +430,7 @@ GRANT EXECUTE ON FUNCTION
   register_handle(TEXT), verify_game_password(TEXT,TEXT),
   start_game(TEXT,TEXT), finish_game(TEXT,TEXT), admin_ok(TEXT),
   get_games_locked(), set_games_locked(BOOLEAN,TEXT),
+  get_event_end_time(), set_event_end_time(TEXT,TEXT),
   send_malware(TEXT,TEXT), send_malware_all(TEXT),
   resolve_malware(UUID,TEXT), timeout_malware(UUID),
   record_wrong_guess(UUID),

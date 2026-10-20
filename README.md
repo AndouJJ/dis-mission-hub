@@ -44,6 +44,7 @@ project/, chats/     — original design files + session history (reference only
 - **Leaderboard** ranks by **fastest total time**.
 - **"Malware injection"** — the organiser can trigger a full-screen takeover on any participant (or everyone). It's tied to the handle in the database, so refresh/incognito can't clear it; the victim must enter **someone else's Unique ID** to clear it. Each wrong guess adds a **+1:00 penalty** (and shows "Guessing passwords isn't clever — it's reckless"); leaving it unresolved for 5 minutes auto-clears it with a **+5 min penalty**.
 - **Live `games_locked` switch** stored in Supabase — toggled from the admin console with no redeploy.
+- **Event-end hard stop** — an admin-set `event_end_time` cutoff (ISO 8601, e.g. `2026-10-28T22:00:00+08:00`) in `app_settings`. The instant it passes, every client force-closes any open game and blocks starting or resuming one — regardless of password-unlock state — behind a full-screen "Mission Hub Closed" overlay. Leave it blank (`''`) for no cutoff. Set it via the `set_event_end_time(p_time, p_admin_pw)` RPC (same pattern as `set_games_locked`) or directly in the Table Editor; clients pick it up within ~20s, and also schedule an exact-moment timer so it doesn't wait for the next poll.
 
 ---
 
@@ -62,6 +63,7 @@ Change every default before the event:
 | `pw_expedition` | **United by Action** completion code — give this to a Game Master to hand out in person after verifying the selfie (there's no entry gate; ne-4 "Own the Process" also has no outer gate — Chapter 1 is its own password puzzle) |
 | `admin_pw` | admin-console password — **use a long random value** (it's checked over the API) |
 | `games_locked` | `true` locks the six NE mini-games behind their passwords (United by Action is never gated) |
+| `event_end_time` | ISO 8601 cutoff (e.g. `2026-10-28T22:00:00+08:00`) that hard-stops every game the instant it passes; leave `''` for no cutoff |
 
 ### 3. Credentials
 `index.html` (and the private `admin.html`) embed the Supabase **Project URL**
